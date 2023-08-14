@@ -1,6 +1,7 @@
 ﻿using EasyAddCharacter.Textures;
 using HarmonyLib;
 using Il2CppInterop.Runtime;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppNewtonsoft.Json;
 using Il2CppNewtonsoft.Json.Linq;
 using Il2CppVampireSurvivors.Data;
@@ -10,6 +11,7 @@ using Il2CppVampireSurvivors.Objects;
 using Il2CppVampireSurvivors.UI;
 using MelonLoader;
 using System.Reflection;
+using UnityEngine;
 using WNP78;
 using Il2Generic = Il2CppSystem.Collections.Generic;
 
@@ -27,19 +29,16 @@ namespace EasyAddCharacter
 
     public class Mod : MelonMod
     {
-        static string CharacterJson = "[{\"level\":1,\"startingWeapon\":\"WHIP\",\"cooldown\":1,\"charName\":\"Antonio\",\"surname\":\"Belpaese\",\"textureName\":\"characters\",\"spriteName\":\"newAntonio_01.png\",\"skins\":[{\"id\":0,\"name\":\"Default\",\"textureName\":\"characters\",\"spriteName\":\"newAntonio_01.png\",\"walkingFrames\":4,\"unlocked\":true},{\"id\":1,\"name\":\"Legacy\",\"textureName\":\"characters\",\"spriteName\":\"Antonio_01.png\",\"walkingFrames\":4,\"unlocked\":true}],\"currentSkinIndex\":0,\"walkingFrames\":4,\"description\":\"Gains 10% more Damage every 10 levels (max +50%).\",\"isBought\":true,\"price\":0,\"completedStages\":[],\"survivedMinutes\":0,\"enemiesKilled\":0,\"stageData\":[],\"maxHp\":120,\"armor\":1,\"regen\":0,\"moveSpeed\":1,\"power\":1,\"area\":1,\"speed\":1,\"duration\":1,\"amount\":0,\"luck\":1,\"growth\":1,\"greed\":1,\"curse\":1,\"magnet\":0,\"revivals\":0,\"rerolls\":0,\"skips\":0,\"banish\":0,\"showcase\":[\"SHADOWSERVANT\",\"SHADOWSERVANT\",\"SHADOWSERVANT\",\"SHADOWSERVANT\",\"SHADOWSERVANT\",\"SHADOWSERVANT\",\"SHADOWSERVANT\",\"AREA\",\"AREA\",\"AREA\",\"AREA\",\"AREA\",\"SPEED\",\"SPEED\",\"SPEED\",\"SPEED\",\"SPEED\",\"DURATION\",\"DURATION\",\"DURATION\",\"DURATION\",\"DURATION\",\"LUCK\",\"LUCK\",\"LUCK\",\"LUCK\",\"LUCK\",\"COOLDOWN\",\"COOLDOWN\",\"COOLDOWN\",\"COOLDOWN\",\"COOLDOWN\",\"AMOUNT\",\"AMOUNT\"]},{\"power\":0.1,\"level\":10},{\"power\":0.1,\"level\":20,\"growth\":1},{\"power\":0.1,\"level\":30},{\"power\":0.1,\"level\":40,\"growth\":1},{\"power\":0.1,\"level\":50},{\"level\":21,\"growth\":-1},{\"level\":41,\"growth\":-1}]";
-
-        private static Skin createSkin()
+        private static SkinObject createSkin(string name, string spriteName)
         {
             return new()
             {
-                id = 0,
-                name = "Default",
-                textureName = "characters",
-                walkingFrames = 1,
-                unlocked = true,
-                spriteName = "floating-cat.png",
-                walkFrameRate = new Il2CppSystem.Nullable<int>(0),
+                Id = 0,
+                Name = name,
+                TextureName = "characters",
+                WalkingFrames = 1,
+                Unlocked = true,
+                SpriteName = spriteName
             };
         }
 
@@ -70,31 +69,58 @@ namespace EasyAddCharacter
 
         static NullableStruct<int> zeroPadNullable = new(1);
 
-        private static CharacterData createCharacterData()
+        private static CharacterObject createCharacterData(string firstName, string lastName)
         {
-            CharacterData c = new()
+            CharacterObject c = new()
             {
-                skins = new(),
-                level = 1,
-                cooldown = 1,
-                charName = "Nick",
-                surname = "F",
-                textureName = "characters",
-                spriteName = "floating-cat.png",
-                portraitName = "floating-cat.png",
-                currentSkinIndex = 0,
-                walkingFrames = 1,
-                description = "Testing out adding a new character.",
-                isBought = true,
-                showcase = new(),
-                price = 0,
-                speed = 1,
-                skips = 1,
-                startingWeapon = new NullableStruct<WeaponType>(WeaponType.WHIP)
+                Level = 1,
+                StartingWeapon = WeaponType.AXE,
+                Cooldown = 1,
+                CharName = firstName,
+                Surname = lastName,
+                TextureName = "characters",
+                SpriteName = "floating-cat.png",
+                Skins = new() { createSkin("Default", "floating-cat.png") },
+                CurrentSkinIndex = 0,
+                WalkingFrames = 4,
+                Description = "Nick's Test!",
+                IsBought = true,
+                Price = 0,
+                CompletedStages = new(),
+                SurvivedMinutes = 0,
+                EnemiesKilled = 0,
+                StageData = new(),
+                MaxHp = 120,
+                Armor = 1,
+                Regen = 0,
+                MoveSpeed = 1,
+                Power = 1,
+                Area = 1,
+                Speed = 1,
+                Duration = 1,
+                Amount = 0,
+                Luck = 1,
+                Growth = 1,
+                Greed = 1,
+                Curse = 1,
+                Magnet = 0,
+                Revivals = 0,
+                Rerolls = 0,
+                Skips = 0,
+                Banish = 0,
+                Showcase = new()
             };
-            c.skins.Add(createSkin());
-            c.walkFrameRate = c.skins.ToArray().First().walkFrameRate;
+
             return c;
+        }
+
+        private static CharacterObject createCharacterModifier(int level, double power)
+        {
+            return new()
+            {
+                Power = power,
+                Level = level
+            };
         }
 
         internal static JsonSerializerSettings serializerSettings = new JsonSerializerSettings
@@ -148,12 +174,6 @@ namespace EasyAddCharacter
             static void Initialize_Postfix(DataManager __instance)
             {
                 Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-
-                //Il2Generic.List<CharacterData> char_list = new();
-                
-                // char_list.Add(Mod.createCharacterData());
-                //__instance.AllCharacters.Add(my_character_type, ListToJArray(char_list));
-                //__instance.AllCharactersJson.Add("NICK", JsonConvert.SerializeObject(char_list, serializerSettings));
             }
 
             [HarmonyPatch(nameof(DataManager.LoadBaseJObjects))]
@@ -161,8 +181,10 @@ namespace EasyAddCharacter
             static void LoadBaseJObjects_Postfix(DataManager __instance, object[] __args, MethodBase __originalMethod)
             {
                 Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-                JArray json = JArray.Parse(CharacterJson);
-                __instance.AllCharactersJson.Add(my_character_type.ToString() ,json);
+                List<CharacterObject> list = new() { createCharacterData("Nick", "Fistere"), createCharacterModifier(10, 0.1) };
+                string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(list);
+                JArray json = JArray.Parse(jsonString);
+                __instance.AllCharactersJson.Add(my_character_type.ToString(), json);
             }
 
             [HarmonyPatch(nameof(DataManager.LoadBaseJObjects))]
@@ -206,14 +228,6 @@ namespace EasyAddCharacter
                 ref Il2Generic.Dictionary<CharacterType, Il2Generic.List<CharacterData>> __result)
             {
                 Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name} for {__result.Count} characters");
-                //foreach (Il2Generic.KeyValuePair<CharacterType, Il2Generic.List<CharacterData>> item in __result)
-                //    Melon<Mod>.Logger.Msg($"{item.Key} - {item.Value}");
-
-                if (CharacterSelectionPageConstructed && !__result.ContainsKey(my_character_type))
-                {
-                    __result.Add(my_character_type, char_list);
-                    Melon<Mod>.Logger.Msg($"Added {my_character_type}");
-                }
             }
 
             [HarmonyPatch(nameof(DataManager.GetConvertedCharacterData))]
@@ -339,13 +353,14 @@ namespace EasyAddCharacter
 
             [HarmonyPatch(nameof(CharacterSelectionPage.ShowCharacterInfo))]
             [HarmonyPrefix]
-            static void ShowCharacterInfo_Prefix(CharacterSelectionPage __instance, CharacterData charData, CharacterType cType, CharacterItemUI character, MethodBase __originalMethod)
+            static bool ShowCharacterInfo_Prefix(CharacterSelectionPage __instance, CharacterData charData, CharacterType cType, CharacterItemUI character, MethodBase __originalMethod)
             {
                 Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
                 if (cType == my_character_type)
                 {
-                    __instance.Icon.sprite = SpriteImporter.LoadSprite(Path.Combine(Directory.GetCurrentDirectory(), "resources", "floating-cat.png"));
+                    return false;
                 }
+                return true;
             }
 
             [HarmonyPatch(nameof(CharacterSelectionPage.ShowCharacterInfo))]
@@ -353,6 +368,18 @@ namespace EasyAddCharacter
             static void ShowCharacterInfo_Postfix(CharacterSelectionPage __instance, CharacterData charData, CharacterType cType, CharacterItemUI character, MethodBase __originalMethod)
             {
                 Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
+                if (cType == my_character_type)
+                {
+                    Melon<Mod>.Logger.Msg($"Setting the icon for {my_character_type}");
+                    __instance.Icon.sprite = SpriteImporter.LoadSprite(Path.Combine(Directory.GetCurrentDirectory(), "resources", "floating-cat.png"));
+                    __instance._Name.text = charData.GetFullNameUntranslated();
+                    __instance.Description.text = charData.description;
+                    //__instance.StatsPanel.Populate();
+                    __instance.StatsPanel.SetCharacter(charData, cType);
+                    __instance._EggCount.text = charData.exLevels.ToString();
+                    __instance.SetWeaponIconSprite(charData);
+                    __instance._selectedCharacter = character;
+                }
             }
         }
 
@@ -385,30 +412,31 @@ namespace EasyAddCharacter
             {
                 if (cType == my_character_type /*|| cType == my_character_type - 1*/)
                 {
-                    //Melon<Mod>.Logger.Msg($"CharacterItemUI.{MethodBase.GetCurrentMethod()?.Name}");
-                    //GameObject character = page._spawned[^1].Cast<GameObject>();
-                    //character.name = dat.GetFullNameUntranslated();
+                    __instance._voidWeapon = true;
+                    __instance.name = dat.charName;
+                    __instance._CharacterName.text = dat.charName;
+                    __instance._page = page;
+                    __instance._playerOptions = dataManager._playerOptions;
+                    __instance._data = dat;
+                    __instance._dataManager = dataManager;
+                    __instance._CharacterIcon.sprite = SpriteImporter.LoadSprite(Path.Combine(Directory.GetCurrentDirectory(), "resources", "floating-cat.png"));
+                    __instance._CharacterIcon.sprite.name = __instance.name;
+                    __instance._CharacterIcon.sprite.texture.name = __instance.name;
+                    __instance._defaultTextColor = new Color(1, 1, 1, 1);
+                    __instance._nameText = __instance._CharacterName;
+                    __instance.Type = my_character_type;
+                    __instance._Background.name = __instance.name;
+                    __instance.SetWeaponIconSprite(dat);
 
-                    //__instance.name = character.name;
-                    //Button button = character.GetComponent<Button>();
-                    //// Set sprite
-                    //Image characterIcon = character.transform.GetComponentsInChildren<Image>().Where(i => i.name == "CharacterIcon").First();
-                    //characterIcon.sprite = SpriteImporter.LoadSprite(Path.Combine(Directory.GetCurrentDirectory(), "resources", "floating-cat.png"));
-                    //characterIcon.sprite.texture.ReinitializeWithFormatImpl(characterIcon.sprite.texture.width, characterIcon.sprite.texture.height, GraphicsFormat.R32G32B32A32_UInt, false);
-                    //characterIcon.sprite.texture.filterMode = FilterMode.Point;
+                    // TODO: put this somewhere...
+                    dat.portraitName = dat.spriteName;
+                    dat.onEveryLevelUp = new ModifierStats() { Amount = 1 };
+                    dat.bgm = "NONE"; // TODO: what is this? A: Background Modifier? There's a type for it. BGMType
+                    dat.isBought = true;
 
-                    //character.transform.GetComponentInChildren<TextMeshProUGUI>().text = dat.charName;
+                    playerOptions._config.BoughtCharacters.Add(my_character_type);
 
-                    //__instance._page = page;
-                    //__instance._playerOptions = dataManager._playerOptions;
-                    //__instance._data = dat;
-                    //__instance._dataManager = dataManager;
-                    //__instance._CharacterIcon.sprite = SpriteImporter.LoadSprite(Path.Combine(Directory.GetCurrentDirectory(), "resources", "floating-cat.png"));
-                    //__instance._CharacterIcon.sprite.name = __instance.name;
-                    //__instance._CharacterIcon.sprite.texture.name = __instance.name;
-                    //__instance._defaultTextColor = new Color(1, 1, 1, 1);
-                    //__instance._nameText = __instance._CharacterName;
-                    //__instance.Type = my_character_type;
+                    return false;
                 }
                 return true;
             }
@@ -417,8 +445,32 @@ namespace EasyAddCharacter
             [HarmonyPostfix]
             static void SetData_Postfix(CharacterItemUI __instance, object[] __args, MethodBase __originalMethod)
             {
-                if (__args[2] != null && __args[2].ToString() == my_character_type.ToString())
+                if (__instance.Type == my_character_type)
                     Melon<Mod>.Logger.Msg($"CharacterItemUI.{MethodBase.GetCurrentMethod()?.Name}");
+            }
+        }
+
+        public static Sprite FloatingCat = SpriteImporter.LoadSprite(Path.Combine(Directory.GetCurrentDirectory(), "resources", "floating-cat.png"));
+
+        [HarmonyPatch(typeof(Resources))]
+        class Resources_Patch
+        {
+            [HarmonyPatch(nameof(Resources.LoadAll), new Type[] { typeof(string), typeof(Il2CppSystem.Type) })]
+            [HarmonyPostfix]
+            static void LoadAll_Postfix(Resources __instance, object[] __args, string path, MethodBase __originalMethod, Il2CppReferenceArray<UnityEngine.Object> __result)
+            {
+                Melon<Mod>.Logger.Msg($"CharacterItemUI.{MethodBase.GetCurrentMethod()?.Name}");
+                if (path == "SpriteSheets")
+                {
+                    FloatingCat.name = "floating-cat";
+                    FloatingCat.texture.name = "floating-cat";
+                    UnityEngine.Object.DontDestroyOnLoad(FloatingCat);
+
+                    _ = __result.AddItem(FloatingCat);
+                    //List<UnityEngine.Object> list = __result.Where(m => m.name.Contains("antonio")).ToList();
+                    //List<UnityEngine.Object> list2 = __result.Where(m => m.name.Contains("Antonio")).ToList();
+                    List<UnityEngine.Object> list2 = __result.Where(m => m.name.IndexOf("antonio", StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                }
             }
         }
     }

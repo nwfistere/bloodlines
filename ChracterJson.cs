@@ -1,21 +1,21 @@
 ﻿using Il2CppVampireSurvivors.Data;
-using Il2CppVampireSurvivors.Data.Characters;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json.Converters;
 
 namespace EasyAddCharacter
 {
-    internal class ChracterJson
+    //internal class CharacterArray
+    //{
+    //    public List<CharacterObject> Items { get; set; }
+    //}
+    internal class CharacterObject
     {
         [JsonProperty("level")]
         public int Level { get; set; }
 
         [JsonProperty("startingWeapon")]
-        public string StartingWeapon { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public WeaponType StartingWeapon { get; set; }
 
         [JsonProperty("cooldown")]
         public int Cooldown { get; set; }
@@ -33,7 +33,7 @@ namespace EasyAddCharacter
         public string SpriteName { get; set; }
 
         [JsonProperty("skins")]
-        public List<Skin> Skins { get; set; }
+        public List<SkinObject> Skins { get; set; }
 
         [JsonProperty("currentSkinIndex")]
         public int CurrentSkinIndex { get; set; }
@@ -116,10 +116,10 @@ namespace EasyAddCharacter
         [JsonProperty("banish")]
         public int Banish { get; set; }
 
-        [JsonProperty("showcase")]
-        public List<string> Showcase { get; set; }
+        [JsonProperty("showcase", ItemConverterType = typeof(StringEnumConverter))]
+        public List<WeaponType> Showcase { get; set; }
     }
-    public class Skin
+    public class SkinObject
     {
         [JsonProperty("id")]
         public int Id { get; set; }
