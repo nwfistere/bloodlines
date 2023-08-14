@@ -15,6 +15,7 @@ using UnityEngine;
 using WNP78;
 using Il2Generic = Il2CppSystem.Collections.Generic;
 using EasyAddCharacter.Config;
+using MelonLoader.TinyJSON;
 
 namespace EasyAddCharacter
 {
@@ -33,10 +34,17 @@ namespace EasyAddCharacter
         public static readonly string ModDirectory = Path.Combine(Directory.GetCurrentDirectory(), "UserData", "EasyAddCharacter");
         public static readonly string DataDirectory = Path.Combine(ModDirectory, "data");
         public Config.Config Config { get; private set; }
+        public CharacterManager manager { get; private set; }
 
         public override void OnInitializeMelon()
         {
+            if (!Directory.Exists(ModDirectory))
+            {
+                Directory.CreateDirectory(ModDirectory);
+                Directory.CreateDirectory(DataDirectory);
+            }
             Config = new Config.Config(Path.Combine(ModDirectory, "config.cfg"), "EasyAddCharacter");
+            manager = new(ModDirectory, Path.Combine(DataDirectory, "characters"));
         }
 
         private static SkinObject createSkin(string name, string spriteName)
@@ -191,10 +199,18 @@ namespace EasyAddCharacter
             static void LoadBaseJObjects_Postfix(DataManager __instance, object[] __args, MethodBase __originalMethod)
             {
                 Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-                List<CharacterJson> list = new() { createCharacterData("Nick", "Fistere"), createCharacterModifier(10, 0.1) };
-                string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(list);
-                JArray json = JArray.Parse(jsonString);
-                __instance.AllCharactersJson.Add(my_character_type.ToString(), json);
+                CharacterType iter = Enum.GetValues<CharacterType>().Max() + 1;
+
+                foreach (KeyValuePair<Type, List<BaseCharacterFile>> entry in Melon<Mod>.Instance.manager.ParsedCharacterFiles)
+                {
+                    foreach (BaseCharacterFile file in entry.Value)
+                    {
+                        string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(file.GetCharacterJson());
+                        Melon<Mod>.Logger.Msg($"Adding character...");
+                        JArray json = JArray.Parse(jsonString);
+                        __instance.AllCharactersJson.Add(iter++.ToString(), json);
+                    }
+                }
             }
 
             [HarmonyPatch(nameof(DataManager.LoadBaseJObjects))]

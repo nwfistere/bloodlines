@@ -14,6 +14,9 @@ namespace EasyAddCharacter
         [JsonProperty("version")]
         [JsonConverter(typeof(VersionConverter))]
         abstract public Version Version { get; set; }
+
+        // Defined in case we move the character json somewhere.
+        abstract public List<CharacterJson> GetCharacterJson();
     }
 
     // Mark with [Obsolete("CharacterFileV* is deprecated, use CharacterFileV* instead.")] when new version is here.
@@ -28,5 +31,10 @@ namespace EasyAddCharacter
         public List<CharacterJson> Character { get; set; }
 
         public CharacterFileV0_1() : base() {}
+
+        public override List<CharacterJson> GetCharacterJson()
+        {
+            return Character;
+        }
     }
 }

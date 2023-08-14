@@ -3,7 +3,7 @@ using System;
 
 namespace EasyAddCharacter
 {
-    internal class Character
+    public class Character
     {
         public CharacterJson CharacterJson { get; private set; }
 

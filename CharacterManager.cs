@@ -1,5 +1,6 @@
 ﻿using Il2CppVampireSurvivors.Objects.Characters.Enemies;
 using MelonLoader;
+using MelonLoader.ICSharpCode.SharpZipLib.GZip;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -7,16 +8,45 @@ using System.IO.Compression;
 
 namespace EasyAddCharacter
 {
-    internal class CharacterManager
+    public class CharacterManager
     {
         public List<Character> characters { get; protected set; } = new();
         private readonly string ZipPath;
         private readonly string ExtractPath;
-        private Dictionary<Type, List<BaseCharacterFile>> ParsedCharacterFiles = new();
+        public Dictionary<Type, List<BaseCharacterFile>> ParsedCharacterFiles { get; protected set; } = new();
+        public readonly bool success = false;
         public CharacterManager(string ZipPath, string ExtractPath)
         {
             this.ZipPath = ZipPath;
             this.ExtractPath = ExtractPath;
+            try
+            {
+                ParseExistingCharacterFiles();
+                ParseZipFiles();
+                success = true;
+            } catch (Exception e)
+            {
+                Melon<Mod>.Logger.Error($"Error: {e}");
+                Melon<Mod>.Logger.Error($"Submit an issue for this exception.");
+            }
+
+        }
+
+        public void ParseExistingCharacterFiles()
+        {
+            if (!Directory.Exists(ExtractPath))
+                Directory.CreateDirectory(ExtractPath);
+
+            foreach (string dir in Directory.GetDirectories(ExtractPath))
+            {
+                string jsonFile = Path.Combine(dir, "character.json");
+                if (File.Exists(jsonFile))
+                {
+                    Melon<Mod>.Logger.Msg($"Loading up character json from {Path.GetDirectoryName(dir)}");
+                    string fileContent = File.ReadAllText(jsonFile);
+                    handleJsonFileString(fileContent);
+                }
+            }
         }
 
         public void ParseZipFiles()
@@ -28,6 +58,7 @@ namespace EasyAddCharacter
                 {
                     try
                     {
+                        Melon<Mod>.Logger.Msg($"Parsing {Path.GetFileName(zip)}");
                         handleZipFile(zip);
                     }
                     catch (Exception)
@@ -38,7 +69,7 @@ namespace EasyAddCharacter
             }
         }
 
-        private void cleanupFiles(List<string> files)
+        private static void CleanupFiles(List<string> files)
         {
             foreach (string file in files.Where(file => File.Exists(file)))
             {
@@ -70,7 +101,7 @@ namespace EasyAddCharacter
                 if (!DirectoryEmpty(outputDirectory))
                 {
                     if (File.Exists(Path.Combine(outputDirectory, "character.json")))
-                        Melon<Mod>.Logger.Error($"A character witht this name already exists...");
+                        Melon<Mod>.Logger.Error($"A character with this name already exists...");
                     else
                         Melon<Mod>.Logger.Error($"Output directory '{outputDirectory}' isn't empty.");
                 }
@@ -146,25 +177,27 @@ namespace EasyAddCharacter
             {
                 Melon<Mod>.Logger.Error($"Error: File did not exist. Do you have permission to access the directory?");
                 Melon<Mod>.Logger.Error($"Skipping file: {filePath} - {exception}");
-                cleanupFiles(filesToClean);
+                CleanupFiles(filesToClean);
                 return;
             }
             catch (Exception e)
             {
                 Melon<Mod>.Logger.Error($"Copy and paste the following exception to new issue on github.");
                 Melon<Mod>.Logger.Error($"Caught unexpected exception: {e}");
-                cleanupFiles(filesToClean);
+                CleanupFiles(filesToClean);
                 throw;
             }
 
             Melon<Mod>.Logger.Msg($"Extraction of {Path.GetFileNameWithoutExtension(filePath)} successful. Deleting zip file.");
 
-            cleanupFiles(new List<string>() { filePath });
+            CleanupFiles(new List<string>() { filePath });
         }
 
         private void handleJsonFileString(string json)
         {
             BaseCharacterFile characterDto = GetFileDto(json, out Type actualType);
+            if (!ParsedCharacterFiles.ContainsKey(actualType))
+                ParsedCharacterFiles.Add(actualType, new());
             ParsedCharacterFiles[actualType].Add(characterDto);
         }
 
