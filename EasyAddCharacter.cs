@@ -14,6 +14,7 @@ using System.Reflection;
 using UnityEngine;
 using WNP78;
 using Il2Generic = Il2CppSystem.Collections.Generic;
+using EasyAddCharacter.Config;
 
 namespace EasyAddCharacter
 {
@@ -29,6 +30,15 @@ namespace EasyAddCharacter
 
     public class Mod : MelonMod
     {
+        public static readonly string ModDirectory = Path.Combine(Directory.GetCurrentDirectory(), "UserData", "EasyAddCharacter");
+        public static readonly string DataDirectory = Path.Combine(ModDirectory, "data");
+        public Config.Config Config { get; private set; }
+
+        public override void OnInitializeMelon()
+        {
+            Config = new Config.Config(Path.Combine(ModDirectory, "config.cfg"), "EasyAddCharacter");
+        }
+
         private static SkinObject createSkin(string name, string spriteName)
         {
             return new()
@@ -69,9 +79,9 @@ namespace EasyAddCharacter
 
         static NullableStruct<int> zeroPadNullable = new(1);
 
-        private static CharacterObject createCharacterData(string firstName, string lastName)
+        private static CharacterJson createCharacterData(string firstName, string lastName)
         {
-            CharacterObject c = new()
+            CharacterJson c = new()
             {
                 Level = 1,
                 StartingWeapon = WeaponType.AXE,
@@ -114,7 +124,7 @@ namespace EasyAddCharacter
             return c;
         }
 
-        private static CharacterObject createCharacterModifier(int level, double power)
+        private static CharacterJson createCharacterModifier(int level, double power)
         {
             return new()
             {
@@ -181,7 +191,7 @@ namespace EasyAddCharacter
             static void LoadBaseJObjects_Postfix(DataManager __instance, object[] __args, MethodBase __originalMethod)
             {
                 Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-                List<CharacterObject> list = new() { createCharacterData("Nick", "Fistere"), createCharacterModifier(10, 0.1) };
+                List<CharacterJson> list = new() { createCharacterData("Nick", "Fistere"), createCharacterModifier(10, 0.1) };
                 string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(list);
                 JArray json = JArray.Parse(jsonString);
                 __instance.AllCharactersJson.Add(my_character_type.ToString(), json);

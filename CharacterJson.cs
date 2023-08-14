@@ -4,11 +4,8 @@ using Newtonsoft.Json.Converters;
 
 namespace EasyAddCharacter
 {
-    //internal class CharacterArray
-    //{
-    //    public List<CharacterObject> Items { get; set; }
-    //}
-    internal class CharacterObject
+
+    public class CharacterJson
     {
         [JsonProperty("level")]
         public int Level { get; set; }
