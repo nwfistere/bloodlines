@@ -1,10 +1,13 @@
 ﻿using Il2CppVampireSurvivors.Data;
+using Il2CppVampireSurvivors.Objects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System.Reflection;
 
 namespace EasyAddCharacter
 {
 
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class CharacterJson
     {
         [JsonProperty("level")]
@@ -115,6 +118,27 @@ namespace EasyAddCharacter
 
         [JsonProperty("showcase", ItemConverterType = typeof(StringEnumConverter))]
         public List<WeaponType> Showcase { get; set; }
+
+        public ModifierStats toModifierStat()
+        {
+            ModifierStats m = new();
+
+            PropertyInfo[] myProps = this.GetType().GetProperties();
+            foreach(PropertyInfo prop in this.GetType().GetProperties())
+            {
+                if (m.GetType().GetProperty(prop.Name) == null)
+                    continue;
+                var value = prop.GetValue(this, null);
+                if (prop.Name == "Power")
+                {
+                    m.Power = Convert.ToSingle(this.Power);
+                    continue;
+                }
+                m.GetType().GetProperty(prop.Name).SetValue(m, value);
+            }
+
+            return m;
+        }
     }
     public class SkinObject
     {

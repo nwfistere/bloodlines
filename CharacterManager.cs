@@ -13,7 +13,6 @@ namespace EasyAddCharacter
         public List<Character> characters { get; protected set; } = new();
         private readonly string ZipPath;
         private readonly string ExtractPath;
-        public Dictionary<Type, List<BaseCharacterFile>> ParsedCharacterFiles { get; protected set; } = new();
         public readonly bool success = false;
         public CharacterManager(string ZipPath, string ExtractPath)
         {
@@ -44,7 +43,7 @@ namespace EasyAddCharacter
                 {
                     Melon<Mod>.Logger.Msg($"Loading up character json from {Path.GetDirectoryName(dir)}");
                     string fileContent = File.ReadAllText(jsonFile);
-                    handleJsonFileString(fileContent);
+                    handleJsonFileString(jsonFile, fileContent);
                 }
             }
         }
@@ -137,7 +136,7 @@ namespace EasyAddCharacter
                                 jsonString = reader.ReadToEnd();
                             }
 
-                            handleJsonFileString(jsonString);
+                            handleJsonFileString(outputJsonFile, jsonString);
                             entry.ExtractToFile(outputJsonFile);
                             filesToClean.Add(outputJsonFile);
                         }
@@ -193,12 +192,10 @@ namespace EasyAddCharacter
             CleanupFiles(new List<string>() { filePath });
         }
 
-        private void handleJsonFileString(string json)
+        private void handleJsonFileString(string jsonFilePath, string json)
         {
             BaseCharacterFile characterDto = GetFileDto(json, out Type actualType);
-            if (!ParsedCharacterFiles.ContainsKey(actualType))
-                ParsedCharacterFiles.Add(actualType, new());
-            ParsedCharacterFiles[actualType].Add(characterDto);
+            characters.Add(new(jsonFilePath, characterDto, actualType));
         }
 
         private BaseCharacterFile GetFileDto(string json, out Type type)

@@ -16,6 +16,7 @@ namespace EasyAddCharacter.Config
         {
             this.SavePath = SavePath;
             Category = MelonPreferences.CreateCategory(CategoryName);
+            Category.SetFilePath(SavePath);
         }
         protected void Add<T>(string key, T defaultValue)
         {

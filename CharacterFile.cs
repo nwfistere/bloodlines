@@ -19,7 +19,7 @@ namespace EasyAddCharacter
         abstract public List<CharacterJson> GetCharacterJson();
     }
 
-    // Mark with [Obsolete("CharacterFileV* is deprecated, use CharacterFileV* instead.")] when new version is here.
+    // Mark with [Obsolete("CharacterFileV* is deprecated, use CharacterFileV* instead.")] when I add a new version.
     public class CharacterFileV0_1 : BaseCharacterFile
     {
         [JsonIgnore]
