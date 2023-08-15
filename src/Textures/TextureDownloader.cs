@@ -1,6 +1,6 @@
 ﻿using UnityEngine.Networking;
 
-namespace Bloodlines.Textures
+namespace Bloodlines.src.Textures
 {
     public class TextureDownloader
     {
@@ -22,7 +22,7 @@ namespace Bloodlines.Textures
                 var request = uwr.SendWebRequest();
 
                 while (!request.isDone)
-                    System.Threading.Thread.Sleep(50);
+                    Thread.Sleep(50);
 
                 if (uwr.result != UnityWebRequest.Result.Success)
                 {

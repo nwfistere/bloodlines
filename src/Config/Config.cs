@@ -1,4 +1,4 @@
-﻿namespace Bloodlines.Config
+﻿namespace Bloodlines.src.Config
 {
     public class Config : BaseConfig
     {

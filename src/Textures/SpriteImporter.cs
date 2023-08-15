@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 
-namespace Bloodlines.Textures
+namespace Bloodlines.src.Textures
 {
     public class SpriteImporter : MonoBehaviour
     {
