@@ -2,7 +2,7 @@
 using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Objects;
 
-namespace Bloodlines
+namespace Bloodlines.src
 {
     public class Character
     {
@@ -26,8 +26,8 @@ namespace Bloodlines
             this.CharacterFilePath = CharacterFilePath;
             this.CharacterFileVersion = CharacterFileVersion;
             this.CharacterFileJson = CharacterFileJson;
-            this.CharacterInfo = (CharacterFileJson as CharacterFileV0_1).Character[0];
-            this.ModifierStats = (CharacterFileJson as CharacterFileV0_1).Character.Skip(1).ToList().Select(c => c.toModifierStat()).ToList();
+            CharacterInfo = (CharacterFileJson as CharacterFileV0_1).Character[0];
+            ModifierStats = (CharacterFileJson as CharacterFileV0_1).Character.Skip(1).ToList().Select(c => c.toModifierStat()).ToList();
         }
     }
 }

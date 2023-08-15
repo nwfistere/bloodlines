@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
 
-namespace Bloodlines
+namespace Bloodlines.src
 {
     public class CharacterManager
     {
@@ -124,7 +124,6 @@ namespace Bloodlines
                 using (FileStream fs = new(filePath, FileMode.Open))
                 using (ZipArchive archive = new(fs, ZipArchiveMode.Read))
                 {
-
                     foreach (ZipArchiveEntry entry in archive.Entries)
                     {
                         if (entry.Name.EndsWith(".json"))

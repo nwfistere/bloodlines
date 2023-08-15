@@ -1,4 +1,5 @@
-﻿using Bloodlines.Textures;
+﻿using Bloodlines.src.Config;
+using Bloodlines.src.Textures;
 using HarmonyLib;
 using Il2CppNewtonsoft.Json;
 using Il2CppNewtonsoft.Json.Linq;
@@ -13,7 +14,7 @@ using System.Reflection;
 using UnityEngine;
 using Il2Generic = Il2CppSystem.Collections.Generic;
 
-namespace Bloodlines
+namespace Bloodlines.src
 {
     public static class ModInfo
     {
@@ -29,7 +30,7 @@ namespace Bloodlines
     {
         public static readonly string ModDirectory = Path.Combine(Directory.GetCurrentDirectory(), "UserData", "EasyAddCharacter");
         public static readonly string DataDirectory = Path.Combine(ModDirectory, "data");
-        public Config.Config Config { get; private set; }
+        public Config Config { get; private set; }
         public CharacterManager manager { get; private set; }
 
         static DataManager dataManager;
@@ -49,7 +50,7 @@ namespace Bloodlines
         [HarmonyPatch("Il2CppInterop.HarmonySupport.Il2CppDetourMethodPatcher", "ReportException")]
         public static class Patch_Il2CppDetourMethodPatcher
         {
-            public static bool Prefix(System.Exception ex)
+            public static bool Prefix(Exception ex)
             {
                 MelonLogger.Error("During invoking native->managed trampoline", ex);
                 return false;

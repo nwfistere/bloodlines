@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Bloodlines
+namespace Bloodlines.src
 {
     // The Deserialized version of the Character json files.
     public abstract class BaseCharacterFile

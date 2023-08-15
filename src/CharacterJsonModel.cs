@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Reflection;
 
-namespace Bloodlines
+namespace Bloodlines.src
 {
 
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
@@ -123,15 +123,15 @@ namespace Bloodlines
         {
             ModifierStats m = new();
 
-            PropertyInfo[] myProps = this.GetType().GetProperties();
-            foreach (PropertyInfo prop in this.GetType().GetProperties())
+            PropertyInfo[] myProps = GetType().GetProperties();
+            foreach (PropertyInfo prop in GetType().GetProperties())
             {
                 if (m.GetType().GetProperty(prop.Name) == null)
                     continue;
                 var value = prop.GetValue(this, null);
                 if (prop.Name == "Power")
                 {
-                    m.Power = Convert.ToSingle(this.Power);
+                    m.Power = Convert.ToSingle(Power);
                     continue;
                 }
                 m.GetType().GetProperty(prop.Name).SetValue(m, value);
