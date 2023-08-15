@@ -1,33 +1,28 @@
-﻿using EasyAddCharacter.Textures;
+﻿using Bloodlines.Textures;
 using HarmonyLib;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppNewtonsoft.Json;
 using Il2CppNewtonsoft.Json.Linq;
 using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Data.Characters;
 using Il2CppVampireSurvivors.Framework;
 using Il2CppVampireSurvivors.Objects;
+using Il2CppVampireSurvivors.Objects.Characters;
 using Il2CppVampireSurvivors.UI;
 using MelonLoader;
 using System.Reflection;
 using UnityEngine;
-using WNP78;
 using Il2Generic = Il2CppSystem.Collections.Generic;
-using EasyAddCharacter.Config;
-using MelonLoader.TinyJSON;
-using Il2CppVampireSurvivors.Objects.Characters;
 
-namespace EasyAddCharacter
+namespace Bloodlines
 {
     public static class ModInfo
     {
-        public const string Name = "VSEasyAddCharacter";
-        public const string Description = "Easily add new characters!";
+        public const string Name = "Bloodlines";
+        public const string Description = "Easily add custom characters!";
         public const string Author = "Nick";
         public const string Company = "Nick";
         public const string Version = "0.1.0";
-        public const string Download = "https://github.com/nwfistere/VSEasyAddCharacter";
+        public const string Download = "https://github.com/nwfistere/bloodlines";
     }
 
     public class Mod : MelonMod
@@ -61,13 +56,11 @@ namespace EasyAddCharacter
             }
         }
 
-        internal static JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+        internal static JsonSerializerSettings serializerSettings = new()
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             NullValueHandling = NullValueHandling.Ignore
         };
-
-        static Il2Generic.List<CharacterData> char_list = new();
 
         private static JArray ListToJArray(Il2Generic.List<CharacterData> list)
         {
@@ -98,13 +91,6 @@ namespace EasyAddCharacter
         class CharacterController_Patch
         {
             [HarmonyPatch(nameof(CharacterController.InitCharacter))]
-            [HarmonyPrefix]
-            static void InitCharacter_Prefix(CharacterController __instance, CharacterType characterType, int playerIndex)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(CharacterController.InitCharacter))]
             [HarmonyPostfix]
             static void InitCharacter_Postfix(CharacterController __instance, CharacterType characterType, int playerIndex)
             {
@@ -114,6 +100,7 @@ namespace EasyAddCharacter
                     string spriteFilename = (ch.CharacterFileJson as CharacterFileV0_1).Character[0].SpriteName;
 
                     __instance.Rend.sprite = SpriteImporter.LoadSprite(Path.Combine(Path.GetDirectoryName(ch.CharacterFilePath), spriteFilename));
+                    __instance.Rend.sprite.name = ch.CharacterInfo.CharName;
                 }
             }
         }
@@ -143,14 +130,6 @@ namespace EasyAddCharacter
                     JArray json = JArray.Parse(jsonString);
                     __instance.AllCharactersJson.Add(characterType.ToString(), json);
                 }
-            }
-
-            [HarmonyPatch(nameof(DataManager.GetConvertedCharacterData))]
-            [HarmonyPostfix]
-            static void GetConvertedCharacterData_Postfix(DataManager __instance, object[] __args, MethodBase __originalMethod,
-                ref Il2Generic.Dictionary<CharacterType, Il2Generic.List<CharacterData>> __result)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name} for {__result.Count} characters");
             }
         }
 
@@ -226,13 +205,6 @@ namespace EasyAddCharacter
                     return false;
                 }
                 return true;
-            }
-
-            [HarmonyPatch(nameof(CharacterItemUI.SetData))]
-            [HarmonyPostfix]
-            static void SetData_Postfix(CharacterItemUI __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"CharacterItemUI.{MethodBase.GetCurrentMethod()?.Name}");
             }
         }
     }

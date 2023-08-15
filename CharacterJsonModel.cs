@@ -4,11 +4,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Reflection;
 
-namespace EasyAddCharacter
+namespace Bloodlines
 {
 
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-    public class CharacterJson
+    public class CharacterJsonModel
     {
         [JsonProperty("level")]
         public int Level { get; set; }
@@ -33,7 +33,7 @@ namespace EasyAddCharacter
         public string SpriteName { get; set; }
 
         [JsonProperty("skins")]
-        public List<SkinObject> Skins { get; set; }
+        public List<SkinObjectModel> Skins { get; set; }
 
         [JsonProperty("currentSkinIndex")]
         public int CurrentSkinIndex { get; set; }
@@ -124,7 +124,7 @@ namespace EasyAddCharacter
             ModifierStats m = new();
 
             PropertyInfo[] myProps = this.GetType().GetProperties();
-            foreach(PropertyInfo prop in this.GetType().GetProperties())
+            foreach (PropertyInfo prop in this.GetType().GetProperties())
             {
                 if (m.GetType().GetProperty(prop.Name) == null)
                     continue;
@@ -140,7 +140,7 @@ namespace EasyAddCharacter
             return m;
         }
     }
-    public class SkinObject
+    public class SkinObjectModel
     {
         [JsonProperty("id")]
         public int Id { get; set; }

@@ -1,12 +1,9 @@
-﻿using Il2CppVampireSurvivors.Objects.Characters.Enemies;
-using MelonLoader;
-using MelonLoader.ICSharpCode.SharpZipLib.GZip;
+﻿using MelonLoader;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
 
-namespace EasyAddCharacter
+namespace Bloodlines
 {
     public class CharacterManager
     {
@@ -23,7 +20,8 @@ namespace EasyAddCharacter
                 ParseExistingCharacterFiles();
                 ParseZipFiles();
                 success = true;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Melon<Mod>.Logger.Error($"Error: {e}");
                 Melon<Mod>.Logger.Error($"Submit an issue for this exception.");
@@ -75,14 +73,15 @@ namespace EasyAddCharacter
                 try
                 {
                     File.Delete(file);
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     Melon<Mod>.Logger.Error($"Caught the following error when cleaning up '{file}': {e}");
                     Melon<Mod>.Logger.Error("***** Make sure to clean it up manually *****");
                 }
             }
         }
-        
+
         public static bool DirectoryEmpty(string path)
         {
             return !Directory.EnumerateFileSystemEntries(path).Any();
@@ -104,7 +103,8 @@ namespace EasyAddCharacter
                     else
                         Melon<Mod>.Logger.Error($"Output directory '{outputDirectory}' isn't empty.");
                 }
-            } else
+            }
+            else
             {
                 try
                 {
@@ -204,7 +204,8 @@ namespace EasyAddCharacter
             try
             {
                 jObject = JObject.Parse(json);
-            } catch (JsonReaderException ex)
+            }
+            catch (JsonReaderException ex)
             {
                 Melon<Mod>.Logger.Error($"Failed to parse json to JObject. Invalid Json. {ex}");
                 throw new InvalidDataException("Failed to parse json to JObject", ex);
@@ -213,7 +214,7 @@ namespace EasyAddCharacter
             JToken? jTokenVersion = jObject[propertyName: "version"] ?? throw new InvalidDataException("Invalid json provided, no version string.");
             Version? version = jTokenVersion.ToObject<Version>();
 
-            switch(version?.ToString())
+            switch (version?.ToString())
             {
                 case CharacterFileV0_1._version:
                     {
@@ -225,7 +226,7 @@ namespace EasyAddCharacter
                     }
             }
 
-            throw new InvalidDataException($"Invalid version found in json string { (version == null ? "null" : version.ToString()) }.");
+            throw new InvalidDataException($"Invalid version found in json string {(version == null ? "null" : version.ToString())}.");
         }
     }
 }

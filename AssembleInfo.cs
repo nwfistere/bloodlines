@@ -1,8 +1,7 @@
-﻿using EasyAddCharacter;
+﻿using Bloodlines;
 using MelonLoader;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System;
 
 [assembly: AssemblyTitle(ModInfo.Description)]
 [assembly: AssemblyDescription(ModInfo.Description)]

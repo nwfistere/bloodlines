@@ -1,17 +1,12 @@
 ﻿using MelonLoader;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace EasyAddCharacter.Config
+namespace Bloodlines.Config
 {
     public class BaseConfig
     {
         private readonly string SavePath;
-        private MelonPreferences_Category Category;
-        private Dictionary<string, object> entries = new Dictionary<string, object>();
+        private readonly MelonPreferences_Category Category;
+        private readonly Dictionary<string, object> entries = new();
         public BaseConfig(string SavePath, string CategoryName)
         {
             this.SavePath = SavePath;

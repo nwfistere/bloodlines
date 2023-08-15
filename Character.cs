@@ -1,9 +1,8 @@
 ﻿using Il2CppSystem.Linq;
 using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Objects;
-using System;
 
-namespace EasyAddCharacter
+namespace Bloodlines
 {
     public class Character
     {
@@ -15,7 +14,7 @@ namespace EasyAddCharacter
 
         public BaseCharacterFile CharacterFileJson { get; private set; }
 
-        public CharacterJson CharacterInfo { get; private set; }
+        public CharacterJsonModel CharacterInfo { get; private set; }
 
         public List<ModifierStats> ModifierStats { get; private set; }
 
@@ -30,5 +29,5 @@ namespace EasyAddCharacter
             this.CharacterInfo = (CharacterFileJson as CharacterFileV0_1).Character[0];
             this.ModifierStats = (CharacterFileJson as CharacterFileV0_1).Character.Skip(1).ToList().Select(c => c.toModifierStat()).ToList();
         }
-	}
+    }
 }

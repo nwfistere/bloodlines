@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine.Networking;
+﻿using UnityEngine.Networking;
 
-namespace EasyAddCharacter.Textures
+namespace Bloodlines.Textures
 {
     public class TextureDownloader
     {
