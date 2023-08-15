@@ -24,6 +24,9 @@
     <Reference Include="Il2CppPauseSystem">
       <HintPath>D:\SteamLibrary\steamapps\common\Vampire Survivors\MelonLoader\Il2CppAssemblies\Il2CppPauseSystem.dll</HintPath>
     </Reference>
+    <Reference Include="Il2CppPhaserPort">
+      <HintPath>D:\SteamLibrary\steamapps\common\Vampire Survivors\MelonLoader\Il2CppAssemblies\Il2CppPhaserPort.dll</HintPath>
+    </Reference>
     <Reference Include="Il2CppProCamera2D">
       <HintPath>D:\SteamLibrary\steamapps\common\Vampire Survivors\MelonLoader\Il2CppAssemblies\Il2CppProCamera2D.dll</HintPath>
     </Reference>

@@ -16,6 +16,7 @@ using WNP78;
 using Il2Generic = Il2CppSystem.Collections.Generic;
 using EasyAddCharacter.Config;
 using MelonLoader.TinyJSON;
+using Il2CppVampireSurvivors.Objects.Characters;
 
 namespace EasyAddCharacter
 {
@@ -35,6 +36,9 @@ namespace EasyAddCharacter
         public static readonly string DataDirectory = Path.Combine(ModDirectory, "data");
         public Config.Config Config { get; private set; }
         public CharacterManager manager { get; private set; }
+
+        static DataManager dataManager;
+        static GameManager gameManager;
 
         public override void OnInitializeMelon()
         {
@@ -63,9 +67,6 @@ namespace EasyAddCharacter
             NullValueHandling = NullValueHandling.Ignore
         };
 
-        static DataManager dataManager;
-        static GameManager gameManager;
-
         static Il2Generic.List<CharacterData> char_list = new();
 
         private static JArray ListToJArray(Il2Generic.List<CharacterData> list)
@@ -79,17 +80,41 @@ namespace EasyAddCharacter
         {
             [HarmonyPatch(nameof(GameManager.Construct))]
             [HarmonyPrefix]
-            static void Initialize_Prefix(GameManager __instance)
+            static void Construct_Prefix(GameManager __instance)
             {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
                 gameManager = __instance;
             }
 
             [HarmonyPatch(nameof(GameManager.Construct))]
             [HarmonyPostfix]
-            static void Initialize_Postfix(GameManager __instance)
+            static void Construct_Postfix(GameManager __instance)
             {
                 Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
+            }
+        }
+
+
+        [HarmonyPatch(typeof(CharacterController))]
+        class CharacterController_Patch
+        {
+            [HarmonyPatch(nameof(CharacterController.InitCharacter))]
+            [HarmonyPrefix]
+            static void InitCharacter_Prefix(CharacterController __instance, CharacterType characterType, int playerIndex)
+            {
+                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
+            }
+
+            [HarmonyPatch(nameof(CharacterController.InitCharacter))]
+            [HarmonyPostfix]
+            static void InitCharacter_Postfix(CharacterController __instance, CharacterType characterType, int playerIndex)
+            {
+                if (Melon<Mod>.Instance.manager.characters.Select((c) => c.CharacterType).Contains(characterType))
+                {
+                    Character ch = Melon<Mod>.Instance.manager.characters.Find(c => c.CharacterType == characterType);
+                    string spriteFilename = (ch.CharacterFileJson as CharacterFileV0_1).Character[0].SpriteName;
+
+                    __instance.Rend.sprite = SpriteImporter.LoadSprite(Path.Combine(Path.GetDirectoryName(ch.CharacterFilePath), spriteFilename));
+                }
             }
         }
 
@@ -100,22 +125,13 @@ namespace EasyAddCharacter
             [HarmonyPrefix]
             static void Initialize_Prefix(DataManager __instance)
             {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
                 dataManager = __instance;
-            }
-
-            [HarmonyPatch(nameof(DataManager.Initialize))]
-            [HarmonyPostfix]
-            static void Initialize_Postfix(DataManager __instance)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
             }
 
             [HarmonyPatch(nameof(DataManager.LoadBaseJObjects))]
             [HarmonyPostfix]
             static void LoadBaseJObjects_Postfix(DataManager __instance, object[] __args, MethodBase __originalMethod)
             {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
                 CharacterType iter = Enum.GetValues<CharacterType>().Max() + 1;
 
                 foreach (Character character in Melon<Mod>.Instance.manager.characters)
@@ -129,41 +145,6 @@ namespace EasyAddCharacter
                 }
             }
 
-            [HarmonyPatch(nameof(DataManager.LoadBaseJObjects))]
-            [HarmonyPrefix]
-            static void LoadBaseJObjects_Prefix(DataManager __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(DataManager.MergeInJsonData))]
-            [HarmonyPostfix]
-            static void MergeInJsonData_Postfix(DataManager __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(DataManager.MergeInJsonData))]
-            [HarmonyPrefix]
-            static void MergeInJsonData_Prefix(DataManager __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(DataManager.LoadAndMergeIn))]
-            [HarmonyPostfix]
-            static void LoadAndMergeIn_Postfix(DataManager __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(DataManager.LoadAndMergeIn))]
-            [HarmonyPrefix]
-            static void LoadAndMergeIn_Prefix(DataManager __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
             [HarmonyPatch(nameof(DataManager.GetConvertedCharacterData))]
             [HarmonyPostfix]
             static void GetConvertedCharacterData_Postfix(DataManager __instance, object[] __args, MethodBase __originalMethod,
@@ -171,123 +152,15 @@ namespace EasyAddCharacter
             {
                 Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name} for {__result.Count} characters");
             }
-
-            [HarmonyPatch(nameof(DataManager.GetConvertedCharacterData))]
-            [HarmonyPrefix]
-            static void GetConvertedCharacterData_Prefix(DataManager __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(DataManager.LoadDataFromJson))]
-            [HarmonyPostfix]
-            static void LoadDataFromJson_Postfix(DataManager __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(DataManager.LoadDataFromJson))]
-            [HarmonyPrefix]
-            static void LoadDataFromJson_Prefix(DataManager __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
         }
 
         [HarmonyPatch(typeof(CharacterSelectionPage))]
         class CharacterSelectionPage_Patch
         {
-            [HarmonyPatch(nameof(CharacterSelectionPage.Start))]
-            [HarmonyPrefix]
-            static void Start_Prefix(CharacterSelectionPage __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(CharacterSelectionPage.Construct))]
-            [HarmonyPrefix]
-            static void Construct_Prefix(CharacterSelectionPage __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(CharacterSelectionPage.SetWeaponIconSprite))]
-            [HarmonyPrefix]
-            static void SetWeaponIconSprite_Prefix(CharacterSelectionPage __instance, CharacterData characterData, MethodBase __originalMethod)
-            {
-                if (characterData.charName == "Nick")
-                    Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(CharacterSelectionPage.SetWeaponIconSprite))]
-            [HarmonyPostfix]
-            static void SetWeaponIconSprite_Postfix(CharacterSelectionPage __instance, CharacterData characterData, MethodBase __originalMethod)
-            {
-                if (characterData.charName == "Nick")
-                    Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(CharacterSelectionPage.CharCodeToString))]
-            [HarmonyPrefix]
-            static void CharCodeToString_Prefix(CharacterSelectionPage __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(CharacterSelectionPage.AddCharacter))]
-            [HarmonyPrefix]
-            static void AddCharacter_Prefix(CharacterSelectionPage __instance, CharacterData dat, CharacterType cType, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(CharacterSelectionPage.NextSkin))]
-            [HarmonyPrefix]
-            static void NextSkin_Prefix(CharacterSelectionPage __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(CharacterSelectionPage.Start))]
-            [HarmonyPostfix]
-            static void Start_Postfix(CharacterSelectionPage __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(CharacterSelectionPage.Construct))]
-            [HarmonyPostfix]
-            static void Construct_Postfix(CharacterSelectionPage __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(CharacterSelectionPage.CharCodeToString))]
-            [HarmonyPostfix]
-            static void CharCodeToString_Postfix(CharacterSelectionPage __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(CharacterSelectionPage.AddCharacter))]
-            [HarmonyPostfix]
-            static void AddCharacter_Postfix(CharacterSelectionPage __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(CharacterSelectionPage.NextSkin))]
-            [HarmonyPostfix]
-            static void NextSkin_Postfix(CharacterSelectionPage __instance, object[] __args, MethodBase __originalMethod)
-            {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
             [HarmonyPatch(nameof(CharacterSelectionPage.ShowCharacterInfo))]
             [HarmonyPrefix]
             static bool ShowCharacterInfo_Prefix(CharacterSelectionPage __instance, CharacterData charData, CharacterType cType, CharacterItemUI character, MethodBase __originalMethod)
             {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
                 if (Melon<Mod>.Instance.manager.characters.Select((c) => c.CharacterType).Contains(cType))
                 {
                     return false;
@@ -299,7 +172,6 @@ namespace EasyAddCharacter
             [HarmonyPostfix]
             static void ShowCharacterInfo_Postfix(CharacterSelectionPage __instance, CharacterData charData, CharacterType cType, CharacterItemUI character, MethodBase __originalMethod)
             {
-                Melon<Mod>.Logger.Msg($"{MethodBase.GetCurrentMethod()?.Name}");
                 if (Melon<Mod>.Instance.manager.characters.Select((c) => c.CharacterType).Contains(cType))
                 {
                     Melon<Mod>.Logger.Msg($"Setting the icon for {cType}");
@@ -308,7 +180,6 @@ namespace EasyAddCharacter
                     __instance.Icon.sprite = SpriteImporter.LoadSprite(Path.Combine(Path.GetDirectoryName(ch.CharacterFilePath), spriteFilename));
                     __instance._Name.text = charData.GetFullNameUntranslated();
                     __instance.Description.text = charData.description;
-                    //__instance.StatsPanel.Populate();
                     __instance.StatsPanel.SetCharacter(charData, cType);
                     __instance._EggCount.text = charData.exLevels.ToString();
                     __instance.SetWeaponIconSprite(charData);
@@ -320,21 +191,6 @@ namespace EasyAddCharacter
         [HarmonyPatch(typeof(CharacterItemUI))]
         class CharacterItemUI_Patch
         {
-            //SetInfoPanel
-            [HarmonyPatch(nameof(CharacterItemUI.SetInfoPanel))]
-            [HarmonyPrefix]
-            static void SetInfoPanel_Prefix(CharacterItemUI __instance)
-            {
-                Melon<Mod>.Logger.Msg($"CharacterItemUI.{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(CharacterItemUI.SetInfoPanel))]
-            [HarmonyPostfix]
-            static void SetInfoPanel_Postfix(CharacterItemUI __instance)
-            {
-                Melon<Mod>.Logger.Msg($"CharacterItemUI.{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
             [HarmonyPatch(nameof(CharacterItemUI.SetData))]
             [HarmonyPrefix]
             static bool SetData_Prefix(CharacterItemUI __instance, MethodBase __originalMethod, CharacterSelectionPage page, CharacterData dat, CharacterType cType, DataManager dataManager, PlayerOptions playerOptions)
@@ -344,7 +200,6 @@ namespace EasyAddCharacter
                     Character ch = Melon<Mod>.Instance.manager.characters.Find(c => c.CharacterType == cType);
                     string spriteFilename = (ch.CharacterFileJson as CharacterFileV0_1).Character[0].SpriteName;
 
-                    //__instance._voidWeapon = true;
                     __instance.name = dat.charName;
                     __instance._CharacterName.text = dat.charName;
                     __instance._page = page;
@@ -380,27 +235,5 @@ namespace EasyAddCharacter
                 Melon<Mod>.Logger.Msg($"CharacterItemUI.{MethodBase.GetCurrentMethod()?.Name}");
             }
         }
-
-        //[HarmonyPatch(typeof(Resources))]
-        //class Resources_Patch
-        //{
-        //    [HarmonyPatch(nameof(Resources.LoadAll), new Type[] { typeof(string), typeof(Il2CppSystem.Type) })]
-        //    [HarmonyPostfix]
-        //    static void LoadAll_Postfix(Resources __instance, object[] __args, string path, MethodBase __originalMethod, Il2CppReferenceArray<UnityEngine.Object> __result)
-        //    {
-        //        Melon<Mod>.Logger.Msg($"CharacterItemUI.{MethodBase.GetCurrentMethod()?.Name}");
-        //        if (path == "SpriteSheets")
-        //        {
-        //            FloatingCat.name = "floating-cat";
-        //            FloatingCat.texture.name = "floating-cat";
-        //            UnityEngine.Object.DontDestroyOnLoad(FloatingCat);
-
-        //            _ = __result.AddItem(FloatingCat);
-        //            //List<UnityEngine.Object> list = __result.Where(m => m.name.Contains("antonio")).ToList();
-        //            //List<UnityEngine.Object> list2 = __result.Where(m => m.name.Contains("Antonio")).ToList();
-        //            List<UnityEngine.Object> list2 = __result.Where(m => m.name.IndexOf("antonio", StringComparison.OrdinalIgnoreCase) >= 0).ToList();
-        //        }
-        //    }
-        //}
     }
 }
