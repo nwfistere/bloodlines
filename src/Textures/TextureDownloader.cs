@@ -1,6 +1,6 @@
 ﻿using UnityEngine.Networking;
 
-namespace Bloodlines.src.Textures
+namespace Bloodlines
 {
     public class TextureDownloader
     {

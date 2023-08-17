@@ -1,7 +1,7 @@
 ﻿using Il2CppInterop.Runtime;
 using System.Runtime.InteropServices;
 
-namespace WNP78
+namespace Bloodlines
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct NullableStruct<T> where T : unmanaged
@@ -13,7 +13,7 @@ namespace WNP78
 
         public NullableStruct(T value)
         {
-            this.has_value = true;
+            has_value = true;
             this.value = value;
         }
 

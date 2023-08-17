@@ -1,6 +1,6 @@
 ﻿using MelonLoader;
 
-namespace Bloodlines.src.Config
+namespace Bloodlines
 {
     public class BaseConfig
     {

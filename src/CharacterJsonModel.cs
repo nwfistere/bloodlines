@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Reflection;
 
-namespace Bloodlines.src
+namespace Bloodlines
 {
 
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]

@@ -1,4 +1,4 @@
-﻿using Bloodlines.src;
+﻿using Bloodlines;
 using MelonLoader;
 using System.Reflection;
 using System.Runtime.InteropServices;

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
 
-namespace Bloodlines.src
+namespace Bloodlines
 {
     public class CharacterManager
     {
