@@ -1,4 +1,5 @@
 ﻿using Il2CppVampireSurvivors.Data;
+using Il2CppVampireSurvivors.Data.Characters;
 using Il2CppVampireSurvivors.Objects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -161,5 +162,19 @@ namespace Bloodlines
 
         [JsonProperty("unlocked")]
         public bool Unlocked { get; set; }
+
+        public static explicit operator Skin(SkinObjectModel model)
+        {
+            Skin skin = new Skin();
+
+            skin.id = (SkinType)model.Id;
+            skin.name = model.Name;
+            skin.textureName = model.TextureName;
+            skin.spriteName = model.SpriteName;
+            skin.walkingFrames = model.WalkingFrames;
+            skin.unlocked = model.Unlocked;
+
+            return skin;
+        }
     }
 }

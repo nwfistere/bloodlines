@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Il2Cpp;
 using Il2CppNewtonsoft.Json;
 using Il2CppNewtonsoft.Json.Linq;
 using Il2CppVampireSurvivors.Data;
@@ -15,6 +14,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
+using static Il2CppVampireSurvivors.Signals.GameplaySignals;
 using Il2Generic = Il2CppSystem.Collections.Generic;
 
 namespace Bloodlines
@@ -60,6 +60,7 @@ namespace Bloodlines
 
             //}
         }
+#endif // DEBUG
         [HarmonyPatch("Il2CppInterop.HarmonySupport.Il2CppDetourMethodPatcher", "ReportException")]
         public static class Patch_Il2CppDetourMethodPatcher
         {
@@ -69,7 +70,7 @@ namespace Bloodlines
                 return false;
             }
         }
-#endif // DEBUG
+
 
         internal static JsonSerializerSettings serializerSettings = new()
         {
@@ -121,6 +122,16 @@ namespace Bloodlines
 
                         c.Rend.sprite = SpriteImporter.LoadSprite(ch.FullSpritePath(spriteFilename));
 
+                        //c.WeaponsManager.SetWeaponsActive(true);
+                        //c.MakeLevelOne();
+                        ////c.WeaponsManager.
+                        //RemoveWeaponFromExcluded signal = new RemoveWeaponFromExcluded();
+                        //signal.Type = WeaponType.AXE;
+                        //__instance.LevelUpFactory.RemoveFromExcluded(new RemoveWeaponFromExcluded());
+                        ////__instance.LevelUpFactory.ExcludedWeapons;
+                        //c.OnWeaponMadeLevelOne(WeaponType.AXE);
+                        //__instance.LevelUpFactory.IsBanished(WeaponType.AXE);
+                        //__instance.LevelUpFactory.BanishedWeapons
                     }
 
                 }
@@ -231,645 +242,95 @@ namespace Bloodlines
             }
         }
 
-        //[HarmonyPatch(typeof(CharacterSelectionPage))]
-        //class CharacterSelectionPage_Patch
-        //{
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.ShowCharacterInfo))]
-        //    [HarmonyPrefix]
-        //    static bool ShowCharacterInfo_Prefix(CharacterSelectionPage __instance, CharacterData charData, CharacterType cType, CharacterItemUI character, MethodBase __originalMethod)
-        //    {
-        //        //if (Melon<Mod>.Instance.manager.characters.Select((c) => c.CharacterType).Contains(cType))
-        //        //{
-        //        //    return false;
-        //        //}
-        //        return true;
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.CharMarkup))]
-        //    [HarmonyPrefix]
-        //    static void CharMarkup_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.Construct))]
-        //    [HarmonyPrefix]
-        //    static void Construct_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.Start))]
-        //    [HarmonyPrefix]
-        //    static void Start_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.ClearPlayersAndGoBack))]
-        //    [HarmonyPrefix]
-        //    static void ClearPlayersAndGoBack_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.OnDestroy))]
-        //    [HarmonyPrefix]
-        //    static void OnDestroy_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.RefreshCharacters))]
-        //    [HarmonyPrefix]
-        //    static void RefreshCharacters_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SelectAfterFrameDelay))]
-        //    [HarmonyPrefix]
-        //    static void SelectAfterFrameDelay_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.ConfirmCharacter))]
-        //    [HarmonyPrefix]
-        //    static void ConfirmCharacter_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SetEggs))]
-        //    [HarmonyPrefix]
-        //    static void SetEggs_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SelectCharacter))]
-        //    [HarmonyPrefix]
-        //    static void SelectCharacter_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.BuyCharacter))]
-        //    [HarmonyPrefix]
-        //    static void BuyCharacter_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.IncreaseMaxWeapons))]
-        //    [HarmonyPrefix]
-        //    static void IncreaseMaxWeapons_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.NextSkin))]
-        //    [HarmonyPrefix]
-        //    static void NextSkin_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.WrapNavigation))]
-        //    [HarmonyPrefix]
-        //    static void WrapNavigation_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.ShowCharacterInfo))]
-        //    [HarmonyPrefix]
-        //    static void ShowCharacterInfo_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SetIconSizes))]
-        //    [HarmonyPrefix]
-        //    static void SetIconSizes_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.ResetDisplay))]
-        //    [HarmonyPrefix]
-        //    static void ResetDisplay_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SetSkinSlots))]
-        //    [HarmonyPrefix]
-        //    static void SetSkinSlots_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.OnShowStart))]
-        //    [HarmonyPrefix]
-        //    static void OnShowStart_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.OnPlayerRemoved))]
-        //    [HarmonyPrefix]
-        //    static void OnPlayerRemoved_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.ResetPlayerSelections))]
-        //    [HarmonyPrefix]
-        //    static void ResetPlayerSelections_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.OnEnterPressed))]
-        //    [HarmonyPrefix]
-        //    static void OnEnterPressed_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.OnHideFinish))]
-        //    [HarmonyPrefix]
-        //    static void OnHideFinish_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.OnHideStart))]
-        //    [HarmonyPrefix]
-        //    static void OnHideStart_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.Detune))]
-        //    [HarmonyPrefix]
-        //    static void Detune_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.setupRNJ))]
-        //    [HarmonyPrefix]
-        //    static void setupRNJ_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.setupMIS))]
-        //    [HarmonyPrefix]
-        //    static void setupMIS_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.CharCodeToString))]
-        //    [HarmonyPrefix]
-        //    static void CharCodeToString_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.Populate))]
-        //    [HarmonyPrefix]
-        //    static void Populate_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.AddCharacter))]
-        //    [HarmonyPrefix]
-        //    static void AddCharacter_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.WaitAndDo))]
-        //    [HarmonyPrefix]
-        //    static void WaitAndDo_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.ActivateAndSelectConfirmButton))]
-        //    [HarmonyPrefix]
-        //    static void ActivateAndSelectConfirmButton_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SetWeaponIconSprite))]
-        //    [HarmonyPrefix]
-        //    static void SetWeaponIconSprite_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.MakeDisplayMultiplayer))]
-        //    [HarmonyPrefix]
-        //    static void MakeDisplayMultiplayer_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.MakeDisplaySingleplayer))]
-        //    [HarmonyPrefix]
-        //    static void MakeDisplaySingleplayer_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.RefreshMaxWeaponsAndEggsDisplay))]
-        //    [HarmonyPrefix]
-        //    static void RefreshMaxWeaponsAndEggsDisplay_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SpawnPlayerItem))]
-        //    [HarmonyPrefix]
-        //    static void SpawnPlayerItem_Prefix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.CharMarkup))]
-        //    [HarmonyPostfix]
-        //    static void CharMarkup_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.Construct))]
-        //    [HarmonyPostfix]
-        //    static void Construct_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.Start))]
-        //    [HarmonyPostfix]
-        //    static void Start_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.ClearPlayersAndGoBack))]
-        //    [HarmonyPostfix]
-        //    static void ClearPlayersAndGoBack_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.OnDestroy))]
-        //    [HarmonyPostfix]
-        //    static void OnDestroy_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.RefreshCharacters))]
-        //    [HarmonyPostfix]
-        //    static void RefreshCharacters_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SelectAfterFrameDelay))]
-        //    [HarmonyPostfix]
-        //    static void SelectAfterFrameDelay_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.ConfirmCharacter))]
-        //    [HarmonyPostfix]
-        //    static void ConfirmCharacter_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SetEggs))]
-        //    [HarmonyPostfix]
-        //    static void SetEggs_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SelectCharacter))]
-        //    [HarmonyPostfix]
-        //    static void SelectCharacter_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.BuyCharacter))]
-        //    [HarmonyPostfix]
-        //    static void BuyCharacter_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.IncreaseMaxWeapons))]
-        //    [HarmonyPostfix]
-        //    static void IncreaseMaxWeapons_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.NextSkin))]
-        //    [HarmonyPostfix]
-        //    static void NextSkin_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.WrapNavigation))]
-        //    [HarmonyPostfix]
-        //    static void WrapNavigation_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.ShowCharacterInfo))]
-        //    [HarmonyPostfix]
-        //    static void ShowCharacterInfo_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SetIconSizes))]
-        //    [HarmonyPostfix]
-        //    static void SetIconSizes_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.ResetDisplay))]
-        //    [HarmonyPostfix]
-        //    static void ResetDisplay_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SetSkinSlots))]
-        //    [HarmonyPostfix]
-        //    static void SetSkinSlots_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.OnShowStart))]
-        //    [HarmonyPostfix]
-        //    static void OnShowStart_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.OnPlayerRemoved))]
-        //    [HarmonyPostfix]
-        //    static void OnPlayerRemoved_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.ResetPlayerSelections))]
-        //    [HarmonyPostfix]
-        //    static void ResetPlayerSelections_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.OnEnterPressed))]
-        //    [HarmonyPostfix]
-        //    static void OnEnterPressed_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.OnHideFinish))]
-        //    [HarmonyPostfix]
-        //    static void OnHideFinish_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.OnHideStart))]
-        //    [HarmonyPostfix]
-        //    static void OnHideStart_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.Detune))]
-        //    [HarmonyPostfix]
-        //    static void Detune_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.setupRNJ))]
-        //    [HarmonyPostfix]
-        //    static void setupRNJ_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.setupMIS))]
-        //    [HarmonyPostfix]
-        //    static void setupMIS_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.CharCodeToString))]
-        //    [HarmonyPostfix]
-        //    static void CharCodeToString_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.Populate))]
-        //    [HarmonyPostfix]
-        //    static void Populate_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.AddCharacter))]
-        //    [HarmonyPostfix]
-        //    static void AddCharacter_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.WaitAndDo))]
-        //    [HarmonyPostfix]
-        //    static void WaitAndDo_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.ActivateAndSelectConfirmButton))]
-        //    [HarmonyPostfix]
-        //    static void ActivateAndSelectConfirmButton_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SetWeaponIconSprite))]
-        //    [HarmonyPostfix]
-        //    static void SetWeaponIconSprite_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.MakeDisplayMultiplayer))]
-        //    [HarmonyPostfix]
-        //    static void MakeDisplayMultiplayer_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.MakeDisplaySingleplayer))]
-        //    [HarmonyPostfix]
-        //    static void MakeDisplaySingleplayer_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.RefreshMaxWeaponsAndEggsDisplay))]
-        //    [HarmonyPostfix]
-        //    static void RefreshMaxWeaponsAndEggsDisplay_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SpawnPlayerItem))]
-        //    [HarmonyPostfix]
-        //    static void SpawnPlayerItem_Postfix(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SetSkinSlots))]
-        //    [HarmonyPrefix]
-        //    static void SetSkinSlots_Prefix(CharacterSelectionPage __instance, MethodBase __originalMethod)
-        //    {
-        //        //__instance.cha
-        //        //if (Melon<Mod>.Instance.manager.characters.Select((c) => c.CharacterType).Contains(cType))
-        //        //{
-        //        //    return false;
-        //        //}
-        //        //return true;
-        //        Melon<BloodlinesMod>.Logger.Msg($"SetSkinSlots_Prefix");
-        //        //if (Melon<Mod>.Instance.manager.characters.Select((c) => c.CharacterType).Contains(__instance._currentType))
-        //        //{
-        //        //    //Character ch = Melon<Mod>.Instance.manager.characters.Find(c => c.CharacterType == __instance._currentType);
-        //        //    //string spriteFilename = (ch.CharacterFileJson as CharacterFileV0_1).Character[0].SpriteName;
-
-        //        //    //GameObject character = GameObject.Instantiate(__instance.CharacterPrefab);
-        //        //    //Image image = character.AddComponent<Image>();
-        //        //    //image.sprite = SpriteImporter.LoadSprite(Path.Combine(Path.GetDirectoryName(ch.CharacterFilePath), spriteFilename));
-
-        //        //    //Melon<Mod>.Logger.Msg($"skin for {__instance._currentType}");
-        //        //    //__instance._skinSlots.Add(image);
-
-        //        //    Character ch = Melon<Mod>.Instance.manager.characters.Find(c => c.CharacterType == __instance._currentType);
-        //        //    int nSkins = (ch.CharacterFileJson as CharacterFileV0_1).Character[0].Skins.Count;
-
-        //        //    //for (int i = 0; i < nSkins; i++)
-        //        //    //{
-        //        //    //    __instance._SkinOffIcon
-        //        //    //    __instance._skinSlots.Add()
-        //        //    //}
-        //        //}
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SetSkinSlots))]
-        //    [HarmonyPostfix]
-        //    static void SetSkinSlots_Postfix(CharacterSelectionPage __instance, MethodBase __originalMethod)
-        //    {
-        //        //SetSkinSlots creates the skin slots, not the skins!
-
-        //        //Character ch = Melon<Mod>.Instance.manager.characters.Find(c => c.CharacterType == __instance._currentType);
-        //        ////string spriteFilename = ch.CharacterInfo.Skins;
-        //        //Melon<Mod>.Logger.Msg($"SetSkinSlots_Postfix");
-        //        //for (int i = 0; i < __instance._skinSlots.Count; i++)
-        //        //    __instance._skinSlots[i].sprite = SpriteImporter.LoadSprite(ch.FullSpritePath(ch.CharacterInfo.Skins[i].SpriteName));
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.NextSkin))]
-        //    [HarmonyPrefix]
-        //    static void NextSkin_Prefix2(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //    }
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.NextSkin))]
-        //    [HarmonyPostfix]
-        //    static void NextSkin_Postfix2(CharacterSelectionPage __instance)
-        //    {
-        //        Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-        //        Character ch = Melon<BloodlinesMod>.Instance.manager.characters.Find(c => c.CharacterType == __instance._currentType);
-
-        //        int activeSkinIndex = __instance._skinSlots.FindIndex(new Func<Image, bool>((s) => s.sprite.name == "weaponLevelFull"));
-        //        Sprite sprite = SpriteImporter.LoadSprite(ch.FullSpritePath(ch.CharacterInfo.Skins[activeSkinIndex].SpriteName));
-        //        __instance.Icon.sprite = sprite;
-        //        __instance._selectedCharacter._CharacterIcon.sprite = sprite;
-        //    }
-
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.SetIconSizes))]
-        //    [HarmonyPrefix]
-        //    static bool SetIconSizes_Prefix(CharacterSelectionPage __instance, MethodBase __originalMethod)
-        //    {
-
-        //        Character ch = Melon<BloodlinesMod>.Instance.manager.characters.Find(c => c.CharacterType == __instance._currentType);
-        //        Melon<BloodlinesMod>.Logger.Msg($"SetIconSizes_Prefix");
-        //        if (Melon<BloodlinesMod>.Instance.manager.characters.Select((c) => c.CharacterType).Contains(__instance._currentType))
-        //        {
-        //            return false;
-        //        }
-        //        return true;
-        //    }
-
-
-
-        //    [HarmonyPatch(nameof(CharacterSelectionPage.ShowCharacterInfo))]
-        //    [HarmonyPostfix]
-        //    static void ShowCharacterInfo_Postfix(CharacterSelectionPage __instance, CharacterData charData, CharacterType cType, CharacterItemUI character, MethodBase __originalMethod)
-        //    {
-        //        if (Melon<BloodlinesMod>.Instance.manager.characters.Select((c) => c.CharacterType).Contains(cType))
-        //        {
-        //            Melon<BloodlinesMod>.Logger.Msg($"Setting the icon for {cType}");
-        //            Character ch = Melon<BloodlinesMod>.Instance.manager.characters.Find(c => c.CharacterType == cType);
-        //            string spriteFilename = (ch.CharacterFileJson as CharacterFileV0_1).Character[0].SpriteName;
-        //            int activeSkinIndex = __instance._skinSlots.FindIndex(new Func<Image, bool>((s) => s.sprite.name == "weaponLevelFull"));
-        //            Sprite sprite = SpriteImporter.LoadSprite(ch.FullSpritePath(ch.CharacterInfo.Skins[activeSkinIndex].SpriteName));
-        //            __instance.Icon.sprite = sprite;
-        //            __instance._Name.text = charData.GetFullNameUntranslated();
-        //            __instance.Description.text = charData.description;
-        //            __instance.StatsPanel.SetCharacter(charData, cType);
-        //            __instance._EggCount.text = charData.exLevels.ToString();
-        //            __instance.SetWeaponIconSprite(charData);
-        //            __instance._selectedCharacter = character;
-        //            //__instance.skin
-        //        }
-        //    }
-        //}
+        [HarmonyPatch(typeof(CharacterSelectionPage))]
+        class CharacterSelectionPage_Patch
+        {
+            [HarmonyPatch(nameof(CharacterSelectionPage.NextSkin))]
+            [HarmonyPostfix]
+            static void NextSkin_Postfix(CharacterSelectionPage __instance)
+            {
+                if (Melon<BloodlinesMod>.Instance.manager.characters.Select((c) => c.CharacterType).Contains(__instance._currentType))
+                {
+                    Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterSelectionPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+                    Character ch = Melon<BloodlinesMod>.Instance.manager.characters.Find(c => c.CharacterType == __instance._currentType);
+
+                    int activeSkinIndex = __instance._skinSlots.FindIndex(new Func<Image, bool>((s) => s.sprite.name == "weaponLevelFull"));
+                    Sprite sprite = SpriteImporter.LoadSprite(ch.FullSpritePath(ch.CharacterInfo.Skins[activeSkinIndex].SpriteName));
+                    __instance.Icon.sprite = sprite;
+                    __instance._selectedCharacter._CharacterIcon.sprite = sprite;
+                }
+            }
+
+
+            [HarmonyPatch(nameof(CharacterSelectionPage.SetIconSizes))]
+            [HarmonyPrefix]
+            static bool SetIconSizes_Prefix(CharacterSelectionPage __instance, MethodBase __originalMethod)
+            {
+                if (Melon<BloodlinesMod>.Instance.manager.characters.Select((c) => c.CharacterType).Contains(__instance._currentType))
+                {
+                    return false;
+                }
+                return true;
+            }
+
+
+            //[HarmonyPatch(nameof(CharacterSelectionPage.SetSkinSlots))]
+            //[HarmonyPrefix]
+            //static void SetSkinSlots_Postfix(CharacterSelectionPage __instance, MethodBase __originalMethod)
+            //{
+            //    if (Melon<BloodlinesMod>.Instance.manager.characters.Select((c) => c.CharacterType).Contains(__instance._currentType))
+            //    {
+            //        Character ch = Melon<BloodlinesMod>.Instance.manager.characters.Find(c => c.CharacterType == __instance._currentType);
+            //        int skinCount = ch.CharacterInfo.Skins.Count;
+            //        if (skinCount == 1)
+            //            return;
+
+            //        foreach (Skin skin in ch.CharacterInfo.Skins)
+            //        {
+            //            //GameObject skinIndex = GameObject.Instantiate(__instance._SkinIndexPrefab);
+            //            //skinIndex.transform.SetParent(__instance._SkinIndexContainer);
+            //            //image.sprite = __instance._SkinOffIcon;
+            //            //__instance._skinSlots.Add(image);
+            //        }
+            //    }
+            //}
+
+
+            [HarmonyPatch(nameof(CharacterSelectionPage.ShowCharacterInfo))]
+            [HarmonyPostfix]
+            static void ShowCharacterInfo_Postfix(CharacterSelectionPage __instance, CharacterData charData, CharacterType cType, CharacterItemUI character, MethodBase __originalMethod)
+            {
+                if (Melon<BloodlinesMod>.Instance.manager.characters.Select((c) => c.CharacterType).Contains(cType))
+                {
+                    Melon<BloodlinesMod>.Logger.Msg($"Setting the icon for {cType}");
+                    Character ch = Melon<BloodlinesMod>.Instance.manager.characters.Find(c => c.CharacterType == cType);
+                    string spriteFilename = (ch.CharacterFileJson as CharacterFileV0_1).Character[0].SpriteName;
+                    int activeSkinIndex = __instance._skinSlots.FindIndex(new Func<Image, bool>((s) => s.sprite.name == "weaponLevelFull"));
+                    if (activeSkinIndex == -1)
+                        activeSkinIndex = 0;
+                    Sprite sprite = SpriteImporter.LoadSprite(ch.FullSpritePath(ch.CharacterInfo.Skins[activeSkinIndex].SpriteName));
+                    
+                    __instance.Icon.sprite = sprite;
+                    __instance._Name.text = charData.GetFullNameUntranslated();
+                    __instance.Description.text = charData.description;
+                    __instance.StatsPanel.SetCharacter(charData, cType);
+                    __instance._EggCount.text = charData.exLevels.ToString();
+                    __instance.SetWeaponIconSprite(charData);
+                    __instance._selectedCharacter = character;
+                    // UI/Canvas - App/Safe Area/View - CharacterSelection/Panel/InfoPanel/Background/CharacterImage
+                    RectTransform CharacterInfoIconRectTransform = __instance.transform.FindChild("Panel/InfoPanel/Background/CharacterImage").GetComponent<RectTransform>();
+
+                    int width = sprite.texture.width;
+                    int height = sprite.texture.height;
+
+                    // Resize to fit the info box better.
+                    int long_side = width > height ? width : height;
+                    int delta = 150 - long_side;
+
+                    CharacterInfoIconRectTransform.sizeDelta = new Vector2(width + delta, height + delta);
+                }
+            }
+        }
 
         [HarmonyPatch(typeof(CharacterItemUI))]
         class CharacterItemUI_Patch

@@ -23,6 +23,9 @@ namespace Bloodlines
                 throw new Exception("ImageConversion.LoadImage failed");
             }
 
+            // Point makes the pixels come out much clearer.
+            texture.filterMode = FilterMode.Point;
+
             return texture;
         }
 
