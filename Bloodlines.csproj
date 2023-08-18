@@ -63,6 +63,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>D:\SteamLibrary\steamapps\common\Vampire Survivors\MelonLoader\Managed\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing.Common">
+      <HintPath>D:\SteamLibrary\steamapps\common\Vampire Survivors\MelonLoader\net6\System.Drawing.Common.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>D:\SteamLibrary\steamapps\common\Vampire Survivors\MelonLoader\Il2CppAssemblies\Unity.TextMeshPro.dll</HintPath>
     </Reference>
