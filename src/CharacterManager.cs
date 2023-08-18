@@ -1,7 +1,11 @@
 ﻿using MelonLoader;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
+using System.Linq;
 
 namespace Bloodlines
 {
@@ -23,8 +27,8 @@ namespace Bloodlines
             }
             catch (Exception e)
             {
-                Melon<Mod>.Logger.Error($"Error: {e}");
-                Melon<Mod>.Logger.Error($"Submit an issue for this exception.");
+                Melon<BloodlinesMod>.Logger.Error($"Error: {e}");
+                Melon<BloodlinesMod>.Logger.Error($"Submit an issue for this exception.");
             }
 
         }
@@ -39,7 +43,7 @@ namespace Bloodlines
                 string jsonFile = Path.Combine(dir, "character.json");
                 if (File.Exists(jsonFile))
                 {
-                    Melon<Mod>.Logger.Msg($"Loading up character json from {Path.GetDirectoryName(dir)}");
+                    Melon<BloodlinesMod>.Logger.Msg($"Loading up character json from {Path.GetDirectoryName(dir)}");
                     string fileContent = File.ReadAllText(jsonFile);
                     handleJsonFileString(jsonFile, fileContent);
                 }
@@ -55,12 +59,12 @@ namespace Bloodlines
                 {
                     try
                     {
-                        Melon<Mod>.Logger.Msg($"Parsing {Path.GetFileName(zip)}");
+                        Melon<BloodlinesMod>.Logger.Msg($"Parsing {Path.GetFileName(zip)}");
                         handleZipFile(zip);
                     }
                     catch (Exception)
                     {
-                        Melon<Mod>.Logger.Error($"Failed to extract zip file: '{zip}'");
+                        Melon<BloodlinesMod>.Logger.Error($"Failed to extract zip file: '{zip}'");
                     }
                 }
             }
@@ -76,8 +80,8 @@ namespace Bloodlines
                 }
                 catch (Exception e)
                 {
-                    Melon<Mod>.Logger.Error($"Caught the following error when cleaning up '{file}': {e}");
-                    Melon<Mod>.Logger.Error("***** Make sure to clean it up manually *****");
+                    Melon<BloodlinesMod>.Logger.Error($"Caught the following error when cleaning up '{file}': {e}");
+                    Melon<BloodlinesMod>.Logger.Error("***** Make sure to clean it up manually *****");
                 }
             }
         }
@@ -95,13 +99,13 @@ namespace Bloodlines
 
             if (Directory.Exists(outputDirectory))
             {
-                Melon<Mod>.Logger.Warning($"Output directory '{outputDirectory}' already exists");
+                Melon<BloodlinesMod>.Logger.Warning($"Output directory '{outputDirectory}' already exists");
                 if (!DirectoryEmpty(outputDirectory))
                 {
                     if (File.Exists(Path.Combine(outputDirectory, "character.json")))
-                        Melon<Mod>.Logger.Error($"A character with this name already exists...");
+                        Melon<BloodlinesMod>.Logger.Error($"A character with this name already exists...");
                     else
-                        Melon<Mod>.Logger.Error($"Output directory '{outputDirectory}' isn't empty.");
+                        Melon<BloodlinesMod>.Logger.Error($"Output directory '{outputDirectory}' isn't empty.");
                 }
             }
             else
@@ -112,7 +116,7 @@ namespace Bloodlines
                 }
                 catch (Exception e)
                 {
-                    Melon<Mod>.Logger.Error($"Failed to create the directory '{outputDirectory}' - {e}");
+                    Melon<BloodlinesMod>.Logger.Error($"Failed to create the directory '{outputDirectory}' - {e}");
                     throw;
                 }
             }
@@ -151,18 +155,18 @@ namespace Bloodlines
                             }
                             catch (IOException ioe)
                             {
-                                Melon<Mod>.Logger.Error($"Error: {imageFilePath} already exists.\nAre you trying to reimport the same character? Rename the zip file to something unique to fix this issue.");
+                                Melon<BloodlinesMod>.Logger.Error($"Error: {imageFilePath} already exists.\nAre you trying to reimport the same character? Rename the zip file to something unique to fix this issue.");
                                 throw;
                             }
                             catch (Exception e)
                             {
-                                Melon<Mod>.Logger.Error($"Error: Unexpected error while extracting image {entry.Name} from zip file. {e}");
+                                Melon<BloodlinesMod>.Logger.Error($"Error: Unexpected error while extracting image {entry.Name} from zip file. {e}");
                                 throw;
                             }
                         }
                         else
                         {
-                            Melon<Mod>.Logger.Warning($"Found invalid file: '{entry.FullName}', ignoring.");
+                            Melon<BloodlinesMod>.Logger.Warning($"Found invalid file: '{entry.FullName}', ignoring.");
                         }
                     }
                     if (!jsonString.Any())
@@ -173,20 +177,20 @@ namespace Bloodlines
             }
             catch (FileNotFoundException exception)
             {
-                Melon<Mod>.Logger.Error($"Error: File did not exist. Do you have permission to access the directory?");
-                Melon<Mod>.Logger.Error($"Skipping file: {filePath} - {exception}");
+                Melon<BloodlinesMod>.Logger.Error($"Error: File did not exist. Do you have permission to access the directory?");
+                Melon<BloodlinesMod>.Logger.Error($"Skipping file: {filePath} - {exception}");
                 CleanupFiles(filesToClean);
                 return;
             }
             catch (Exception e)
             {
-                Melon<Mod>.Logger.Error($"Copy and paste the following exception to new issue on github.");
-                Melon<Mod>.Logger.Error($"Caught unexpected exception: {e}");
+                Melon<BloodlinesMod>.Logger.Error($"Copy and paste the following exception to new issue on github.");
+                Melon<BloodlinesMod>.Logger.Error($"Caught unexpected exception: {e}");
                 CleanupFiles(filesToClean);
                 throw;
             }
 
-            Melon<Mod>.Logger.Msg($"Extraction of {Path.GetFileNameWithoutExtension(filePath)} successful. Deleting zip file.");
+            Melon<BloodlinesMod>.Logger.Msg($"Extraction of {Path.GetFileNameWithoutExtension(filePath)} successful. Deleting zip file.");
 
             CleanupFiles(new List<string>() { filePath });
         }
@@ -206,7 +210,7 @@ namespace Bloodlines
             }
             catch (JsonReaderException ex)
             {
-                Melon<Mod>.Logger.Error($"Failed to parse json to JObject. Invalid Json. {ex}");
+                Melon<BloodlinesMod>.Logger.Error($"Failed to parse json to JObject. Invalid Json. {ex}");
                 throw new InvalidDataException("Failed to parse json to JObject", ex);
             }
 

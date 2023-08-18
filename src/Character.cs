@@ -1,6 +1,10 @@
 ﻿using Il2CppSystem.Linq;
 using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Objects;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Bloodlines
 {

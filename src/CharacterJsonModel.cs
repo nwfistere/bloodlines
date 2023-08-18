@@ -2,6 +2,8 @@
 using Il2CppVampireSurvivors.Objects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Bloodlines

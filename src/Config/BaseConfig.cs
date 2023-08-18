@@ -1,4 +1,5 @@
 ﻿using MelonLoader;
+using System.Collections.Generic;
 
 namespace Bloodlines
 {
