@@ -115,11 +115,7 @@ namespace Bloodlines
                         Character ch = Melon<Mod>.Instance.manager.characters.Find(c => c.CharacterType == characterType);
                         string spriteFilename = (ch.CharacterFileJson as CharacterFileV0_1).Character[0].SpriteName;
 
-                        //Texture2D texture = SpriteImporter.LoadTexture(ch.FullSpritePath(spriteFilename));
-
-                        System.Drawing.Image ScaledImage = ImageScaler.ScaleImage(SpriteImporter.LoadImage(ch.FullSpritePath(spriteFilename)), 50);
-
-                        c.Rend.sprite = SpriteImporter.LoadSprite(ScaledImage);
+                        c.Rend.sprite = SpriteImporter.LoadSprite(ch.FullSpritePath(spriteFilename));
 
                     }
 
