@@ -1,13 +1,16 @@
-﻿using Il2CppVampireSurvivors.Data;
+﻿using Bloodlines.src;
+using Bloodlines.src.json;
+using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Data.Characters;
 using Il2CppVampireSurvivors.Objects;
+using MelonLoader;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
 using System.Collections.Generic;
-using System.Numerics;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+using UnityEngine;
 
 namespace Bloodlines
 {
@@ -35,7 +38,7 @@ namespace Bloodlines
         public string SpriteName { get; set; }
 
         [JsonProperty("skins")]
-        public List<SkinObjectModel> Skins { get; set; }
+        public List<SkinObjectModelv0_2> Skins { get; set; }
 
         [JsonProperty("currentSkinIndex")]
         public int CurrentSkinIndex { get; set; }
@@ -62,6 +65,7 @@ namespace Bloodlines
         public StatModifierJsonModelv0_2 OnEveryLevelUp { get; set; }
 
         [JsonProperty("bodyOffset")]
+        [JsonConverter(typeof(Vector2JsonConverter))]
         public Vector2 BodyOffset { get; set; }
 
         [JsonProperty("portraitName")]
@@ -72,7 +76,9 @@ namespace Bloodlines
 
         public string toCharacterDataJson()
         {
-            CharacterData c = new();
+            List<CharacterDataModel> DataModelList = new();
+            CharacterDataModel c = new();
+            DataModelList.Add(c);
 
             StatModifierJsonModelv0_2 stats = StatModifiers[0];
 
@@ -80,7 +86,11 @@ namespace Bloodlines
             foreach (PropertyInfo prop in statsProps)
             {
                 if (c.GetType().GetProperty(prop.Name) == null)
+                {
+                    Melon<BloodlinesMod>.Logger.Msg($"No match for {prop.Name}");
                     continue;
+                }
+
                 var value = prop.GetValue(stats, null);
                 c.GetType().GetProperty(prop.Name).SetValue(c, value);
             }
@@ -88,17 +98,54 @@ namespace Bloodlines
             PropertyInfo[] myProps = GetType().GetProperties();
             foreach (PropertyInfo prop in myProps)
             {
-                if (c.GetType().GetProperty(prop.Name) == null)
+                if (c.GetType().GetProperty(prop.Name) == null && prop.Name != "StatModifiers")
+                {
+                    Melon<BloodlinesMod>.Logger.Msg($"No match for {prop.Name}");
                     continue;
+                }
+
                 var value = prop.GetValue(this, null);
-                c.GetType().GetProperty(prop.Name).SetValue(c, value);
+                //if (prop.Name == "Skins")
+                //{
+                //    var modelProp = c.GetType().GetProperty(prop.Name);
+                //    List<Skin> skins = new();
+                //    List<SkinObjectModelv0_2> models = value as List<SkinObjectModelv0_2>;
+
+                //    foreach (SkinObjectModelv0_2 model in models)
+                //    {
+                //        Skin skin = new();
+                //        skin.id = model.Id;
+                //        skin.name = model.Name;
+                //        skin.textureName = model.TextureName;
+                //        skin.spriteName = model.SpriteName;
+                //        skin.walkingFrames = model.WalkingFrames;
+                //        skin.unlocked = model.Unlocked;
+                //        skins.Add(skin);
+                //    }
+
+                //    modelProp.SetValue(c, skins);
+                //}
+                if (prop.Name == "StatModifiers")
+                {
+                    foreach (StatModifierJsonModelv0_2 statMod in StatModifiers.Skip(1))
+                    {
+                        DataModelList.Add(statMod.toCharacterDataModel());
+                    }
+                }
+                else
+                {
+                    c.GetType().GetProperty(prop.Name).SetValue(c, value);
+                }
             }
 
-
+            // Note: Looks like we cannot serialize Skin because of Il2Cpp.
+            // Could probably use a custom parser to call the Il2Cpp version of newtonsoft to handle the Skin object, but too lazy right now.
+            // Use SkinObjectModelv0_2 instead.
             return JsonConvert.SerializeObject(c);
         }
     }
 
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class StatModifierJsonModelv0_2
     {
         [JsonProperty("level")]
@@ -178,19 +225,42 @@ namespace Bloodlines
             foreach (PropertyInfo prop in GetType().GetProperties())
             {
                 if (m.GetType().GetProperty(prop.Name) == null)
+                {
                     continue;
+                }
+
                 var value = prop.GetValue(this, null);
                 m.GetType().GetProperty(prop.Name).SetValue(m, value);
             }
 
             return m;
         }
+
+        public CharacterDataModel toCharacterDataModel()
+        {
+            CharacterDataModel c = new();
+
+            PropertyInfo[] myProps = GetType().GetProperties();
+            foreach (PropertyInfo prop in myProps)
+            {
+                if (c.GetType().GetProperty(prop.Name) == null)
+                {
+                    Melon<BloodlinesMod>.Logger.Msg($"No match for {prop.Name}");
+                    continue;
+                }
+
+                var value = prop.GetValue(this, null);
+                c.GetType().GetProperty(prop.Name).SetValue(c, value);
+            }
+
+            return c;
+        }
     }
 
     public class SkinObjectModelv0_2
     {
         [JsonProperty("id")]
-        public int Id { get; set; }
+        public SkinType Id { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -207,9 +277,9 @@ namespace Bloodlines
         [JsonProperty("unlocked")]
         public bool Unlocked { get; set; }
 
-        public static explicit operator Skin(SkinObjectModelv0_2 model)
+        public static implicit operator Skin(SkinObjectModelv0_2 model)
         {
-            Skin skin = new Skin();
+            Skin skin = new();
 
             skin.id = (SkinType)model.Id;
             skin.name = model.Name;
@@ -219,6 +289,20 @@ namespace Bloodlines
             skin.unlocked = model.Unlocked;
 
             return skin;
+        }
+
+        public static implicit operator SkinObjectModelv0_2(Skin skin)
+        {
+            SkinObjectModelv0_2 model = new();
+
+            model.Id = skin.id;
+            model.Name = skin.name;
+            model.TextureName = skin.textureName;
+            model.SpriteName = skin.spriteName;
+            model.WalkingFrames = skin.walkingFrames;
+            model.Unlocked = skin.unlocked;
+
+            return model;
         }
     }
 }

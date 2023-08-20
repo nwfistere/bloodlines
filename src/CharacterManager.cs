@@ -1,4 +1,5 @@
-﻿using Il2CppVampireSurvivors.Data.Characters;
+﻿using Bloodlines.src;
+using Il2CppVampireSurvivors.Data;
 using MelonLoader;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,7 +13,8 @@ namespace Bloodlines
 {
     public class CharacterManager
     {
-        public List<CharacterData> characters { get; protected set; } = new();
+        public List<CharacterDataModelWrapper> characters { get; protected set; } = new();
+        public Dictionary<CharacterType, CharacterDataModelWrapper> characterDict { get; set; } = new();
         private readonly string ZipPath;
         private readonly string ExtractPath;
         public readonly bool success = false;
@@ -37,7 +39,9 @@ namespace Bloodlines
         public void ParseExistingCharacterFiles()
         {
             if (!Directory.Exists(ExtractPath))
+            {
                 Directory.CreateDirectory(ExtractPath);
+            }
 
             foreach (string dir in Directory.GetDirectories(ExtractPath))
             {
@@ -104,9 +108,13 @@ namespace Bloodlines
                 if (!DirectoryEmpty(outputDirectory))
                 {
                     if (File.Exists(Path.Combine(outputDirectory, "character.json")))
+                    {
                         Melon<BloodlinesMod>.Logger.Error($"A character with this name already exists...");
+                    }
                     else
+                    {
                         Melon<BloodlinesMod>.Logger.Error($"Output directory '{outputDirectory}' isn't empty.");
+                    }
                 }
             }
             else
@@ -225,7 +233,10 @@ namespace Bloodlines
                         type = typeof(CharacterFileModelV0_1);
                         CharacterFileModelV0_1? c = JsonConvert.DeserializeObject<CharacterFileModelV0_1>(json);
                         if (c == null)
+                        {
                             break;
+                        }
+
                         return c;
                     }
                 case CharacterFileModelV0_2._version:
@@ -233,7 +244,10 @@ namespace Bloodlines
                         type = typeof(CharacterFileModelV0_2);
                         CharacterFileModelV0_2? c = JsonConvert.DeserializeObject<CharacterFileModelV0_2>(json);
                         if (c == null)
+                        {
                             break;
+                        }
+
                         return c;
                     }
                 default:

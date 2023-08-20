@@ -1,244 +1,287 @@
-﻿using Il2CppVampireSurvivors.Data;
+﻿using Bloodlines.src.json;
+using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Data.Characters;
 using Il2CppVampireSurvivors.Objects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace Bloodlines.src
 {
     // This is meant to be a json serializable copy of Vampire Survivors's Character data.
     // VampireSurvivors CharacterData has nullables, which make it hard to do anything. Copy the class into this.
+
+    public class CharacterDataModelWrapper
+    {
+        [JsonIgnore]
+        public CharacterType characterType { get; set; }
+
+        public List<CharacterDataModel> CharacterSettings { get; set; }
+
+        [JsonIgnore]
+        public CharacterDataModel Character { get
+            {
+                if (CharacterSettings.Any())
+                {
+                    return CharacterSettings[0];
+                } else
+                {
+                    throw new System.Exception("Characters hasn't been set yet.");
+                }
+            }
+        }
+    }
+
     public class CharacterDataModel
     {
         [JsonProperty("hidden")]
-        public bool hidden;
+        public bool Hidden { get; set; }
 
 
         [JsonProperty("level")]
-        public int level;
+        public float Level { get; set; }
 
 
         [JsonProperty("startingWeapon")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public WeaponType startingWeapon;
+        public WeaponType StartingWeapon { get; set; }
 
 
         [JsonProperty("cooldown")]
-        public float cooldown;
+        public float Cooldown { get; set; }
 
 
         [JsonProperty("prefix")]
-        public string prefix;
+        public string Prefix { get; set; }
 
 
         [JsonProperty("charName")]
-        public string charName;
+        public string CharName { get; set; }
 
 
         [JsonProperty("surname")]
-        public string surname;
+        public string Surname { get; set; }
 
 
         [JsonProperty("textureName")]
-        public string textureName;
+        public string TextureName { get; set; }
 
 
         [JsonProperty("spriteName")]
-        public string spriteName;
+        public string SpriteName { get; set; }
 
 
         [JsonProperty("portraitName")]
-        public string portraitName;
+        public string PortraitName { get; set; }
 
 
         [JsonProperty("walkingFrames")]
-        public int walkingFrames;
+        public int WalkingFrames { get; set; }
 
 
         [JsonProperty("skins")]
-        public List<Skin> skins;
+        public List<SkinObjectModelv0_2> Skins { get; set; }
 
 
         [JsonProperty("spriteAnims")]
-        public SpriteAnims spriteAnims;
+        public SpriteAnims SpriteAnims { get; set; }
 
 
         [JsonProperty("walkFrameRate")]
-        public int walkFrameRate;
+        public int WalkFrameRate { get; set; }
 
 
         [JsonProperty("description")]
-        public string description;
+        public string Description { get; set; }
 
 
         [JsonProperty("isBought")]
-        public bool isBought;
+        public bool IsBought { get; set; }
 
 
         [JsonProperty("price")]
-        public float price;
+        public float Price { get; set; }
 
 
         [JsonProperty("maxHp")]
-        public float maxHp;
+        public float MaxHp { get; set; }
 
 
         [JsonProperty("armor")]
-        public float armor;
+        public float Armor { get; set; }
 
 
         [JsonProperty("regen")]
-        public float regen;
+        public float Regen { get; set; }
 
 
         [JsonProperty("moveSpeed")]
-        public float moveSpeed;
+        public float MoveSpeed { get; set; }
 
 
         [JsonProperty("power")]
-        public double power;
+        public double Power { get; set; }
 
 
         [JsonProperty("area")]
-        public float area;
+        public float Area { get; set; }
 
 
         [JsonProperty("speed")]
-        public float speed;
+        public float Speed { get; set; }
 
 
         [JsonProperty("duration")]
-        public float duration;
+        public float Duration { get; set; }
 
 
         [JsonProperty("amount")]
-        public float amount;
+        public float Amount { get; set; }
 
 
         [JsonProperty("luck")]
-        public float luck;
+        public float Luck { get; set; }
 
 
         [JsonProperty("growth")]
-        public float growth;
+        public float Growth { get; set; }
 
 
         [JsonProperty("greed")]
-        public float greed;
+        public float Greed { get; set; }
 
 
         [JsonProperty("magnet")]
-        public float magnet;
+        public float Magnet { get; set; }
 
 
         [JsonProperty("revivals")]
-        public float revivals;
+        public float Revivals { get; set; }
 
 
         [JsonProperty("curse")]
-        public float curse;
+        public float Curse { get; set; }
 
 
         [JsonProperty("shields")]
-        public float shields;
+        public float Shields { get; set; }
 
 
-        [JsonProperty("reRolls")]
-        public float reRolls;
+        [JsonProperty("rerolls")]
+        public float Rerolls { get; set; }
 
 
         [JsonProperty("skips")]
-        public float skips;
+        public float Skips { get; set; }
 
 
         [JsonProperty("banish")]
-        public float banish;
+        public float Banish { get; set; }
+
+        [JsonProperty("charm")]
+        public float Charm { get; set; }
+
+        [JsonProperty("shroud")]
+        public float Shroud { get; set; }
 
 
-        [JsonProperty("showcase")]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public List<WeaponType> showcase;
+        [JsonProperty("showcase", ItemConverterType = typeof(StringEnumConverter))]
+        public List<WeaponType> Showcase { get; set; }
 
 
         [JsonProperty("debugTime")]
-        public float debugTime;
+        public float DebugTime { get; set; }
 
 
         [JsonProperty("debugEnemies")]
-        public float debugEnemies;
+        public float DebugEnemies { get; set; }
 
 
         [JsonProperty("bgm")]
-        public string bgm;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public BgmType BGM { get; set; }
 
 
         [JsonProperty("startFrameCount")]
-        public int startFrameCount;
+        public int StartFrameCount { get; set; }
 
 
         [JsonProperty("zeroPad")]
-        public int zeroPad;
+        public int ZeroPad { get; set; }
 
 
         [JsonProperty("suffix")]
-        public string suffix;
+        public string Suffix { get; set; }
 
 
         [JsonProperty("frameRate")]
-        public int frameRate;
+        public int FrameRate { get; set; }
 
 
         [JsonProperty("sineSpeed")]
-        public SineBonusData sineSpeed;
+        public SineBonusData SineSpeed { get; set; }
 
 
         [JsonProperty("sineCooldown")]
-        public SineBonusData sineCooldown;
+        public SineBonusData SineCooldown { get; set; }
 
 
         [JsonProperty("sineArea")]
-        public SineBonusData sineArea;
+        public SineBonusData SineArea { get; set; }
 
 
         [JsonProperty("sineDuration")]
-        public SineBonusData sineDuration;
+        public SineBonusData SineDuration { get; set; }
 
 
         [JsonProperty("sineMight")]
-        public SineBonusData sineMight;
+        public SineBonusData SineMight { get; set; }
 
 
         [JsonProperty("noHurt")]
-        public bool noHurt;
+        public bool NoHurt { get; set; }
 
 
         [JsonProperty("exLevels")]
-        public int exLevels;
+        public int ExLevels { get; set; }
 
 
         [JsonProperty("exWeapons")]
-        public List<string> exWeapons;
+        public List<string> ExWeapons { get; set; }
 
 
         [JsonProperty("hiddenWeapons")]
-        public List<string> hiddenWeapons;
+        public List<string> HiddenWeapons { get; set; }
 
 
         [JsonProperty("onEveryLevelUp")]
-        public ModifierStats onEveryLevelUp;
+        public ModifierStats OnEveryLevelUp { get; set; }
 
 
         [JsonProperty("bodyOffset")]
-        public Vector2 bodyOffset;
+        [JsonConverter(typeof(Vector2JsonConverter))]
+        public Vector2 BodyOffset { get; set; }
 
 
         [JsonProperty("nameIndex")]
-        public int nameIndex;
+        public int NameIndex { get; set; }
 
 
         [JsonProperty("currentSkinIndex")]
-        public int currentSkinIndex;
+        public int CurrentSkinIndex { get; set; }
+
+        [JsonIgnore]
+        public CharacterType CharacterType { get; set; }
+
+        [JsonIgnore]
+        public string BaseDirectory { get; set; }
+
+        public string GetSpritePath(string filename)
+        {
+            return Path.Combine(BaseDirectory, filename);
+        }
     }
 }

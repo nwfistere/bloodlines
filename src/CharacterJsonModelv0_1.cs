@@ -130,7 +130,10 @@ namespace Bloodlines
             foreach (PropertyInfo prop in GetType().GetProperties())
             {
                 if (m.GetType().GetProperty(prop.Name) == null)
+                {
                     continue;
+                }
+
                 var value = prop.GetValue(this, null);
                 if (prop.Name == "Power")
                 {
@@ -165,7 +168,7 @@ namespace Bloodlines
 
         public static explicit operator Skin(SkinObjectModel model)
         {
-            Skin skin = new Skin();
+            Skin skin = new();
 
             skin.id = (SkinType)model.Id;
             skin.name = model.Name;
