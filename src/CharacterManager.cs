@@ -1,4 +1,5 @@
-﻿using MelonLoader;
+﻿using Il2CppVampireSurvivors.Data.Characters;
+using MelonLoader;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -11,7 +12,7 @@ namespace Bloodlines
 {
     public class CharacterManager
     {
-        public List<Character> characters { get; protected set; } = new();
+        public List<CharacterData> characters { get; protected set; } = new();
         private readonly string ZipPath;
         private readonly string ExtractPath;
         public readonly bool success = false;

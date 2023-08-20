@@ -118,7 +118,7 @@ namespace Bloodlines
                     if (Melon<BloodlinesMod>.Instance.manager.characters.Select((c) => c.CharacterType).Contains(characterType))
                     {
                         Character ch = Melon<BloodlinesMod>.Instance.manager.characters.Find(c => c.CharacterType == characterType);
-                        string spriteFilename = (ch.CharacterFileJson as CharacterFileV0_1).Character[0].SpriteName;
+                        string spriteFilename = (ch.CharacterFileModel as CharacterFileV0_1).Character[0].SpriteName;
 
                         c.Rend.sprite = SpriteImporter.LoadSprite(ch.FullSpritePath(spriteFilename));
 
@@ -156,7 +156,7 @@ namespace Bloodlines
                 if (Melon<BloodlinesMod>.Instance.manager.characters.Select((c) => c.CharacterType).Contains(characterType))
                 {
                     Character ch = Melon<BloodlinesMod>.Instance.manager.characters.Find(c => c.CharacterType == characterType);
-                    string spriteFilename = (ch.CharacterFileJson as CharacterFileV0_1).Character[0].SpriteName;
+                    string spriteFilename = (ch.CharacterFileModel as CharacterFileV0_1).Character[0].SpriteName;
 
                     __instance.IsInvul = true;
                     //__instance.Rend.sprite = SpriteImporter.LoadSprite(ch.FullSpritePath(spriteFilename)); // SpriteImporter.LoadSprite(Path.Combine(Path.GetDirectoryName(ch.CharacterFilePath), spriteFilename), new Rect(0, 0, 50, 50), new Vector2(0.5f, 0.5f));
@@ -233,9 +233,9 @@ namespace Bloodlines
                 foreach (Character character in Melon<BloodlinesMod>.Instance.manager.characters)
                 {
                     CharacterType characterType = iter++;
-                    Melon<BloodlinesMod>.Logger.Msg($"Adding character... {characterType} {(character.CharacterFileJson as CharacterFileV0_1).Character[0].CharName}");
+                    Melon<BloodlinesMod>.Logger.Msg($"Adding character... {characterType} {(character.CharacterFileModel as CharacterFileV0_1).Character[0].CharName}");
                     character.CharacterType = characterType;
-                    string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(character.CharacterFileJson.GetCharacterJson());
+                    string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(character.CharacterFileModel.GetCharacterJson());
                     JArray json = JArray.Parse(jsonString);
                     __instance.AllCharactersJson.Add(characterType.ToString(), json);
                 }
@@ -304,7 +304,7 @@ namespace Bloodlines
                 {
                     Melon<BloodlinesMod>.Logger.Msg($"Setting the icon for {cType}");
                     Character ch = Melon<BloodlinesMod>.Instance.manager.characters.Find(c => c.CharacterType == cType);
-                    string spriteFilename = (ch.CharacterFileJson as CharacterFileV0_1).Character[0].SpriteName;
+                    string spriteFilename = (ch.CharacterFileModel as CharacterFileV0_1).Character[0].SpriteName;
                     int activeSkinIndex = __instance._skinSlots.FindIndex(new Func<Image, bool>((s) => s.sprite.name == "weaponLevelFull"));
                     if (activeSkinIndex == -1)
                         activeSkinIndex = 0;
@@ -342,7 +342,7 @@ namespace Bloodlines
                 if (Melon<BloodlinesMod>.Instance.manager.characters.Select((c) => c.CharacterType).Contains(cType))
                 {
                     Character ch = Melon<BloodlinesMod>.Instance.manager.characters.Find(c => c.CharacterType == cType);
-                    string spriteFilename = (ch.CharacterFileJson as CharacterFileV0_1).Character[0].SpriteName;
+                    string spriteFilename = (ch.CharacterFileModel as CharacterFileV0_1).Character[0].SpriteName;
 
                     __instance.name = dat.charName;
                     __instance._CharacterName.text = dat.charName;

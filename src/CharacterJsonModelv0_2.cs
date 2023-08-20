@@ -5,23 +5,22 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Reflection;
+using System.Text.Json;
 
 namespace Bloodlines
 {
 
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-    public class CharacterJsonModel
+    public class CharacterJsonModelv0_2
     {
-        [JsonProperty("level")]
-        public int Level { get; set; }
-
         [JsonProperty("startingWeapon")]
         [JsonConverter(typeof(StringEnumConverter))]
         public WeaponType StartingWeapon { get; set; }
 
-        [JsonProperty("cooldown")]
-        public int Cooldown { get; set; }
+        [JsonProperty("prefix")]
+        public string Prefix { get; set; }
 
         [JsonProperty("charName")]
         public string CharName { get; set; }
@@ -53,74 +52,123 @@ namespace Bloodlines
         [JsonProperty("price")]
         public int Price { get; set; }
 
-        [JsonProperty("completedStages")]
-        public List<object> CompletedStages { get; set; }
+        [JsonProperty("showcase", ItemConverterType = typeof(StringEnumConverter))]
+        public List<WeaponType> Showcase { get; set; }
 
-        [JsonProperty("survivedMinutes")]
-        public int SurvivedMinutes { get; set; }
+        [JsonProperty("statModifiers")]
+        public List<StatModifierJsonModelv0_2> StatModifiers { get; set; }
 
-        [JsonProperty("enemiesKilled")]
-        public int EnemiesKilled { get; set; }
+        [JsonProperty("onEveryLevelUp")]
+        public StatModifierJsonModelv0_2 OnEveryLevelUp { get; set; }
 
-        [JsonProperty("stageData")]
-        public List<object> StageData { get; set; }
+        [JsonProperty("bodyOffset")]
+        public Vector2 BodyOffset { get; set; }
+
+        [JsonProperty("portraitName")]
+        public string PortraitName { get; set; }
+
+        [JsonProperty("bgm")]
+        public BgmType BGM { get; set; }
+
+        public string toCharacterDataJson()
+        {
+            CharacterData c = new();
+
+            StatModifierJsonModelv0_2 stats = StatModifiers[0];
+
+            PropertyInfo[] statsProps = stats.GetType().GetProperties();
+            foreach (PropertyInfo prop in statsProps)
+            {
+                if (c.GetType().GetProperty(prop.Name) == null)
+                    continue;
+                var value = prop.GetValue(stats, null);
+                c.GetType().GetProperty(prop.Name).SetValue(c, value);
+            }
+
+            PropertyInfo[] myProps = GetType().GetProperties();
+            foreach (PropertyInfo prop in myProps)
+            {
+                if (c.GetType().GetProperty(prop.Name) == null)
+                    continue;
+                var value = prop.GetValue(this, null);
+                c.GetType().GetProperty(prop.Name).SetValue(c, value);
+            }
+
+
+            return JsonConvert.SerializeObject(c);
+        }
+    }
+
+    public class StatModifierJsonModelv0_2
+    {
+        [JsonProperty("level")]
+        public float Level { get; set; }
 
         [JsonProperty("maxHp")]
-        public int MaxHp { get; set; }
+        public float MaxHp { get; set; }
 
         [JsonProperty("armor")]
-        public int Armor { get; set; }
+        public float Armor { get; set; }
 
         [JsonProperty("regen")]
-        public int Regen { get; set; }
+        public float Regen { get; set; }
 
         [JsonProperty("moveSpeed")]
-        public int MoveSpeed { get; set; }
+        public float MoveSpeed { get; set; }
 
         [JsonProperty("power")]
         public double Power { get; set; }
 
         [JsonProperty("area")]
-        public int Area { get; set; }
+        public float Area { get; set; }
 
         [JsonProperty("speed")]
-        public int Speed { get; set; }
+        public float Speed { get; set; }
 
         [JsonProperty("duration")]
-        public int Duration { get; set; }
+        public float Duration { get; set; }
 
         [JsonProperty("amount")]
-        public int Amount { get; set; }
+        public float Amount { get; set; }
 
         [JsonProperty("luck")]
-        public int Luck { get; set; }
+        public float Luck { get; set; }
 
         [JsonProperty("growth")]
-        public int Growth { get; set; }
+        public float Growth { get; set; }
 
         [JsonProperty("greed")]
-        public int Greed { get; set; }
+        public float Greed { get; set; }
 
         [JsonProperty("curse")]
-        public int Curse { get; set; }
+        public float Curse { get; set; }
 
         [JsonProperty("magnet")]
-        public int Magnet { get; set; }
+        public float Magnet { get; set; }
 
         [JsonProperty("revivals")]
-        public int Revivals { get; set; }
+        public float Revivals { get; set; }
 
         [JsonProperty("rerolls")]
-        public int Rerolls { get; set; }
+        public float Rerolls { get; set; }
 
         [JsonProperty("skips")]
-        public int Skips { get; set; }
+        public float Skips { get; set; }
 
         [JsonProperty("banish")]
-        public int Banish { get; set; }
+        public float Banish { get; set; }
 
-        [JsonProperty("showcase", ItemConverterType = typeof(StringEnumConverter))]
-        public List<WeaponType> Showcase { get; set; }
+        [JsonProperty("charm")]
+        public float Charm { get; set; }
+
+        [JsonProperty("shroud")]
+        public float Shroud { get; set; }
+
+        [JsonProperty("shields")]
+        public float Shields { get; set; }
+
+        [JsonProperty("cooldown")]
+        public float Cooldown { get; set; }
 
         public ModifierStats toModifierStat()
         {
@@ -132,18 +180,14 @@ namespace Bloodlines
                 if (m.GetType().GetProperty(prop.Name) == null)
                     continue;
                 var value = prop.GetValue(this, null);
-                if (prop.Name == "Power")
-                {
-                    m.Power = Convert.ToSingle(Power);
-                    continue;
-                }
                 m.GetType().GetProperty(prop.Name).SetValue(m, value);
             }
 
             return m;
         }
     }
-    public class SkinObjectModel
+
+    public class SkinObjectModelv0_2
     {
         [JsonProperty("id")]
         public int Id { get; set; }
@@ -163,7 +207,7 @@ namespace Bloodlines
         [JsonProperty("unlocked")]
         public bool Unlocked { get; set; }
 
-        public static explicit operator Skin(SkinObjectModel model)
+        public static explicit operator Skin(SkinObjectModelv0_2 model)
         {
             Skin skin = new Skin();
 
