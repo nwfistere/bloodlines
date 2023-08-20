@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Il2CppVampireSurvivors.Data.Characters;
+using Il2CppVampireSurvivors.Objects.Characters.Enemies;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,7 @@ namespace Bloodlines
 
         public abstract Type CharacterFileVersion();
 
-        public abstract string GetPortraitString();
+        public abstract List<CharacterData> GetCharacterList();
     }
 
     [Obsolete("CharacterFileModelV0_1 is deprecated, useCharacterFileModelV0_2 instead.")]
@@ -35,6 +37,11 @@ namespace Bloodlines
             return typeof(CharacterFileModelV0_1);
         }
 
+        public override List<CharacterData> GetCharacterList()
+        {
+            throw new Exception("Unimplemented...");
+        }
+
     }
 
     // Mark with [Obsolete("CharacterFileV* is deprecated, use CharacterFileV* instead.")] when I add a new version.
@@ -49,9 +56,6 @@ namespace Bloodlines
         public List<CharacterJsonModelv0_2> Characters { get; set; }
 
         [JsonIgnore]
-        public string CharacterFilePath { get; set; }
-
-        [JsonIgnore]
         public string CharacterBaseDir { get; set; }
 
         public CharacterFileModelV0_2() : base() { }
@@ -61,9 +65,14 @@ namespace Bloodlines
             return typeof(CharacterFileModelV0_2);
         }
 
-        public override string GetPortraitString()
+        // TODO: This likely won't work. CharacterData has nullables and they're dumb in Il2cpp
+        public override List<CharacterData> GetCharacterList()
         {
+            List<CharacterData> characterDatas = new();
 
+            Characters.ForEach((c) => characterDatas.Add(JsonConvert.DeserializeObject<CharacterData>(c.toCharacterDataJson())));
+
+            return characterDatas;
         }
     }
 }

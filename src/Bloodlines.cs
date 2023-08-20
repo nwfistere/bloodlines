@@ -121,17 +121,6 @@ namespace Bloodlines
                         string spriteFilename = (ch.CharacterFileModel as CharacterFileV0_1).Character[0].SpriteName;
 
                         c.Rend.sprite = SpriteImporter.LoadSprite(ch.FullSpritePath(spriteFilename));
-
-                        //c.WeaponsManager.SetWeaponsActive(true);
-                        //c.MakeLevelOne();
-                        ////c.WeaponsManager.
-                        //RemoveWeaponFromExcluded signal = new RemoveWeaponFromExcluded();
-                        //signal.Type = WeaponType.AXE;
-                        //__instance.LevelUpFactory.RemoveFromExcluded(new RemoveWeaponFromExcluded());
-                        ////__instance.LevelUpFactory.ExcludedWeapons;
-                        //c.OnWeaponMadeLevelOne(WeaponType.AXE);
-                        //__instance.LevelUpFactory.IsBanished(WeaponType.AXE);
-                        //__instance.LevelUpFactory.BanishedWeapons
                     }
 
                 }
@@ -362,7 +351,7 @@ namespace Bloodlines
                     // TODO: put this somewhere...
                     dat.portraitName = dat.spriteName;
                     dat.onEveryLevelUp = new ModifierStats() { Amount = 1 };
-                    dat.bgm = "NONE"; // TODO: what is this? A: Background Modifier? There's a type for it. BGMType
+                    dat.bgm = "NONE"; // TODO: what is this? A: Background Modifier? There's a type for it. BGMType A: background music!
                     dat.isBought = true;
 
                     playerOptions._config.BoughtCharacters.Add(cType);

@@ -196,13 +196,13 @@ namespace Bloodlines
             CleanupFiles(new List<string>() { filePath });
         }
 
-        private void handleJsonFileString(string jsonFilePath, string json)
+        private void handleJsonFileString(string filePath, string json)
         {
-            BaseCharacterFile characterDto = GetFileDto(json, out Type actualType);
-            characters.Add(new(jsonFilePath, characterDto, actualType));
+            BaseCharacterFileModel characterDto = GetFileDto(json, filePath, out Type actualType);
+            characterDto.GetCharacterList().ForEach((data) => characters.Add(data));
         }
 
-        private BaseCharacterFile GetFileDto(string json, out Type type)
+        private BaseCharacterFileModel GetFileDto(string json, string filePath, out Type type)
         {
             JObject jObject;
             try
@@ -220,17 +220,27 @@ namespace Bloodlines
 
             switch (version?.ToString())
             {
-                case CharacterFileV0_1._version:
+                case CharacterFileModelV0_1._version:
                     {
-                        type = typeof(CharacterFileV0_1);
-                        CharacterFileV0_1? c = JsonConvert.DeserializeObject<CharacterFileV0_1>(json);
+                        type = typeof(CharacterFileModelV0_1);
+                        CharacterFileModelV0_1? c = JsonConvert.DeserializeObject<CharacterFileModelV0_1>(json);
                         if (c == null)
                             break;
                         return c;
                     }
+                case CharacterFileModelV0_2._version:
+                    {
+                        type = typeof(CharacterFileModelV0_2);
+                        CharacterFileModelV0_2? c = JsonConvert.DeserializeObject<CharacterFileModelV0_2>(json);
+                        if (c == null)
+                            break;
+                        return c;
+                    }
+                default:
+                    throw new InvalidDataException($"Invalid version number found in json string {(version == null ? "null" : version.ToString())} in <{filePath}>.");
             }
 
-            throw new InvalidDataException($"Invalid version found in json string {(version == null ? "null" : version.ToString())}.");
+            throw new InvalidDataException($"Invalid Json object in file <{filePath}>");
         }
     }
 }
