@@ -6,68 +6,89 @@
     </title>
   </head>
   <body>
-    <form>
-      <div class="form-pair">
-        <label>First name</label>
-        <input type="text" name="firstName" id="firstName" placeholder="Name"
-          required />
-      </div>
-      <div class="form-pair">
-        <label>Last name</label>
-        <input type="text" name="lastName" id="lastName" placeholder="Last name" />
-      </div>
-      <div class="form-pair">
-        <label>Starting weapon</label>
-        <select id="weaponsSelect" name="weaponsSelect"></select>
-      </div>
-      <div class="form-pair">
-        <label>Cooldown</label>
-        <input type="number" id="cooldown" name="cooldown" value="1" min="0" />
-      </div>
-      <div class="form-pair">
-        <label>Sprite</label>
-        <input type="file" id="sprite" name="sprite" accept=".png" />
-      </div>
-      <label for="skin-form-container">Skins</label>
-      <div class="skin-form" id="skin-form-container">
-        <div class="skin-form-button"><input type="button" value="add"
-            id="addSkinForm" /></div>
-        <div class="skin-form-button"><input type="button" value="remove"
-            id="removeSkinForm" hidden /></div>
-        <div id="skinContainer">&nbsp;</div>
-      </div>
-      <div class="form-pair">
-        <label>Current skin index (Coming soon)</label>
-        <input type="number" id="walkingFrames" name="walkingFrames" value="0"
-          readonly />
-      </div>
-      <div class="form-pair">
-        <label>Walking Frames (Coming soon)</label>
-        <input type="number" id="walkingFrames" name="walkingFrames" value="1"
-          readonly />
-      </div>
-      <div class="form-pair">
-        <label>Description</label>
-        <input type="text" id="description" name="description" />
-      </div>
-      <div class="form-pair">
-        <label>Already bought</label>
-        <input type="checkbox" id="isBought" name="isBought" value="false" />
-      </div>
-      <div class="form-pair">
-        <label for="price">Price</label>
-        <input type="number" id="price" name="price" min="0" />
-      </div>
-      <div class="body-offset-form">
-        <label>Body offset</label>
+    <div class="form-box">
+
+      <!-- Basic input -->
+      <form id="basic">
         <div class="form-pair">
-          <label for="bodyOffsetX">x</label>
-          <input type="number" id="bodyOffsetX" name="x" />
+          <label for="charName">First name</label>
+          <input type="text" name="firstName" id="charName" placeholder="Name"
+            required />
         </div>
         <div class="form-pair">
-          <label for="bodyOffsetY">y</label>
-          <input type="number" id="bodyOffsetY" name="y" />
+          <label for="surname">Last name</label>
+          <input type="text" name="lastName" id="surname" placeholder="Last name" />
         </div>
+        <div class="form-pair">
+          <label for="startingWeapon">Starting weapon</label>
+          <select id="startingWeapon" name="weaponsSelect"></select>
+        </div>
+        <div class="form-pair">
+          <label>Cooldown</label>
+          <input type="number" id="cooldown" name="cooldown" value="1" min="0" />
+        </div>
+        <div class="form-pair">
+          <label for="spriteName">Sprite</label>
+          <input type="file" id="spriteName" name="sprite" accept=".png" />
+        </div>
+        <div class="form-pair">
+          <label>Current skin index (Coming soon)</label>
+          <input type="number" id="walkingFrames" name="walkingFrames" value="0"
+            readonly />
+        </div>
+        <div class="form-pair">
+          <label>Walking Frames (Coming soon)</label>
+          <input type="number" id="walkingFrames" name="walkingFrames" value="1"
+            readonly />
+        </div>
+        <div class="form-pair">
+          <label>Description</label>
+          <input type="text" id="description" name="description" />
+        </div>
+        <div class="form-pair">
+          <label>Already bought</label>
+          <input type="checkbox" id="isBought" name="isBought" value="false" />
+        </div>
+        <div class="form-pair">
+          <label for="price">Price</label>
+          <input type="number" id="price" name="price" min="0" />
+        </div>
+        <div class="body-offset-form">
+          <label>Body offset</label>
+          <div class="form-pair">
+            <label for="bodyOffsetX">x</label>
+            <input type="number" id="bodyOffset.x" name="x" />
+          </div>
+          <div class="form-pair">
+            <label for="bodyOffsetY">y</label>
+            <input type="number" id="bodyOffset.y" name="y" />
+          </div>
+        </div>
+        <label for="modifier-form-container">Initial Stats</label>
+        <div class="modifier-form" id="modifier-form-container">
+          <div class="modifier-form-button"><input type="button" value="add"
+              id="addInitialModifierForm" /></div>
+          <div class="modifier-form-button"><input type="button" value="remove"
+              id="removeInitialModifierForm" hidden /></div>
+          <div id="initialModifierContainer">&nbsp;</div>
+        </div>
+      </form>
+
+      <!-- Skins -->
+      <form id="skins">
+        <label for="skin-form-container">Skins</label>
+        <div class="skin-form" id="skin-form-container">
+          <div class="skin-form-button"><input type="button" value="add"
+              id="addSkinForm" /></div>
+          <div class="skin-form-button"><input type="button" value="remove"
+              id="removeSkinForm" hidden /></div>
+          <div id="skinContainer">&nbsp;</div>
+        </div>
+      </form>
+
+      <!-- Per level modifiers -->
+      <form id="modifiers">
+        <label for="modifier-form-container">Level modifiers</label>
         <div class="modifier-form" id="modifier-form-container">
           <div class="modifier-form-button"><input type="button" value="add"
               id="addModifierForm" /></div>
@@ -75,19 +96,21 @@
               id="removeModifierForm" hidden /></div>
           <div id="modifierContainer">&nbsp;</div>
         </div>
-      </div>
-    </form>
+      </form>
 
-    <form>
-      <div class="form-pair">
-        <label for="outputJsonLabel">Output character json:</label>
-        <br />
-        <textarea id="outputJsonTextArea" name="outputJsonTextArea" readonly
-          style="width: 250px;"></textarea>
-      </div>
-    </form>
+      <!-- Output -->
+      <form id="output">
+        <div class="form-pair">
+          <label for="outputJsonLabel">Output character json:</label>
+          <br />
+          <textarea id="outputJsonTextArea" name="outputJsonTextArea" readonly
+            style="width: 250px;"></textarea>
+        </div>
+      </form>
+    </div>
 
     <script type="text/javascript" src="zip.min.js"></script>
     <script type="text/javascript" src="./create-character.js"></script>
+    <!-- <link href="style.css" rel="stylesheet" /> -->
   </body>
 </html>

@@ -2,13 +2,13 @@ var weaponListJson = {
   "weapons": [ "VOID", "MAGIC_MISSILE", "HOLY_MISSILE", "WHIP", "VAMPIRICA", "AXE", "SCYTHE", "KNIFE", "THOUSAND", "HOLYWATER", "BORA", "DIAMOND", "FIREBALL", "HELLFIRE", "HOLYBOOK", "VESPERS", "CROSS", "HEAVENSWORD", "GARLIC", "VORTEX", "LAUREL", "THORNS", "LIGHTNING", "LOOP", "PENTAGRAM", "ROSARY", "SIRE", "SILF", "SILF2", "SILF3", "BONE", "LANCET", "SONG", "MANNAGGIA", "CHERRY", "CART", "CART2", "GATTI", "STIGRANGATTI", "GATTI_SCRATCH", "GATTI_SCUFFLE", "FLOWER", "GUNS", "GUNS2", "GUNS3", "TRAPANO", "TRAPANO2", "SARABANDE", "FIREEXPLOSION", "NDUJA", "POWER", "AREA", "SPEED", "COOLDOWN", "DURATION", "AMOUNT", "MAXHEALTH", "ARMOR", "MOVESPEED", "MAGNET", "GROWTH", "LUCK", "GREED", "REVIVAL", "SHIELD", "REGEN", "CURSE", "SILVER", "GOLD", "ROCHER", "ROCHEREXP", "LEFT", "RIGHT", "CORRIDOR", "SHROUD", "COLDEXPLOSION", "WINDOW", "PANDORA", "VENTO", "VENTO2", "VENTO2_EXPLO", "VENTO2_EXTRA", "ROBBA", "WINDOW2", "SILF_COUNTER", "SILF2_COUNTER", "RAYEXPLOSION", "CANDYBOX", "GUNS_COUNTER", "GUNS2_COUNTER", "JUBILEE", "VICTORY", "SOLES", "GATTI_COUNTER", "NDUJA_COUNTER", "TRIASSO1", "TRIASSO2", "TRIASSO3", "BLOODLINE", "CANDYBOX2", "BUBBLES", "ASTRONOMIA", "BLOOD_GARLIC", "BLOOD_SONG", "BLOOD_PENTAGRAM", "BLOOD_LANCET", "BLOOD_LAUREL", "JUBILEE_RAYS", "MISSPELL", "MISSPELL2", "SILVERWIND", "SILVERWIND2", "FOURSEASONS", "FOURSEASONS2", "SUMMONNIGHT", "SUMMONNIGHT2", "MIRAGEROBE", "MIRAGEROBE2", "BUBBLES2", "NIGHTSWORD", "NIGHTSWORD2", "BOCCE", "BOCCE_COUNTER", "SPELL_STRING", "SPELL_STREAM", "SPELL_STRIKE", "SPELL_STROM", "BONE2", "BONE_ARM", "TETRAFORCE", "SHADOWSERVANT", "SHADOWSERVANT2", "PRISMATICMISS", "PRISMATICMISS2", "FLASHARROW", "FLASHARROW2", "SEC_MILLIONAIRE", "SWORD", "SWORD2", "PARTY", "SWORD_FINISHER", "LEGIONNAIRE", "PHASER", "SHADOWSERVANT_COUNTER", "PARTY_COUNTER", "ACADEMYBADGE", "INSATIABLE", "CHERRY2", "CHERRY_STAR_EXPLO", "CHERRY_STAR" ]
 }
 
-var weaponsSelect = document.getElementById("weaponsSelect");
+var startingWeapon = document.getElementById("startingWeapon");
 
 for (var i = 0; i < weaponListJson.weapons.length; i++) {
   var option = document.createElement("option");
   option.text = weaponListJson.weapons[i];
   option.value = weaponListJson.weapons[i];
-  weaponsSelect.add(option);
+  startingWeapon.add(option);
 }
 
 const handleSubmit = (event) => {
@@ -112,6 +112,56 @@ const createJsonOutput = () => {
   setJsonOutputValue(json);
 };
 
+const createJsonOutput2 = (form) => {
+  const json = clone(characterJson);
+  const char = json.character[0];
+  for (let field of form.elements) {
+    if (!field.id || field.disabled || field.type === 'reset' || field.type === 'submit' || field.type === 'button') {
+      continue;
+    }
+
+    let fieldId = field.id;
+
+    if (field.id.endsWith("-initial")) {
+      fieldId = fieldId.substring(0, fieldId.length - 8);
+    } else if (field.id.includes(".")) {
+      const split = field.id.split(".");
+      if (split.length > 2 || !Object.hasOwn(char, split[0]) || !Object.hasOwn(char[split[0]], split[1])) {
+        console.error("Invalid input id: " + field.id);
+      }
+      char[split[0]][split[1]] = getFieldValue(field);
+      continue;
+    }
+
+    if (!Object.hasOwn(char, fieldId)) {
+      console.error("Json object doesn't have property: " + field.id);
+      continue;
+    }
+
+    char[fieldId] = getFieldValue(field);
+  }
+
+  setJsonOutputValue(json);
+}
+
+const getFieldValue = (field) => {
+  switch (field.type) {
+    case "text":
+    case "select-one":
+      return field.value;
+    case "number":
+      return parseInt(field.value) || 0;
+    case "checkbox":
+      return field.checked;
+    case "file":
+      return field.value.split(/(\\|\/)/g).pop();
+    default:
+      console.error("Unknown input type: " + field.type);
+  }
+
+  return null;
+}
+
 const setJsonOutputValue = (json) => {
   const output = document.getElementById("outputJsonTextArea");
   // output.add
@@ -150,33 +200,33 @@ let numOfModifiers = 0;
 document.getElementById("addSkinForm").addEventListener("click", () => {
   const div = document.createElement("div");
   div.setAttribute("class", "skin-form-instance");
-  div.setAttribute("id", "skin-form-" + numOfSkins);
+  div.setAttribute("id", "skin-form--" + numOfSkins);
 
   const nameLabel = createLabel("Skin name");
-  nameLabel.setAttribute("for", "skinName" + numOfSkins);
-  const nameText = createInput("text", "skinName" + numOfSkins, "skinName" + numOfSkins);
+  nameLabel.setAttribute("for", "skinName-" + numOfSkins);
+  const nameText = createInput("text", "skinName-" + numOfSkins, "skinName-" + numOfSkins);
   const nameDiv = createSkinFormPairDiv();
   nameDiv.appendChild(nameLabel);
   nameDiv.appendChild(nameText);
 
   const spriteLabel = createLabel("Sprite");
-  spriteLabel.setAttribute("for", "skinSprite" + numOfSkins);
+  spriteLabel.setAttribute("for", "skinSprite-" + numOfSkins);
   const spriteFile = createInput("file", "skinSprite"  + numOfSkins, "skinSprite"  + numOfSkins);
   const spriteDiv = createSkinFormPairDiv();
   spriteDiv.appendChild(spriteLabel);
   spriteDiv.appendChild(spriteFile);
 
   const framesLabel = createLabel("Walking Frames (Coming soon)");
-  framesLabel.setAttribute("for", "walkingFrames" + numOfSkins);
-  const framesNum = createInput("number", "walkingFrames" + numOfSkins, "walkingFrames" + numOfSkins);
+  framesLabel.setAttribute("for", "walkingFrames-" + numOfSkins);
+  const framesNum = createInput("number", "walkingFrames-" + numOfSkins, "walkingFrames-" + numOfSkins);
   framesNum.readOnly = true;
   const framesDiv = createSkinFormPairDiv();
   framesDiv.appendChild(framesLabel);
   framesDiv.appendChild(framesNum);
 
   const unlockedLabel = createLabel("Unlocked");
-  unlockedLabel.setAttribute("for", "unlocked" + numOfSkins);
-  const unlocked = createInput("checkbox", "unlocked" + numOfSkins, "unlocked" + numOfSkins);
+  unlockedLabel.setAttribute("for", "unlocked-" + numOfSkins);
+  const unlocked = createInput("checkbox", "unlocked-" + numOfSkins, "unlocked-" + numOfSkins);
   const unlockedDiv = createSkinFormPairDiv();
   unlockedDiv.appendChild(unlockedLabel);
   unlockedDiv.appendChild(unlocked);
@@ -209,10 +259,11 @@ document.getElementById("removeSkinForm").addEventListener("click", () => {
 });
 
 
-const createModifierElements = (labelName, inputId) => {
+const createModifierElements = (labelName, inputId, required = false) => {
   const label = createLabel(labelName);
   label.setAttribute("for", inputId);
   const input = createInput("number", inputId, inputId);
+  input.required = required;
   const div = createSkinFormPairDiv();
   div.appendChild(label);
   div.appendChild(input);
@@ -224,44 +275,42 @@ const createModiferSection = (i) => {
   div.setAttribute("class", "modifier-form-instance");
   div.setAttribute("id", "modifier-form-" + i);
 
-  div.appendChild(createModifierElements("Max HP", "maxHp" + i));
-  div.appendChild(createModifierElements("Armor", "armor" + i));
-  div.appendChild(createModifierElements("Regen", "regen" + i));
-  div.appendChild(createModifierElements("Move speed", "moveSpeed" + i));
-  div.appendChild(createModifierElements("Power", "power" + i));
-  div.appendChild(createModifierElements("Area", "area" + i));
-  div.appendChild(createModifierElements("Attack? Speed", "speed" + i));
-  div.appendChild(createModifierElements("Duration", "duration" + i));
-  div.appendChild(createModifierElements("Amount", "amount" + i));
-  div.appendChild(createModifierElements("Luck", "luck" + i));
-  div.appendChild(createModifierElements("Growth", "growth" + i));
-  div.appendChild(createModifierElements("Greed", "greed" + i));
-  div.appendChild(createModifierElements("Curse", "curse" + i));
-  div.appendChild(createModifierElements("Magnet", "magnet" + i));
-  div.appendChild(createModifierElements("Revivals", "revivals" + i));
-  div.appendChild(createModifierElements("Rerolls", "rerolls" + i));
-  div.appendChild(createModifierElements("Skips", "skips" + i));
-  div.appendChild(createModifierElements("Banish", "banish" + i));
+  div.appendChild(createModifierElements("Level", "level-" + i, true));
+  div.appendChild(createModifierElements("Max HP", "maxHp-" + i));
+  div.appendChild(createModifierElements("Armor", "armor-" + i));
+  div.appendChild(createModifierElements("Regen", "regen-" + i));
+  div.appendChild(createModifierElements("Move speed", "moveSpeed-" + i));
+  div.appendChild(createModifierElements("Power", "power-" + i));
+  div.appendChild(createModifierElements("Area", "area-" + i));
+  div.appendChild(createModifierElements("Attack? Speed", "speed-" + i));
+  div.appendChild(createModifierElements("Duration", "duration-" + i));
+  div.appendChild(createModifierElements("Amount", "amount-" + i));
+  div.appendChild(createModifierElements("Luck", "luck-" + i));
+  div.appendChild(createModifierElements("Growth", "growth-" + i));
+  div.appendChild(createModifierElements("Greed", "greed-" + i));
+  div.appendChild(createModifierElements("Curse", "curse-" + i));
+  div.appendChild(createModifierElements("Magnet", "magnet-" + i));
+  div.appendChild(createModifierElements("Revivals", "revivals-" + i));
+  div.appendChild(createModifierElements("Rerolls", "rerolls-" + i));
+  div.appendChild(createModifierElements("Skips", "skips-" + i));
+  div.appendChild(createModifierElements("Banish", "banish-" + i));
 
   return div;
 }
 
 document.getElementById("addModifierForm").addEventListener("click", () => {
   let i = numOfModifiers;
-
   const div = createModiferSection(i);
-
   document.getElementById("modifierContainer").appendChild(div);
   numOfModifiers += 1;
   document.getElementById("removeModifierForm").hidden = false;
 });
-
 document.getElementById("removeModifierForm").addEventListener("click", () => {
-  if (numOfSkins > 0) {
-    const element = document.getElementById("modifier-form-" + (numOfSkins - 1));
+  if (numOfModifiers > 0) {
+    const element = document.getElementById("modifier-form-" + (numOfModifiers - 1));
     element.parentNode.removeChild(element);
-    numOfSkins -= 1;
-    if (numOfSkins === 0) {
+    numOfModifiers -= 1;
+    if (numOfModifiers === 0) {
       document.getElementById("removeModifierForm").hidden = true;
     }
     return false;
@@ -269,10 +318,49 @@ document.getElementById("removeModifierForm").addEventListener("click", () => {
   return true;
 });
 
+let initialModifierSpawned = false;
+
+document.getElementById("addInitialModifierForm").addEventListener("click", () => {
+  const div = createModiferSection("-initial");
+  document.getElementById("initialModifierContainer").appendChild(div);
+  initialModifierSpawned = true;
+  document.getElementById("removeInitialModifierForm").hidden = false;
+  document.getElementById("addInitialModifierForm").hidden = true;
+  const level = document.getElementById("level-initial");
+  level.value = 1;
+  level.readOnly = true;
+
+  const parentForm = document.querySelector("#basic");
+  const onInput = () => {
+    // Handle the different types of forms here.
+    createJsonOutput2(parentForm);
+  };
+
+  parentForm.addEventListener("input", onInput);
+});
+
+document.getElementById("removeInitialModifierForm").addEventListener("click", () => {
+  if (initialModifierSpawned) {
+    const element = document.getElementById("modifier-form--initial");
+    element.parentNode.removeChild(element);
+    initialModifierSpawned = false;
+    document.getElementById("removeInitialModifierForm").hidden = true;
+    document.getElementById("addInitialModifierForm").hidden = false;
+    return false;
+  }
+  return true;
+});
+
+
 // Onload
 window.addEventListener("load", (event) => {
-  const forms = document.querySelectorAll("form");
+  const forms= document.querySelectorAll("form");
   for (const form of forms) {
-    form.addEventListener("input", createJsonOutput);
+    const onInput = () => {
+      // Handle the different types of forms here.
+      createJsonOutput2(form);
+    };
+    if (form.id === "basic" || form.id === "modifiers")
+      form.addEventListener("input", onInput);
   }
 });
