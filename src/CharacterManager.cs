@@ -18,11 +18,13 @@ namespace Bloodlines
         public Dictionary<CharacterType, CharacterDataModelWrapper> characterDict { get; set; } = new();
         readonly string ZipPath;
         readonly string ExtractPath;
+        readonly string SavePackPath;
         public readonly bool success;
-        public CharacterManager(string ZipPath, string ExtractPath)
+        public CharacterManager(string ZipPath, string DataPath, string ExtractPath)
         {
             this.ZipPath = ZipPath;
             this.ExtractPath = ExtractPath;
+            this.SavePackPath = Path.Combine(DataPath, "Installed Packs");
 
             try
             {
@@ -41,15 +43,13 @@ namespace Bloodlines
                     foreach (DictionaryEntry de in e.Data)
                         Melon<BloodlinesMod>.Logger.Error("    Key: {0,-20}      Value: {1}", "'" + de.Key.ToString() + "'", de.Value);
                 }
+                success = false;
             }
         }
 
         public void ParseExistingCharacterFiles()
         {
-            if (!Directory.Exists(ExtractPath))
-            {
-                Directory.CreateDirectory(ExtractPath);
-            }
+            CreateDirectory(ExtractPath);
 
             foreach (string dir in Directory.GetDirectories(ExtractPath))
             {
@@ -85,13 +85,13 @@ namespace Bloodlines
             }
         }
 
-        static void CleanupFiles(List<string> files)
+        void CleanupFiles(List<string> files)
         {
             foreach (string file in files.Where(file => File.Exists(file)))
             {
                 try
                 {
-                    File.Delete(file);
+                    SavePack(file);
                 }
                 catch (Exception e)
                 {
@@ -101,9 +101,54 @@ namespace Bloodlines
             }
         }
 
+        public void SavePack(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                CreateDirectory(SavePackPath);
+
+                string fileName = Path.GetFileName(filePath);
+                string newFilePath = GetUnusedName(Path.Combine(SavePackPath, fileName), 0);
+
+                File.Move(filePath, newFilePath);
+            }
+        }
+
+        public string GetUnusedName(string filePath, int level)
+        {
+            if (level == 0 && !File.Exists(filePath))
+            {
+                return filePath;
+            }
+
+            string newFilePath = filePath.Insert(filePath.Length - 4, "-" + level);
+            if (!File.Exists(newFilePath))
+            {
+                return newFilePath;
+            }
+
+            return GetUnusedName(filePath, ++level);
+        }
+
+
         public static bool DirectoryEmpty(string path)
         {
             return !Directory.EnumerateFileSystemEntries(path).Any();
+        }
+
+        public static void CreateDirectory(string path)
+        {
+            try
+            {
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+            } catch (Exception e)
+            {
+                e.Data.Add("CharacterManager.CreateDirectory()", path);
+                throw;
+            }
         }
 
         void handleZipFile(string filePath)
@@ -130,15 +175,7 @@ namespace Bloodlines
             }
             else
             {
-                try
-                {
-                    Directory.CreateDirectory(outputDirectory);
-                }
-                catch (Exception e)
-                {
-                    Melon<BloodlinesMod>.Logger.Error($"Failed to create the directory '{outputDirectory}' - {e}");
-                    throw;
-                }
+                CreateDirectory(outputDirectory);
             }
 
             try

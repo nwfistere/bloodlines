@@ -52,7 +52,7 @@ namespace Bloodlines
             }
 
             Config = new Config(Path.Combine(ModDirectory, "config.cfg"), "Bloodlines");
-            manager = new(ModDirectory, Path.Combine(DataDirectory, "characters"));
+            manager = new(ModDirectory, DataDirectory, Path.Combine(DataDirectory, "characters"));
         }
 
         public static CharacterManager getCharacterManager() => Melon<BloodlinesMod>.Instance.manager;
@@ -175,8 +175,13 @@ namespace Bloodlines
                             string framePath = System.IO.Path.Join(character.BaseDirectory, frame);
                             c.SpriteAnimation._animations["walk"]._frames.Add(SpriteImporter.LoadCharacterSprite(framePath));
                         }
-
-                        c.SpriteAnimation.Play("walk");
+                        if (skin.frames.Any())
+                        {
+                            c.SpriteAnimation.Play("walk");
+                        } else
+                        {
+                            c._hasWalkingAnimation = false;
+                        }
                     }
                 }
 
