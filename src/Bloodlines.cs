@@ -162,17 +162,17 @@ namespace Bloodlines
 
                         if (skin != null)
                         {
-                            c.Rend.sprite = SpriteImporter.LoadSprite(character.SkinPath(skinNum));
+                            c.Rend.sprite = SpriteImporter.LoadCharacterSprite(character.SkinPath(skinNum));
                         }
                         else
                         {
-                            c.Rend.sprite = SpriteImporter.LoadSprite(character.SpritePath);
+                            c.Rend.sprite = SpriteImporter.LoadCharacterSprite(character.SpritePath);
                         }
 
                         foreach (string frame in skin.frames)
                         {
                             string framePath = System.IO.Path.Join(character.BaseDirectory, frame);
-                            c.SpriteAnimation._animations["walk"]._frames.Add(SpriteImporter.LoadSprite(framePath));
+                            c.SpriteAnimation._animations["walk"]._frames.Add(SpriteImporter.LoadCharacterSprite(framePath));
                         }
 
                         c.SpriteAnimation.Play("walk");
@@ -190,12 +190,141 @@ namespace Bloodlines
         [HarmonyPatch(typeof(RecapPage))]
         class RecapPage_Patch
         {
+            // Get's ran start of game.
             [HarmonyPatch(nameof(RecapPage.Construct))]
             [HarmonyPrefix]
             static void Construct_Prefix(RecapPage __instance)
             {
                 Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(CharacterController).FullName}.{MethodBase.GetCurrentMethod().Name}");
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+            }
+
+            [HarmonyPatch(nameof(RecapPage.NextCharacter))]
+            [HarmonyPrefix]
+            static void NextCharacter_Prefix(RecapPage __instance)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+            }
+
+            [HarmonyPatch(nameof(RecapPage.PreviousCharacter))]
+            [HarmonyPrefix]
+            static void PreviousCharacter_Prefix(RecapPage __instance)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+            }
+
+            // Called from OnShowStart
+            [HarmonyPatch(nameof(RecapPage.RefreshCharacterSpecificStats))]
+            [HarmonyPrefix]
+            static void RefreshCharacterSpecificStats_Prefix(RecapPage __instance)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+            }
+
+            // Runs first on gameover
+            [HarmonyPatch(nameof(RecapPage.OnShowStart))]
+            [HarmonyPrefix]
+            static void OnShowStart_Prefix(RecapPage __instance)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+            }
+
+            [HarmonyPatch(nameof(RecapPage.SetInfo))]
+            [HarmonyPrefix]
+            static void SetInfo_Prefix(RecapPage __instance)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+            }
+
+            // Called from RefreshCharacterSpecificStats
+            [HarmonyPatch(nameof(RecapPage.SetCharacter))]
+            [HarmonyPrefix]
+            static void SetCharacter_Prefix(RecapPage __instance)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+            }
+
+            [HarmonyPatch(nameof(RecapPage.SpawnDestructible))]
+            [HarmonyPrefix]
+            static void SpawnDestructible_Prefix(RecapPage __instance)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+            }
+
+            [HarmonyPatch(nameof(RecapPage.Construct))]
+            [HarmonyPostfix]
+            static void Construct_Postfix(RecapPage __instance)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+            }
+
+            [HarmonyPatch(nameof(RecapPage.NextCharacter))]
+            [HarmonyPostfix]
+            static void NextCharacter_Postfix(RecapPage __instance)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+            }
+
+            [HarmonyPatch(nameof(RecapPage.PreviousCharacter))]
+            [HarmonyPostfix]
+            static void PreviousCharacter_Postfix(RecapPage __instance)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+            }
+
+            [HarmonyPatch(nameof(RecapPage.RefreshCharacterSpecificStats))]
+            [HarmonyPostfix]
+            static void RefreshCharacterSpecificStats_Postfix(RecapPage __instance)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+            }
+
+            [HarmonyPatch(nameof(RecapPage.OnShowStart))]
+            [HarmonyPostfix]
+            static void OnShowStart_Postfix(RecapPage __instance)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+                if (isCustomCharacter(__instance._currentCharacter.CharacterType))
+                {
+                    CharacterDataModelWrapper character = getCharacterManager().characterDict[__instance._currentCharacter.CharacterType];
+                    __instance._CharacterIcon.sprite = SpriteImporter.LoadSprite(character.SpritePath);
+                }
+            }
+
+            [HarmonyPatch(nameof(RecapPage.SetInfo))]
+            [HarmonyPostfix]
+            static void SetInfo_Postfix(RecapPage __instance)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+            }
+
+            [HarmonyPatch(nameof(RecapPage.SetCharacter))]
+            [HarmonyPostfix]
+            static void SetCharacter_Postfix(RecapPage __instance)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+            }
+
+            [HarmonyPatch(nameof(RecapPage.SpawnDestructible))]
+            [HarmonyPostfix]
+            static void SpawnDestructible_Postfix(RecapPage __instance)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
             }
         }
 

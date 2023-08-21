@@ -26,10 +26,12 @@ namespace Bloodlines
 
             // Point makes the pixels come out much clearer.
             texture.filterMode = FilterMode.Point;
+            texture.name = Path.GetFileNameWithoutExtension(FilePath);
 
             return texture;
         }
 
+        // Not sure which one of these is actually ran ^v Interesting that C# allows this...
         public static Texture2D LoadTexture(string FilePath, TextureFormat format = TextureFormat.RGBA32, bool mipChain = true)
         {
             Texture2D texture;
@@ -46,6 +48,9 @@ namespace Bloodlines
             {
                 throw new Exception("ImageConversion.LoadImage failed");
             }
+
+            texture.filterMode = FilterMode.Point;
+            texture.name = Path.GetFileNameWithoutExtension(FilePath);
 
             return texture;
         }
@@ -76,6 +81,8 @@ namespace Bloodlines
             }
 
             downloadCache[textureUri] = textureDownloader;
+            texture.filterMode = FilterMode.Point;
+            texture.name = Path.GetFileNameWithoutExtension(textureUri.LocalPath);
 
             return texture;
         }
@@ -138,7 +145,16 @@ namespace Bloodlines
 
         public static Sprite LoadSprite(Texture2D texture, Rect rect, Vector2 pivot)
         {
-            return Sprite.Create(texture, rect, pivot);
+            Sprite sprite = Sprite.Create(texture, rect, pivot);
+            sprite.name = texture.name;
+            return sprite;
+        }
+
+        public static Sprite LoadCharacterSprite(string FilePath)
+        {
+            Texture2D texture = LoadTexture(FilePath);
+            // Stadard characters have large values (400?) in the x y parameters of their Rect. I wonder what that's for.
+            return LoadSprite(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0f));
         }
 
         public static Sprite? TryLoadSprite(string FilePath)
