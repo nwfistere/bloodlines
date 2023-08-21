@@ -11,6 +11,7 @@ using Il2CppVampireSurvivors.Objects.Characters;
 using Il2CppVampireSurvivors.UI;
 using MelonLoader;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -77,6 +78,14 @@ namespace Bloodlines
             public static bool Prefix(Exception ex)
             {
                 MelonLogger.Error("During invoking native->managed trampoline", ex);
+
+                if (ex.Data.Count > 0)
+                {
+                    MelonLogger.Error("Extra Data:");
+                    foreach (DictionaryEntry de in ex.Data)
+                        MelonLogger.Error("    Key: {0,-20}      Value: {1}",
+                                          "'" + de.Key.ToString() + "'", de.Value);
+                }
                 return false;
             }
         }
@@ -132,15 +141,7 @@ namespace Bloodlines
                 gameManager = __instance;
             }
 
-            [HarmonyPatch(nameof(GameManager.Construct))]
-            [HarmonyPostfix]
-            static void Construct_Postfix(GameManager __instance)
-            {
-                Melon<BloodlinesMod>.Logger.Msg($"GameManager.{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
             // InitializeGameSession
-
             [HarmonyPatch(nameof(GameManager.InitializeGameSession))]
             [HarmonyPostfix]
             static void InitializeGameSession_Postfix(GameManager __instance)
@@ -176,13 +177,11 @@ namespace Bloodlines
                         }
 
                         c.SpriteAnimation.Play("walk");
-                        // c.gameObject.transform.GetComponentInChildren<RectTransform>().anchoredPosition = new Vector2(0, -0.2f);
-                        // c.gameObject.transform.Find("WickedSeason").localPosition = new Vector3(0, -0.2f, 0);
                     }
                 }
 
 #if DEBUG
-                BloodlinesMod._Timer = new Timer(TimerCallback, null, 0, 10000); // List stats every 2 seconds.
+                BloodlinesMod._Timer = new Timer(TimerCallback, null, 0, 10000); // List stats every 10 seconds.
 #endif
             }
         }
@@ -190,106 +189,6 @@ namespace Bloodlines
         [HarmonyPatch(typeof(RecapPage))]
         class RecapPage_Patch
         {
-            // Get's ran start of game.
-            [HarmonyPatch(nameof(RecapPage.Construct))]
-            [HarmonyPrefix]
-            static void Construct_Prefix(RecapPage __instance)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-            }
-
-            [HarmonyPatch(nameof(RecapPage.NextCharacter))]
-            [HarmonyPrefix]
-            static void NextCharacter_Prefix(RecapPage __instance)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-            }
-
-            [HarmonyPatch(nameof(RecapPage.PreviousCharacter))]
-            [HarmonyPrefix]
-            static void PreviousCharacter_Prefix(RecapPage __instance)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-            }
-
-            // Called from OnShowStart
-            [HarmonyPatch(nameof(RecapPage.RefreshCharacterSpecificStats))]
-            [HarmonyPrefix]
-            static void RefreshCharacterSpecificStats_Prefix(RecapPage __instance)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-            }
-
-            // Runs first on gameover
-            [HarmonyPatch(nameof(RecapPage.OnShowStart))]
-            [HarmonyPrefix]
-            static void OnShowStart_Prefix(RecapPage __instance)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-            }
-
-            [HarmonyPatch(nameof(RecapPage.SetInfo))]
-            [HarmonyPrefix]
-            static void SetInfo_Prefix(RecapPage __instance)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-            }
-
-            // Called from RefreshCharacterSpecificStats
-            [HarmonyPatch(nameof(RecapPage.SetCharacter))]
-            [HarmonyPrefix]
-            static void SetCharacter_Prefix(RecapPage __instance)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-            }
-
-            [HarmonyPatch(nameof(RecapPage.SpawnDestructible))]
-            [HarmonyPrefix]
-            static void SpawnDestructible_Prefix(RecapPage __instance)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-            }
-
-            [HarmonyPatch(nameof(RecapPage.Construct))]
-            [HarmonyPostfix]
-            static void Construct_Postfix(RecapPage __instance)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-            }
-
-            [HarmonyPatch(nameof(RecapPage.NextCharacter))]
-            [HarmonyPostfix]
-            static void NextCharacter_Postfix(RecapPage __instance)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-            }
-
-            [HarmonyPatch(nameof(RecapPage.PreviousCharacter))]
-            [HarmonyPostfix]
-            static void PreviousCharacter_Postfix(RecapPage __instance)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-            }
-
-            [HarmonyPatch(nameof(RecapPage.RefreshCharacterSpecificStats))]
-            [HarmonyPostfix]
-            static void RefreshCharacterSpecificStats_Postfix(RecapPage __instance)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-            }
-
             [HarmonyPatch(nameof(RecapPage.OnShowStart))]
             [HarmonyPostfix]
             static void OnShowStart_Postfix(RecapPage __instance)
@@ -301,30 +200,6 @@ namespace Bloodlines
                     CharacterDataModelWrapper character = getCharacterManager().characterDict[__instance._currentCharacter.CharacterType];
                     __instance._CharacterIcon.sprite = SpriteImporter.LoadSprite(character.SpritePath);
                 }
-            }
-
-            [HarmonyPatch(nameof(RecapPage.SetInfo))]
-            [HarmonyPostfix]
-            static void SetInfo_Postfix(RecapPage __instance)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-            }
-
-            [HarmonyPatch(nameof(RecapPage.SetCharacter))]
-            [HarmonyPostfix]
-            static void SetCharacter_Postfix(RecapPage __instance)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
-            }
-
-            [HarmonyPatch(nameof(RecapPage.SpawnDestructible))]
-            [HarmonyPostfix]
-            static void SpawnDestructible_Postfix(RecapPage __instance)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
             }
         }
 

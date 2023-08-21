@@ -4,6 +4,7 @@ using MelonLoader;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -32,7 +33,14 @@ namespace Bloodlines
             catch (Exception e)
             {
                 Melon<BloodlinesMod>.Logger.Error($"Error: {e}");
-                Melon<BloodlinesMod>.Logger.Error($"Submit an issue for this exception.");
+                Melon<BloodlinesMod>.Logger.Error($"Submit an issue for this exception including all of the stacktrace and extra data.");
+                Melon<BloodlinesMod>.Logger.Error($"To: https://github.com/nwfistere/bloodlines/issues");
+                if (e.Data.Count > 0)
+                {
+                    Melon<BloodlinesMod>.Logger.Error("Extra Data:");
+                    foreach (DictionaryEntry de in e.Data)
+                        Melon<BloodlinesMod>.Logger.Error("    Key: {0,-20}      Value: {1}", "'" + de.Key.ToString() + "'", de.Value);
+                }
             }
         }
 
@@ -234,6 +242,9 @@ namespace Bloodlines
             }
             catch (JsonReaderException ex)
             {
+                Melon<BloodlinesMod>.Logger.Error($"** NOTE: This is unlikely an issue with Bloodlines **");
+                Melon<BloodlinesMod>.Logger.Error($"Verify that the json file has valid a json body in it!");
+                Melon<BloodlinesMod>.Logger.Error($"Use a tool like https://jsonlint.com to verify your json file.");
                 Melon<BloodlinesMod>.Logger.Error($"Failed to parse json to JObject. Invalid Json. {ex}");
                 throw new InvalidDataException("Failed to parse json to JObject", ex);
             }

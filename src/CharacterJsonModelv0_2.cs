@@ -6,7 +6,9 @@ using Il2CppVampireSurvivors.Objects;
 using MelonLoader;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -83,6 +85,8 @@ namespace Bloodlines
 
             PropertyInfo[] statsProps = stats.GetType().GetProperties();
 
+            List<string> statsToFloat = new() { "Revivals" };
+
             foreach (PropertyInfo prop in statsProps)
             {
                 if (c.GetType().GetProperty(prop.Name) == null)
@@ -92,7 +96,15 @@ namespace Bloodlines
                 }
 
                 var value = prop.GetValue(stats, null);
-                c.GetType().GetProperty(prop.Name).SetValue(c, value);
+                
+                if (statsToFloat.Contains(prop.Name))
+                {
+                    c.GetType().GetProperty(prop.Name).SetValue(c, Convert.ToSingle(value));
+                }
+                else
+                {
+                    c.GetType().GetProperty(prop.Name).SetValue(c, value);
+                }
             }
 
             PropertyInfo[] myProps = GetType().GetProperties();
@@ -111,7 +123,9 @@ namespace Bloodlines
                 {
                     foreach (StatModifierJsonModelv0_2 statMod in StatModifiers.Skip(1))
                         modelWrapper.CharacterSettings.Add(statMod.toCharacterDataModel());
-                    
+                } else if (prop.Name == "OnEveryLevelUp" && OnEveryLevelUp != null)
+                {
+                    c.OnEveryLevelUp = OnEveryLevelUp.toModifierStat();
                 }
                 else
                 {
@@ -145,7 +159,7 @@ namespace Bloodlines
         public float MoveSpeed { get; set; }
 
         [JsonProperty("power")]
-        public double Power { get; set; }
+        public float Power { get; set; }
 
         [JsonProperty("area")]
         public float Area { get; set; }
@@ -175,7 +189,7 @@ namespace Bloodlines
         public float Magnet { get; set; }
 
         [JsonProperty("revivals")]
-        public float Revivals { get; set; }
+        public double Revivals { get; set; }
 
         [JsonProperty("rerolls")]
         public float Rerolls { get; set; }
@@ -187,7 +201,7 @@ namespace Bloodlines
         public float Banish { get; set; }
 
         [JsonProperty("charm")]
-        public float Charm { get; set; }
+        public int Charm { get; set; }
 
         [JsonProperty("shroud")]
         public float Shroud { get; set; }
@@ -206,13 +220,21 @@ namespace Bloodlines
 
             foreach (PropertyInfo prop in GetType().GetProperties())
             {
-                if (m.GetType().GetProperty(prop.Name) == null)
-                {
-                    continue;
-                }
+                try
+                { 
+                    if (m.GetType().GetProperty(prop.Name) == null)
+                    {
+                        continue;
+                    }
 
-                var value = prop.GetValue(this, null);
-                m.GetType().GetProperty(prop.Name).SetValue(m, value);
+                    var value = prop.GetValue(this, null);
+                    m.GetType().GetProperty(prop.Name).SetValue(m, value);
+
+                } catch (Exception e)
+                {
+                    e.Data.Add("CharacterDataModel.toCharacterDataModel().prop.Name", prop.Name);
+                    throw;
+                }
             }
 
             return m;
@@ -223,19 +245,34 @@ namespace Bloodlines
             CharacterDataModel c = new();
 
             PropertyInfo[] myProps = GetType().GetProperties();
+            List<string> statsToFloat = new() { "Revivals" };
 
             foreach (PropertyInfo prop in myProps)
             {
-                if (c.GetType().GetProperty(prop.Name) == null)
+                try
                 {
-                    Melon<BloodlinesMod>.Logger.Msg($"No match for {prop.Name}");
-                    continue;
+                    if (c.GetType().GetProperty(prop.Name) == null)
+                    {
+                        Melon<BloodlinesMod>.Logger.Msg($"No match for {prop.Name}");
+                        continue;
+                    }
+
+                    var value = prop.GetValue(this, null);
+
+                    if (statsToFloat.Contains(prop.Name))
+                    {
+                        c.GetType().GetProperty(prop.Name).SetValue(c, Convert.ToSingle(value));
+                    }
+                    else
+                    {
+                        c.GetType().GetProperty(prop.Name).SetValue(c, value);
+                    }
+                } catch (Exception e)
+                {
+                    e.Data.Add("CharacterDataModel.toCharacterDataModel().prop.Name", prop.Name);
+                    throw;
                 }
-
-                var value = prop.GetValue(this, null);
-                c.GetType().GetProperty(prop.Name).SetValue(c, value);
             }
-
             return c;
         }
     }
