@@ -29,7 +29,7 @@ namespace Bloodlines
         public const string Description = "Easily add custom characters!";
         public const string Author = "Nick";
         public const string Company = "Nick";
-        public const string Version = "0.1.0";
+        public const string Version = "0.2.0";
         public const string Download = "https://github.com/nwfistere/bloodlines";
     }
 
@@ -158,7 +158,7 @@ namespace Bloodlines
                     if (BloodlinesMod.isCustomCharacter(characterType))
                     {
                         CharacterDataModelWrapper character = getCharacterManager().characterDict[characterType];
-                        int skinNum = c.CurrentSkinData.currentSkinIndex;
+                        int skinNum = __instance.PlayerOptions.GetSkinIndexForCharacter(characterType);
                         SkinObjectModelv0_2 skin = character.Skin(skinNum);
 
                         if (skin != null)
@@ -312,7 +312,6 @@ namespace Bloodlines
                     __instance._EggCount.text = charData.exLevels.ToString();
                     __instance.SetWeaponIconSprite(charData);
                     __instance._selectedCharacter = character;
-                    // UI/Canvas - App/Safe Area/View - CharacterSelection/Panel/InfoPanel/Background/CharacterImage
                     RectTransform CharacterInfoIconRectTransform = __instance.transform.FindChild("Panel/InfoPanel/Background/CharacterImage").GetComponent<RectTransform>();
 
                     int width = sprite.texture.width;
@@ -320,7 +319,7 @@ namespace Bloodlines
 
                     // Resize to fit the info box better.
                     int long_side = width > height ? width : height;
-                    int delta = 150 - long_side;
+                    int delta = 100 - long_side;
 
                     CharacterInfoIconRectTransform.sizeDelta = new Vector2(width + delta, height + delta);
                 }
@@ -344,21 +343,13 @@ namespace Bloodlines
                     __instance._playerOptions = dataManager._playerOptions;
                     __instance._data = dat;
                     __instance._dataManager = dataManager;
-                    __instance._CharacterIcon.sprite = SpriteImporter.LoadSprite(ch.PortraitPath);
-                    __instance._CharacterIcon.sprite.name = __instance.name;
-                    __instance._CharacterIcon.sprite.texture.name = __instance.name;
+                    __instance._CharacterIcon.sprite = SpriteImporter.LoadSprite(ch.SkinPath(playerOptions.GetSkinIndexForCharacter(cType)));
                     __instance._defaultTextColor = new Color(1, 1, 1, 1);
                     __instance._nameText = __instance._CharacterName;
                     __instance.Type = cType;
                     __instance._Background.name = __instance.name;
                     __instance.SetWeaponIconSprite(dat);
-
-                    // TODO: I'm pretty sure this isn't needed anymore. TBD
-                    // TODO: put this somewhere...
-                    // dat.portraitName = dat.spriteName;
-                    // dat.onEveryLevelUp = new ModifierStats() { Amount = 1 };
-                    // dat.bgm = "NONE"; // TODO: what is this? A: Background Modifier? There's a type for it. BGMType A: background music!
-                    // dat.isBought = true;
+                    
 
                     playerOptions._config.BoughtCharacters.Add(cType);
 
