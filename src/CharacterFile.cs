@@ -31,16 +31,12 @@ namespace Bloodlines
 
         public CharacterFileModelV0_1() : base() { }
 
-        public override Type CharacterFileVersion()
-        {
-            return typeof(CharacterFileModelV0_1);
-        }
+        public override Type CharacterFileVersion() => typeof(CharacterFileModelV0_1);
 
         public override List<CharacterDataModelWrapper> GetCharacterList()
         {
             throw new Exception("Unimplemented...");
         }
-
     }
 
     // Mark with [Obsolete("CharacterFileV* is deprecated, use CharacterFileV* instead.")] when I add a new version.
@@ -59,10 +55,7 @@ namespace Bloodlines
 
         public CharacterFileModelV0_2() : base() { }
 
-        public override Type CharacterFileVersion()
-        {
-            return typeof(CharacterFileModelV0_2);
-        }
+        public override Type CharacterFileVersion() => typeof(CharacterFileModelV0_2);
 
         public override List<CharacterDataModelWrapper> GetCharacterList()
         {

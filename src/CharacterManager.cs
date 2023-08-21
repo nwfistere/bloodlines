@@ -15,13 +15,14 @@ namespace Bloodlines
     {
         public List<CharacterDataModelWrapper> characters { get; protected set; } = new();
         public Dictionary<CharacterType, CharacterDataModelWrapper> characterDict { get; set; } = new();
-        private readonly string ZipPath;
-        private readonly string ExtractPath;
-        public readonly bool success = false;
+        readonly string ZipPath;
+        readonly string ExtractPath;
+        public readonly bool success;
         public CharacterManager(string ZipPath, string ExtractPath)
         {
             this.ZipPath = ZipPath;
             this.ExtractPath = ExtractPath;
+
             try
             {
                 ParseExistingCharacterFiles();
@@ -33,7 +34,6 @@ namespace Bloodlines
                 Melon<BloodlinesMod>.Logger.Error($"Error: {e}");
                 Melon<BloodlinesMod>.Logger.Error($"Submit an issue for this exception.");
             }
-
         }
 
         public void ParseExistingCharacterFiles()
@@ -46,6 +46,7 @@ namespace Bloodlines
             foreach (string dir in Directory.GetDirectories(ExtractPath))
             {
                 string jsonFile = Path.Combine(dir, "character.json");
+
                 if (File.Exists(jsonFile))
                 {
                     Melon<BloodlinesMod>.Logger.Msg($"Loading up character json from {Path.GetDirectoryName(dir)}");
@@ -60,6 +61,7 @@ namespace Bloodlines
             if (Directory.Exists(ZipPath) && !DirectoryEmpty(ZipPath))
             {
                 List<string> zipFiles = Directory.GetFiles(ZipPath, "*.zip").ToList();
+
                 foreach (string zip in zipFiles)
                 {
                     try
@@ -75,7 +77,7 @@ namespace Bloodlines
             }
         }
 
-        private static void CleanupFiles(List<string> files)
+        static void CleanupFiles(List<string> files)
         {
             foreach (string file in files.Where(file => File.Exists(file)))
             {
@@ -96,7 +98,7 @@ namespace Bloodlines
             return !Directory.EnumerateFileSystemEntries(path).Any();
         }
 
-        private void handleZipFile(string filePath)
+        void handleZipFile(string filePath)
         {
             List<string> filesToClean = new();
 
@@ -105,6 +107,7 @@ namespace Bloodlines
             if (Directory.Exists(outputDirectory))
             {
                 Melon<BloodlinesMod>.Logger.Warning($"Output directory '{outputDirectory}' already exists");
+
                 if (!DirectoryEmpty(outputDirectory))
                 {
                     if (File.Exists(Path.Combine(outputDirectory, "character.json")))
@@ -143,10 +146,10 @@ namespace Bloodlines
                         {
                             string outputJsonFile = Path.Combine(outputDirectory, "character.json");
                             Stream stream = entry.Open();
+
                             using (StreamReader reader = new(stream))
-                            {
                                 jsonString = reader.ReadToEnd();
-                            }
+                            
 
                             handleJsonFileString(outputJsonFile, jsonString);
                             entry.ExtractToFile(outputJsonFile);
@@ -164,12 +167,14 @@ namespace Bloodlines
                             }
                             catch (IOException ioe)
                             {
-                                Melon<BloodlinesMod>.Logger.Error($"Error: {imageFilePath} already exists.\nAre you trying to reimport the same character? Rename the zip file to something unique to fix this issue.");
+                                Melon<BloodlinesMod>.Logger
+                                    .Error($"Error: {imageFilePath} already exists.\nAre you trying to reimport the same character? Rename the zip file to something unique to fix this issue.");
                                 throw;
                             }
                             catch (Exception e)
                             {
-                                Melon<BloodlinesMod>.Logger.Error($"Error: Unexpected error while extracting image {entry.Name} from zip file. {e}");
+                                Melon<BloodlinesMod>.Logger
+                                    .Error($"Error: Unexpected error while extracting image {entry.Name} from zip file. {e}");
                                 throw;
                             }
                         }
@@ -178,6 +183,7 @@ namespace Bloodlines
                             Melon<BloodlinesMod>.Logger.Warning($"Found invalid file: '{entry.FullName}', ignoring.");
                         }
                     }
+
                     if (!jsonString.Any())
                     {
                         throw new InvalidDataException("Didn't find any json file.");
@@ -186,7 +192,8 @@ namespace Bloodlines
             }
             catch (FileNotFoundException exception)
             {
-                Melon<BloodlinesMod>.Logger.Error($"Error: File did not exist. Do you have permission to access the directory?");
+                Melon<BloodlinesMod>.Logger
+                    .Error($"Error: File did not exist. Do you have permission to access the directory?");
                 Melon<BloodlinesMod>.Logger.Error($"Skipping file: {filePath} - {exception}");
                 CleanupFiles(filesToClean);
                 return;
@@ -199,23 +206,28 @@ namespace Bloodlines
                 throw;
             }
 
-            Melon<BloodlinesMod>.Logger.Msg($"Extraction of {Path.GetFileNameWithoutExtension(filePath)} successful. Deleting zip file.");
+            Melon<BloodlinesMod>.Logger
+                .Msg($"Extraction of {Path.GetFileNameWithoutExtension(filePath)} successful. Deleting zip file.");
 
             CleanupFiles(new List<string>() { filePath });
         }
 
-        private void handleJsonFileString(string filePath, string json)
+        void handleJsonFileString(string filePath, string json)
         {
             BaseCharacterFileModel characterDto = GetFileDto(json, filePath, out Type actualType);
-            characterDto.GetCharacterList().ForEach((data) => {
+
+            characterDto.GetCharacterList()
+                .ForEach((data) =>
+            {
                 data.BaseDirectory = Path.GetDirectoryName(filePath);
                 characters.Add(data);
             });
         }
 
-        private BaseCharacterFileModel GetFileDto(string json, string filePath, out Type type)
+        BaseCharacterFileModel GetFileDto(string json, string filePath, out Type type)
         {
             JObject jObject;
+
             try
             {
                 jObject = JObject.Parse(json);
@@ -235,6 +247,7 @@ namespace Bloodlines
                     {
                         type = typeof(CharacterFileModelV0_1);
                         CharacterFileModelV0_1? c = JsonConvert.DeserializeObject<CharacterFileModelV0_1>(json);
+
                         if (c == null)
                         {
                             break;
@@ -246,6 +259,7 @@ namespace Bloodlines
                     {
                         type = typeof(CharacterFileModelV0_2);
                         CharacterFileModelV0_2? c = JsonConvert.DeserializeObject<CharacterFileModelV0_2>(json);
+
                         if (c == null)
                         {
                             break;

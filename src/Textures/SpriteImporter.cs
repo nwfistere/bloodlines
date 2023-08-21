@@ -18,6 +18,7 @@ namespace Bloodlines
 
             byte[] imageBytes = File.ReadAllBytes(FilePath);
             texture = new Texture2D(2, 2);
+
             if (!ImageConversion.LoadImage(texture, imageBytes))
             {
                 throw new Exception("ImageConversion.LoadImage failed");
@@ -40,6 +41,7 @@ namespace Bloodlines
 
             byte[] imageBytes = File.ReadAllBytes(FilePath);
             texture = new Texture2D(2, 2, format, mipChain);
+
             if (!ImageConversion.LoadImage(texture, imageBytes))
             {
                 throw new Exception("ImageConversion.LoadImage failed");
@@ -48,7 +50,7 @@ namespace Bloodlines
             return texture;
         }
 
-        private static readonly Dictionary<Uri, TextureDownloader> downloadCache = new();
+        static readonly Dictionary<Uri, TextureDownloader> downloadCache = new();
 
         public static Texture2D LoadTexture(Uri textureUri)
         {
@@ -85,6 +87,7 @@ namespace Bloodlines
                 return LoadTexture(textureUri);
             }
             catch { }
+
             return null;
         }
 
@@ -98,6 +101,7 @@ namespace Bloodlines
                 {
                     byte[] imageBytes = File.ReadAllBytes(FilePath);
                     texture = new Texture2D(2, 2);
+
                     if (ImageConversion.LoadImage(texture, imageBytes))
                     {
                         return texture;
@@ -105,6 +109,7 @@ namespace Bloodlines
                 }
             }
             catch { }
+
             return null;
         }
 
@@ -141,6 +146,7 @@ namespace Bloodlines
             try
             {
                 Texture2D? texture = TryLoadTexture(FilePath);
+
                 if (texture == null)
                 {
                     return null;
@@ -149,6 +155,7 @@ namespace Bloodlines
                 return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
             }
             catch { }
+
             return null;
         }
 
@@ -157,6 +164,7 @@ namespace Bloodlines
             try
             {
                 Texture2D? texture = TryLoadTexture(FilePath);
+
                 if (texture == null)
                 {
                     return null;
@@ -165,6 +173,7 @@ namespace Bloodlines
                 return Sprite.Create(texture, rect, pivot);
             }
             catch { }
+
             return null;
         }
 
@@ -175,6 +184,7 @@ namespace Bloodlines
                 return LoadSprite(texture, rect, pivot);
             }
             catch { }
+
             return null;
         }
 
@@ -185,8 +195,8 @@ namespace Bloodlines
                 return LoadSprite(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
             }
             catch { }
+
             return null;
         }
     }
-
 }

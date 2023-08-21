@@ -6,27 +6,24 @@ namespace Bloodlines
 {
     public class TextureDownloader
     {
-        private readonly Uri textureUri;
-        private byte[]? DownloadedBytes;
+        readonly Uri textureUri;
+        byte[]? DownloadedBytes;
 
-        public TextureDownloader(Uri textureUri)
-        {
-            this.textureUri = textureUri;
-        }
+        public TextureDownloader(Uri textureUri) => this.textureUri = textureUri;
 
-        private void DownloadTexture()
+        void DownloadTexture()
         {
             UnityWebRequest? uwr = null;
             byte[] bytes;
+
             try
             {
                 uwr = UnityWebRequest.Get(textureUri.AbsoluteUri);
                 var request = uwr.SendWebRequest();
 
                 while (!request.isDone)
-                {
                     Thread.Sleep(50);
-                }
+                
 
                 if (uwr.result != UnityWebRequest.Result.Success)
                 {
@@ -55,5 +52,4 @@ namespace Bloodlines
             return DownloadedBytes;
         }
     }
-
 }

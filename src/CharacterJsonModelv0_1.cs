@@ -9,7 +9,6 @@ using System.Reflection;
 
 namespace Bloodlines
 {
-
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class CharacterJsonModelv0_1
     {
@@ -127,6 +126,7 @@ namespace Bloodlines
             ModifierStats m = new();
 
             PropertyInfo[] myProps = GetType().GetProperties();
+
             foreach (PropertyInfo prop in GetType().GetProperties())
             {
                 if (m.GetType().GetProperty(prop.Name) == null)
@@ -135,11 +135,13 @@ namespace Bloodlines
                 }
 
                 var value = prop.GetValue(this, null);
+
                 if (prop.Name == "Power")
                 {
                     m.Power = Convert.ToSingle(Power);
                     continue;
                 }
+
                 m.GetType().GetProperty(prop.Name).SetValue(m, value);
             }
 

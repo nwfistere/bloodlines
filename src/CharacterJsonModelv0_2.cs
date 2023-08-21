@@ -14,7 +14,6 @@ using UnityEngine;
 
 namespace Bloodlines
 {
-
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class CharacterJsonModelv0_2
     {
@@ -83,6 +82,7 @@ namespace Bloodlines
             StatModifierJsonModelv0_2 stats = StatModifiers[0];
 
             PropertyInfo[] statsProps = stats.GetType().GetProperties();
+
             foreach (PropertyInfo prop in statsProps)
             {
                 if (c.GetType().GetProperty(prop.Name) == null)
@@ -96,6 +96,7 @@ namespace Bloodlines
             }
 
             PropertyInfo[] myProps = GetType().GetProperties();
+
             foreach (PropertyInfo prop in myProps)
             {
                 if (c.GetType().GetProperty(prop.Name) == null && prop.Name != "StatModifiers")
@@ -105,12 +106,12 @@ namespace Bloodlines
                 }
 
                 var value = prop.GetValue(this, null);
+
                 if (prop.Name == "StatModifiers")
                 {
                     foreach (StatModifierJsonModelv0_2 statMod in StatModifiers.Skip(1))
-                    {
                         modelWrapper.CharacterSettings.Add(statMod.toCharacterDataModel());
-                    }
+                    
                 }
                 else
                 {
@@ -202,6 +203,7 @@ namespace Bloodlines
             ModifierStats m = new();
 
             PropertyInfo[] myProps = GetType().GetProperties();
+
             foreach (PropertyInfo prop in GetType().GetProperties())
             {
                 if (m.GetType().GetProperty(prop.Name) == null)
@@ -221,6 +223,7 @@ namespace Bloodlines
             CharacterDataModel c = new();
 
             PropertyInfo[] myProps = GetType().GetProperties();
+
             foreach (PropertyInfo prop in myProps)
             {
                 if (c.GetType().GetProperty(prop.Name) == null)
@@ -255,7 +258,7 @@ namespace Bloodlines
         public List<string> frames { get; set; } = new();
 
         [JsonProperty("walkingFrames")]
-        public int WalkingFrames { get { return frames?.Count ?? 1; } }
+        public int WalkingFrames => frames?.Count ?? 1;
 
         [JsonProperty("unlocked")]
         public bool Unlocked { get; set; }

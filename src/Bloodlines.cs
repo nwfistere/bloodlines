@@ -49,14 +49,12 @@ namespace Bloodlines
                 Directory.CreateDirectory(ModDirectory);
                 Directory.CreateDirectory(DataDirectory);
             }
+
             Config = new Config(Path.Combine(ModDirectory, "config.cfg"), "Bloodlines");
             manager = new(ModDirectory, Path.Combine(DataDirectory, "characters"));
         }
 
-        public static CharacterManager getCharacterManager()
-        {
-            return Melon<BloodlinesMod>.Instance.manager;
-        }
+        public static CharacterManager getCharacterManager() => Melon<BloodlinesMod>.Instance.manager;
 
         public static bool isCustomCharacter(CharacterType characterType)
         {
@@ -70,7 +68,6 @@ namespace Bloodlines
 
             if (gameManager != null)
             {
-
             }
         }
 #endif // DEBUG
@@ -84,14 +81,13 @@ namespace Bloodlines
             }
         }
 
-
         internal static JsonSerializerSettings serializerSettings = new()
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             NullValueHandling = NullValueHandling.Ignore
         };
 
-        private static JArray ListToJArray(Il2Generic.List<CharacterData> list)
+        static JArray ListToJArray(Il2Generic.List<CharacterData> list)
         {
             string result = JsonConvert.SerializeObject(list, serializerSettings);
             return JArray.Parse(result);
@@ -99,7 +95,7 @@ namespace Bloodlines
 
         public static Timer _Timer;
 
-        public static void TimerCallback(System.Object stateInfo)
+        public static void TimerCallback(object stateInfo)
         {
             if (gameManager != null && gameManager.PlayerOne != null && gameManager.PlayerOne.PlayerStats != null)
             {
@@ -108,15 +104,19 @@ namespace Bloodlines
                 List<string> ignoreFileds = new() { "ObjectClass", "Pointer", "WasCollected" };
 
                 Melon<BloodlinesMod>.Logger.Msg("\n==============================\n");
+
                 foreach (PropertyInfo prop in statsProps)
                 {
                     if (prop.Name.Contains("BackingField") || ignoreFileds.Contains(prop.Name))
                         continue;
+
                     if (prop.PropertyType == typeof(EggFloat))
-                        Melon<BloodlinesMod>.Logger.Msg($"{prop.Name} = Value: <{(prop.GetValue(stats) as EggFloat).GetValue()}> EggValue: <{(prop.GetValue(stats) as EggFloat).GetEggValue()}>");
+                        Melon<BloodlinesMod>.Logger
+                            .Msg($"{prop.Name} = Value: <{(prop.GetValue(stats) as EggFloat).GetValue()}> EggValue: <{(prop.GetValue(stats) as EggFloat).GetEggValue()}>");
                     else if (prop.PropertyType == typeof(EggDouble))
-                        Melon<BloodlinesMod>.Logger.Msg($"{prop.Name} = Value: <{(prop.GetValue(stats) as EggDouble).GetValue()}> EggValue: <{(prop.GetValue(stats) as EggDouble).GetEggValue()}>");
-                    else 
+                        Melon<BloodlinesMod>.Logger
+                            .Msg($"{prop.Name} = Value: <{(prop.GetValue(stats) as EggDouble).GetValue()}> EggValue: <{(prop.GetValue(stats) as EggDouble).GetEggValue()}>");
+                    else
                         Melon<BloodlinesMod>.Logger.Msg($"{prop.Name} = <{prop.GetValue(stats)}>");
                 }
             }
@@ -147,12 +147,13 @@ namespace Bloodlines
             {
                 Melon<BloodlinesMod>.Logger.Msg($"GameManager.{MethodBase.GetCurrentMethod()?.Name}");
 
-
                 foreach (CharacterController c in __instance._characters)
                 {
                     CharacterType characterType = c.CharacterType;
 
-                    Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterController).FullName}.{MethodBase.GetCurrentMethod().Name} - {characterType}");
+                    Melon<BloodlinesMod>.Logger
+                        .Msg($"{typeof(CharacterController).FullName}.{MethodBase.GetCurrentMethod().Name} - {characterType}");
+
                     if (BloodlinesMod.isCustomCharacter(characterType))
                     {
                         CharacterDataModelWrapper character = getCharacterManager().characterDict[characterType];
@@ -162,7 +163,8 @@ namespace Bloodlines
                         if (skin != null)
                         {
                             c.Rend.sprite = SpriteImporter.LoadSprite(character.SkinPath(skinNum));
-                        } else
+                        }
+                        else
                         {
                             c.Rend.sprite = SpriteImporter.LoadSprite(character.SpritePath);
                         }
@@ -172,11 +174,13 @@ namespace Bloodlines
                             string framePath = System.IO.Path.Join(character.BaseDirectory, frame);
                             c.SpriteAnimation._animations["walk"]._frames.Add(SpriteImporter.LoadSprite(framePath));
                         }
+
                         c.SpriteAnimation.Play("walk");
-                        //c.gameObject.transform.GetComponentInChildren<RectTransform>().anchoredPosition = new Vector2(0, -0.2f);
-                        //c.gameObject.transform.Find("WickedSeason").localPosition = new Vector3(0, -0.2f, 0);
+                        // c.gameObject.transform.GetComponentInChildren<RectTransform>().anchoredPosition = new Vector2(0, -0.2f);
+                        // c.gameObject.transform.Find("WickedSeason").localPosition = new Vector3(0, -0.2f, 0);
                     }
                 }
+
 #if DEBUG
                 BloodlinesMod._Timer = new Timer(TimerCallback, null, 0, 10000); // List stats every 2 seconds.
 #endif
@@ -190,21 +194,21 @@ namespace Bloodlines
             [HarmonyPrefix]
             static void Construct_Prefix(RecapPage __instance)
             {
-                Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterController).FullName}.{MethodBase.GetCurrentMethod().Name}");
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(CharacterController).FullName}.{MethodBase.GetCurrentMethod().Name}");
             }
         }
 
-
-            [HarmonyPatch(typeof(CharacterController))]
+        [HarmonyPatch(typeof(CharacterController))]
         class CharacterController_Patch
         {
             [HarmonyPatch(nameof(CharacterController.SetCharacterSprite))]
             [HarmonyPrefix]
             static void InitCharacter_Prefix(CharacterController __instance)
             {
-                Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterController).FullName}.{MethodBase.GetCurrentMethod().Name}");
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"{typeof(CharacterController).FullName}.{MethodBase.GetCurrentMethod().Name}");
             }
-
         }
 
         [HarmonyPatch(typeof(DataManager))]
@@ -230,10 +234,13 @@ namespace Bloodlines
                     characterWrapper.characterType = characterType;
                     Melon<BloodlinesMod>.Logger.Msg($"Adding character... {characterType} {character.CharName}");
                     character.CharacterType = characterType;
+
                     string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(characterWrapper.CharacterSettings, Newtonsoft.Json.Formatting.Indented,
-                        new Newtonsoft.Json.JsonSerializerSettings() {
+                        new Newtonsoft.Json.JsonSerializerSettings()
+                        {
                             ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
                         });
+
                     JArray json = JArray.Parse(jsonString);
                     __instance.AllCharactersJson.Add(characterType.ToString(), json);
                     Melon<BloodlinesMod>.Instance.manager.characterDict.Add(characterType, characterWrapper);
@@ -249,6 +256,7 @@ namespace Bloodlines
             static void NextSkin_Postfix(CharacterSelectionPage __instance)
             {
                 CharacterType characterType = __instance._currentType;
+
                 if (isCustomCharacter(characterType))
                 {
                     CharacterDataModelWrapper character = getCharacterManager().characterDict[characterType];
@@ -264,7 +272,6 @@ namespace Bloodlines
                 }
             }
 
-
             [HarmonyPatch(nameof(CharacterSelectionPage.SetIconSizes))]
             [HarmonyPrefix]
             static bool SetIconSizes_Prefix(CharacterSelectionPage __instance, MethodBase __originalMethod)
@@ -273,9 +280,9 @@ namespace Bloodlines
                 {
                     return false;
                 }
+
                 return true;
             }
-
 
             [HarmonyPatch(nameof(CharacterSelectionPage.ShowCharacterInfo))]
             [HarmonyPostfix]
@@ -286,6 +293,7 @@ namespace Bloodlines
                     Melon<BloodlinesMod>.Logger.Msg($"Setting the icon for {cType}");
                     CharacterDataModelWrapper ch = getCharacterManager().characterDict[cType];
                     int activeSkinIndex = __instance._skinSlots.FindIndex(new Func<Image, bool>((s) => s.sprite.name == "weaponLevelFull"));
+
                     if (activeSkinIndex == -1)
                     {
                         activeSkinIndex = 0;
@@ -343,15 +351,16 @@ namespace Bloodlines
 
                     // TODO: I'm pretty sure this isn't needed anymore. TBD
                     // TODO: put this somewhere...
-                    //dat.portraitName = dat.spriteName;
-                    //dat.onEveryLevelUp = new ModifierStats() { Amount = 1 };
-                    //dat.bgm = "NONE"; // TODO: what is this? A: Background Modifier? There's a type for it. BGMType A: background music!
-                    //dat.isBought = true;
+                    // dat.portraitName = dat.spriteName;
+                    // dat.onEveryLevelUp = new ModifierStats() { Amount = 1 };
+                    // dat.bgm = "NONE"; // TODO: what is this? A: Background Modifier? There's a type for it. BGMType A: background music!
+                    // dat.isBought = true;
 
                     playerOptions._config.BoughtCharacters.Add(cType);
 
                     return false;
                 }
+
                 return true;
             }
         }
