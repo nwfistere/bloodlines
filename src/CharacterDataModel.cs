@@ -19,7 +19,30 @@ namespace Bloodlines.src
         [JsonIgnore]
         public CharacterType characterType { get; set; }
 
-        public List<CharacterDataModel> CharacterSettings { get; set; }
+        public List<CharacterDataModel> CharacterSettings { get; set; } = new();
+
+        [JsonIgnore]
+        public string BaseDirectory { get; set; }
+
+        public string SpritePath
+        {
+            get
+            {
+                return Path.Combine(BaseDirectory, Character.SpriteName);
+            }
+        }
+
+        public string PortraitPath
+        {
+            get
+            {
+                return Path.Combine(BaseDirectory, Character.PortraitName);
+            }
+        }
+
+        public string SkinPath(int skinId) => Path.Combine(BaseDirectory, Character.Skins[skinId].SpriteName);
+
+        public SkinObjectModelv0_2 Skin(int skinId) => Character.Skins[skinId];
 
         [JsonIgnore]
         public CharacterDataModel Character { get
@@ -262,7 +285,7 @@ namespace Bloodlines.src
 
 
         [JsonProperty("bodyOffset")]
-        [JsonConverter(typeof(Vector2JsonConverter))]
+        //[JsonConverter(typeof(Vector2JsonConverter))] I doubt Vampire survivors reads in like this, so don't do this.
         public Vector2 BodyOffset { get; set; }
 
 
@@ -275,13 +298,5 @@ namespace Bloodlines.src
 
         [JsonIgnore]
         public CharacterType CharacterType { get; set; }
-
-        [JsonIgnore]
-        public string BaseDirectory { get; set; }
-
-        public string GetSpritePath(string filename)
-        {
-            return Path.Combine(BaseDirectory, filename);
-        }
     }
 }

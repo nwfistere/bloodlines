@@ -13,7 +13,7 @@ namespace Bloodlines
 
             if (!File.Exists(FilePath))
             {
-                throw new ArgumentException("FilePath does not exist.");
+                throw new ArgumentException($"FilePath does not exist. <{FilePath}>");
             }
 
             byte[] imageBytes = File.ReadAllBytes(FilePath);
@@ -35,7 +35,7 @@ namespace Bloodlines
 
             if (!File.Exists(FilePath))
             {
-                throw new ArgumentException("FilePath does not exist.");
+                throw new ArgumentException($"FilePath does not exist. <{FilePath}>");
             }
 
             byte[] imageBytes = File.ReadAllBytes(FilePath);

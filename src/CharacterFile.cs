@@ -15,7 +15,7 @@ namespace Bloodlines
 
         public abstract Type CharacterFileVersion();
 
-        public abstract List<CharacterDataModel> GetCharacterList();
+        public abstract List<CharacterDataModelWrapper> GetCharacterList();
     }
 
     [Obsolete("CharacterFileModelV0_1 is deprecated, useCharacterFileModelV0_2 instead.")]
@@ -36,7 +36,7 @@ namespace Bloodlines
             return typeof(CharacterFileModelV0_1);
         }
 
-        public override List<CharacterDataModel> GetCharacterList()
+        public override List<CharacterDataModelWrapper> GetCharacterList()
         {
             throw new Exception("Unimplemented...");
         }
@@ -64,12 +64,11 @@ namespace Bloodlines
             return typeof(CharacterFileModelV0_2);
         }
 
-        // TODO: This likely won't work. CharacterData has nullables and they're dumb in Il2cpp
-        public override List<CharacterDataModel> GetCharacterList()
+        public override List<CharacterDataModelWrapper> GetCharacterList()
         {
-            List<CharacterDataModel> characterDatas = new();
+            List<CharacterDataModelWrapper> characterDatas = new();
 
-            Characters.ForEach((c) => characterDatas.Add(JsonConvert.DeserializeObject<CharacterDataModel>(c.toCharacterDataJson())));
+            Characters.ForEach((c) => characterDatas.Add(c.toCharacterDataModel()));
 
             return characterDatas;
         }

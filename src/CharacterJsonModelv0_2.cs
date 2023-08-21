@@ -74,11 +74,11 @@ namespace Bloodlines
         [JsonProperty("bgm")]
         public BgmType BGM { get; set; }
 
-        public string toCharacterDataJson()
+        public CharacterDataModelWrapper toCharacterDataModel()
         {
-            List<CharacterDataModel> DataModelList = new();
+            CharacterDataModelWrapper modelWrapper = new();
             CharacterDataModel c = new();
-            DataModelList.Add(c);
+            modelWrapper.CharacterSettings.Add(c);
 
             StatModifierJsonModelv0_2 stats = StatModifiers[0];
 
@@ -105,31 +105,11 @@ namespace Bloodlines
                 }
 
                 var value = prop.GetValue(this, null);
-                //if (prop.Name == "Skins")
-                //{
-                //    var modelProp = c.GetType().GetProperty(prop.Name);
-                //    List<Skin> skins = new();
-                //    List<SkinObjectModelv0_2> models = value as List<SkinObjectModelv0_2>;
-
-                //    foreach (SkinObjectModelv0_2 model in models)
-                //    {
-                //        Skin skin = new();
-                //        skin.id = model.Id;
-                //        skin.name = model.Name;
-                //        skin.textureName = model.TextureName;
-                //        skin.spriteName = model.SpriteName;
-                //        skin.walkingFrames = model.WalkingFrames;
-                //        skin.unlocked = model.Unlocked;
-                //        skins.Add(skin);
-                //    }
-
-                //    modelProp.SetValue(c, skins);
-                //}
                 if (prop.Name == "StatModifiers")
                 {
                     foreach (StatModifierJsonModelv0_2 statMod in StatModifiers.Skip(1))
                     {
-                        DataModelList.Add(statMod.toCharacterDataModel());
+                        modelWrapper.CharacterSettings.Add(statMod.toCharacterDataModel());
                     }
                 }
                 else
@@ -141,7 +121,7 @@ namespace Bloodlines
             // Note: Looks like we cannot serialize Skin because of Il2Cpp.
             // Could probably use a custom parser to call the Il2Cpp version of newtonsoft to handle the Skin object, but too lazy right now.
             // Use SkinObjectModelv0_2 instead.
-            return JsonConvert.SerializeObject(c);
+            return modelWrapper;
         }
     }
 
@@ -271,8 +251,11 @@ namespace Bloodlines
         [JsonProperty("spriteName")]
         public string SpriteName { get; set; }
 
+        [JsonProperty("frames")]
+        public List<string> frames { get; set; } = new();
+
         [JsonProperty("walkingFrames")]
-        public int WalkingFrames { get; set; }
+        public int WalkingFrames { get { return frames?.Count ?? 1; } }
 
         [JsonProperty("unlocked")]
         public bool Unlocked { get; set; }
@@ -299,7 +282,6 @@ namespace Bloodlines
             model.Name = skin.name;
             model.TextureName = skin.textureName;
             model.SpriteName = skin.spriteName;
-            model.WalkingFrames = skin.walkingFrames;
             model.Unlocked = skin.unlocked;
 
             return model;

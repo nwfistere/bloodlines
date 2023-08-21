@@ -207,7 +207,10 @@ namespace Bloodlines
         private void handleJsonFileString(string filePath, string json)
         {
             BaseCharacterFileModel characterDto = GetFileDto(json, filePath, out Type actualType);
-            characterDto.GetCharacterList().ForEach((data) => characters.Add(data));
+            characterDto.GetCharacterList().ForEach((data) => {
+                data.BaseDirectory = Path.GetDirectoryName(filePath);
+                characters.Add(data);
+            });
         }
 
         private BaseCharacterFileModel GetFileDto(string json, string filePath, out Type type)

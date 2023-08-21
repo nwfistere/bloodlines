@@ -5,14 +5,17 @@ using Il2CppNewtonsoft.Json.Linq;
 using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Data.Characters;
 using Il2CppVampireSurvivors.Framework;
+using Il2CppVampireSurvivors.Framework.NumberTypes;
 using Il2CppVampireSurvivors.Objects;
 using Il2CppVampireSurvivors.Objects.Characters;
 using Il2CppVampireSurvivors.UI;
 using MelonLoader;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 using Il2Generic = Il2CppSystem.Collections.Generic;
@@ -65,10 +68,10 @@ namespace Bloodlines
         {
             base.OnLateUpdate();
 
-            //if (gameManager != null)
-            //{
+            if (gameManager != null)
+            {
 
-            //}
+            }
         }
 #endif // DEBUG
         [HarmonyPatch("Il2CppInterop.HarmonySupport.Il2CppDetourMethodPatcher", "ReportException")]
@@ -92,6 +95,31 @@ namespace Bloodlines
         {
             string result = JsonConvert.SerializeObject(list, serializerSettings);
             return JArray.Parse(result);
+        }
+
+        public static Timer _Timer;
+
+        public static void TimerCallback(System.Object stateInfo)
+        {
+            if (gameManager != null && gameManager.PlayerOne != null && gameManager.PlayerOne.PlayerStats != null)
+            {
+                PlayerModifierStats stats = gameManager.PlayerOne.PlayerStats;
+                PropertyInfo[] statsProps = stats.GetType().GetProperties();
+                List<string> ignoreFileds = new() { "ObjectClass", "Pointer", "WasCollected" };
+
+                Melon<BloodlinesMod>.Logger.Msg("\n==============================\n");
+                foreach (PropertyInfo prop in statsProps)
+                {
+                    if (prop.Name.Contains("BackingField") || ignoreFileds.Contains(prop.Name))
+                        continue;
+                    if (prop.PropertyType == typeof(EggFloat))
+                        Melon<BloodlinesMod>.Logger.Msg($"{prop.Name} = Value: <{(prop.GetValue(stats) as EggFloat).GetValue()}> EggValue: <{(prop.GetValue(stats) as EggFloat).GetEggValue()}>");
+                    else if (prop.PropertyType == typeof(EggDouble))
+                        Melon<BloodlinesMod>.Logger.Msg($"{prop.Name} = Value: <{(prop.GetValue(stats) as EggDouble).GetValue()}> EggValue: <{(prop.GetValue(stats) as EggDouble).GetEggValue()}>");
+                    else 
+                        Melon<BloodlinesMod>.Logger.Msg($"{prop.Name} = <{prop.GetValue(stats)}>");
+                }
+            }
         }
 
         [HarmonyPatch(typeof(GameManager))]
@@ -127,34 +155,49 @@ namespace Bloodlines
                     Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterController).FullName}.{MethodBase.GetCurrentMethod().Name} - {characterType}");
                     if (BloodlinesMod.isCustomCharacter(characterType))
                     {
-                        CharacterDataModel character = getCharacterManager().characterDict[characterType].Character[0];
-                        c.Rend.sprite = SpriteImporter.LoadSprite(character.GetSpritePath(character.SpriteName));
+                        CharacterDataModelWrapper character = getCharacterManager().characterDict[characterType];
+                        int skinNum = c.CurrentSkinData.currentSkinIndex;
+                        SkinObjectModelv0_2 skin = character.Skin(skinNum);
+
+                        if (skin != null)
+                        {
+                            c.Rend.sprite = SpriteImporter.LoadSprite(character.SkinPath(skinNum));
+                        } else
+                        {
+                            c.Rend.sprite = SpriteImporter.LoadSprite(character.SpritePath);
+                        }
+
+                        foreach (string frame in skin.frames)
+                        {
+                            string framePath = System.IO.Path.Join(character.BaseDirectory, frame);
+                            c.SpriteAnimation._animations["walk"]._frames.Add(SpriteImporter.LoadSprite(framePath));
+                        }
+                        c.SpriteAnimation.Play("walk");
+                        //c.gameObject.transform.GetComponentInChildren<RectTransform>().anchoredPosition = new Vector2(0, -0.2f);
+                        //c.gameObject.transform.Find("WickedSeason").localPosition = new Vector3(0, -0.2f, 0);
                     }
                 }
+#if DEBUG
+                BloodlinesMod._Timer = new Timer(TimerCallback, null, 0, 10000); // List stats every 2 seconds.
+#endif
             }
+        }
 
-            [HarmonyPatch(nameof(GameManager.InitializeGameSession))]
+        [HarmonyPatch(typeof(RecapPage))]
+        class RecapPage_Patch
+        {
+            [HarmonyPatch(nameof(RecapPage.Construct))]
             [HarmonyPrefix]
-            static void InitializeGameSession_Prefix(GameManager __instance)
+            static void Construct_Prefix(RecapPage __instance)
             {
-                Melon<BloodlinesMod>.Logger.Msg($"GameManager.{MethodBase.GetCurrentMethod()?.Name}");
+                Melon<BloodlinesMod>.Logger.Msg($"{typeof(CharacterController).FullName}.{MethodBase.GetCurrentMethod().Name}");
             }
         }
 
 
-        [HarmonyPatch(typeof(CharacterController))]
+            [HarmonyPatch(typeof(CharacterController))]
         class CharacterController_Patch
         {
-            //[HarmonyPatch(nameof(CharacterController.InitCharacter))]
-            //[HarmonyPostfix]
-            //static void InitCharacter_Postfix(CharacterController __instance, CharacterType characterType, int playerIndex)
-            //{
-            //    if (isCustomCharacter(characterType))
-            //    {
-            //        __instance.IsInvul = true;
-            //    }
-            //}
-
             [HarmonyPatch(nameof(CharacterController.SetCharacterSprite))]
             [HarmonyPrefix]
             static void InitCharacter_Prefix(CharacterController __instance)
@@ -182,14 +225,18 @@ namespace Bloodlines
 
                 foreach (CharacterDataModelWrapper characterWrapper in Melon<BloodlinesMod>.Instance.manager.characters)
                 {
-                    CharacterDataModel character = characterWrapper.Character[0];
+                    CharacterDataModel character = characterWrapper.Character;
                     CharacterType characterType = iter++;
+                    characterWrapper.characterType = characterType;
                     Melon<BloodlinesMod>.Logger.Msg($"Adding character... {characterType} {character.CharName}");
                     character.CharacterType = characterType;
-                    string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(character);
+                    string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(characterWrapper.CharacterSettings, Newtonsoft.Json.Formatting.Indented,
+                        new Newtonsoft.Json.JsonSerializerSettings() {
+                            ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                        });
                     JArray json = JArray.Parse(jsonString);
                     __instance.AllCharactersJson.Add(characterType.ToString(), json);
-                    Melon<BloodlinesMod>.Instance.manager.characterDict.Add(characterType, character);
+                    Melon<BloodlinesMod>.Instance.manager.characterDict.Add(characterType, characterWrapper);
                 }
             }
         }
@@ -204,10 +251,14 @@ namespace Bloodlines
                 CharacterType characterType = __instance._currentType;
                 if (isCustomCharacter(characterType))
                 {
-                    CharacterDataModel character = getCharacterManager().characterDict[characterType].Character[0];
+                    CharacterDataModelWrapper character = getCharacterManager().characterDict[characterType];
 
                     int activeSkinIndex = __instance._skinSlots.FindIndex(new Func<Image, bool>((s) => s.sprite.name == "weaponLevelFull"));
-                    Sprite sprite = SpriteImporter.LoadSprite(character.GetSpritePath(character.Skins[activeSkinIndex].SpriteName));
+
+                    if (activeSkinIndex == -1)
+                        activeSkinIndex = 0;
+
+                    Sprite sprite = SpriteImporter.LoadSprite(character.SkinPath(activeSkinIndex));
                     __instance.Icon.sprite = sprite;
                     __instance._selectedCharacter._CharacterIcon.sprite = sprite;
                 }
@@ -233,14 +284,14 @@ namespace Bloodlines
                 if (isCustomCharacter(cType))
                 {
                     Melon<BloodlinesMod>.Logger.Msg($"Setting the icon for {cType}");
-                    CharacterDataModel ch = getCharacterManager().characterDict[cType].Character[0];
+                    CharacterDataModelWrapper ch = getCharacterManager().characterDict[cType];
                     int activeSkinIndex = __instance._skinSlots.FindIndex(new Func<Image, bool>((s) => s.sprite.name == "weaponLevelFull"));
                     if (activeSkinIndex == -1)
                     {
                         activeSkinIndex = 0;
                     }
 
-                    Sprite sprite = SpriteImporter.LoadSprite(ch.GetSpritePath(ch.Skins[activeSkinIndex].SpriteName));
+                    Sprite sprite = SpriteImporter.LoadSprite(ch.SkinPath(activeSkinIndex));
 
                     __instance.Icon.sprite = sprite;
                     __instance._Name.text = charData.GetFullNameUntranslated();
@@ -273,7 +324,7 @@ namespace Bloodlines
             {
                 if (isCustomCharacter(cType))
                 {
-                    CharacterDataModel ch = getCharacterManager().characterDict[cType].Character[0];
+                    CharacterDataModelWrapper ch = getCharacterManager().characterDict[cType];
 
                     __instance.name = dat.charName;
                     __instance._CharacterName.text = dat.charName;
@@ -281,7 +332,7 @@ namespace Bloodlines
                     __instance._playerOptions = dataManager._playerOptions;
                     __instance._data = dat;
                     __instance._dataManager = dataManager;
-                    __instance._CharacterIcon.sprite = SpriteImporter.LoadSprite(ch.GetSpritePath(ch.PortraitName));
+                    __instance._CharacterIcon.sprite = SpriteImporter.LoadSprite(ch.PortraitPath);
                     __instance._CharacterIcon.sprite.name = __instance.name;
                     __instance._CharacterIcon.sprite.texture.name = __instance.name;
                     __instance._defaultTextColor = new Color(1, 1, 1, 1);
