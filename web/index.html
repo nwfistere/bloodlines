@@ -9,79 +9,81 @@
     <div class="form-box">
 
       <!-- Basic input -->
-      <form id="basic">
-        <div class="form-pair">
-          <label for="charName">First name</label>
-          <input type="text" name="firstName" id="charName" placeholder="Name"
+      <form id="basic-form">
+        <div class="form-pair field-split align-left">
+          <label for="prefix">Prefix</label>
+          <input type="text" name="firstName" id="prefix" class="field-style" placeholder="Prefix"
             required />
         </div>
-        <div class="form-pair">
+        <div class="form-pair field-split align-left">
+          <label for="charName">First name</label>
+          <input type="text" name="firstName" id="charName" class="field-style" placeholder="Name"
+            required />
+        </div>
+        <div class="form-pair field-split align-left">
           <label for="surname">Last name</label>
-          <input type="text" name="lastName" id="surname" placeholder="Last name" />
+          <input type="text" name="lastName" id="surname" class="field-style" placeholder="Last name" />
         </div>
-        <div class="form-pair">
+        <div class="form-pair field-split align-left">
           <label for="startingWeapon">Starting weapon</label>
-          <select id="startingWeapon" name="weaponsSelect"></select>
+          <select id="startingWeapon" name="weaponsSelect" class="field-style">
+            <!-- <option value="" selected>Weapon</option> -->
+          </select>
         </div>
-        <div class="form-pair">
-          <label>Cooldown</label>
-          <input type="number" id="cooldown" name="cooldown" value="1" min="0" />
-        </div>
-        <div class="form-pair">
+        <div class="form-pair field-split align-left">
           <label for="spriteName">Sprite</label>
-          <input type="file" id="spriteName" name="sprite" accept=".png" />
+          <input type="file" id="spriteName" name="sprite" accept=".png" class="field-style"/>
         </div>
-        <div class="form-pair">
+        <!-- <div class="form-pair field-split align-left">
           <label>Current skin index (Coming soon)</label>
-          <input type="number" id="walkingFrames" name="walkingFrames" value="0"
+          <input type="number" class="field-style" id="walkingFrames" name="walkingFrames" value="0"
             readonly />
         </div>
-        <div class="form-pair">
-          <label>Walking Frames (Coming soon)</label>
-          <input type="number" id="walkingFrames" name="walkingFrames" value="1"
+        <div class="form-pair field-split align-left">
+          <label>Walking Frames Coming soon)</label>
+          <input type="number" class="field-style"id="walkingFrames" name="walkingFrames" value="1"
             readonly />
-        </div>
-        <div class="form-pair">
+        </div> -->
+        <div class="form-pair field-split align-left">
           <label>Description</label>
-          <input type="text" id="description" name="description" />
+          <input type="text" class="field-style" id="description" name="description" />
         </div>
-        <div class="form-pair">
+        <div class="form-pair field-split align-left">
           <label>Already bought</label>
-          <input type="checkbox" id="isBought" name="isBought" value="false" />
+          <input type="checkbox" class="field-style" id="isBought" name="isBought" value="true" />
         </div>
-        <div class="form-pair">
+        <div class="form-pair field-split align-left">
           <label for="price">Price</label>
-          <input type="number" id="price" name="price" min="0" />
+          <input type="number" class="field-style" id="price" name="price" min="0" />
         </div>
-        <div class="body-offset-form">
+        <div class="body-offset-form align-left">
           <label>Body offset</label>
-          <div class="form-pair">
+          <div class="form-pair field-split">
             <label for="bodyOffsetX">x</label>
-            <input type="number" id="bodyOffset.x" name="x" />
+            <input type="number" class="field-style" id="bodyOffset.x" name="x" />
           </div>
-          <div class="form-pair">
+          <div class="form-pair field-split align-left">
             <label for="bodyOffsetY">y</label>
-            <input type="number" id="bodyOffset.y" name="y" />
+            <input type="number" class="field-style" id="bodyOffset.y" name="y" />
           </div>
         </div>
-        <label for="modifier-form-container">Initial Stats</label>
-        <div class="modifier-form" id="modifier-form-container">
-          <div class="modifier-form-button"><input type="button" value="add"
-              id="addInitialModifierForm" /></div>
-          <div class="modifier-form-button"><input type="button" value="remove"
-              id="removeInitialModifierForm" hidden /></div>
-          <div id="initialModifierContainer">&nbsp;</div>
+        <div class="form-pair field-split align-left">
+          <label for="showcase">Showcase items</label>
+          <select id="showcase" class="field-style" multiple></select>
         </div>
+        <!-- TODO: Sort showcase items by passive-->
       </form>
 
       <!-- Skins -->
       <form id="skins">
         <label for="skin-form-container">Skins</label>
         <div class="skin-form" id="skin-form-container">
-          <div class="skin-form-button"><input type="button" value="add"
-              id="addSkinForm" /></div>
-          <div class="skin-form-button"><input type="button" value="remove"
-              id="removeSkinForm" hidden /></div>
+          <div class="skin-form-button form-pair">
+            <input type="button" value="add" id="addSkinForm"/>
+          </div>
+          <div class="skin-form-button">
+            <input type="button" value="remove" id="removeSkinForm" hidden />
+          </div>
           <div id="skinContainer">&nbsp;</div>
         </div>
       </form>
@@ -90,27 +92,109 @@
       <form id="modifiers">
         <label for="modifier-form-container">Stat modifiers</label>
         <div class="modifier-form" id="modifier-form-container">
-          <div class="modifier-form-button"><input type="button" value="add"
-              id="addModifierForm" /></div>
-          <div class="modifier-form-button"><input type="button" value="remove"
-              id="removeModifierForm" hidden /></div>
+          <div class="modifier-form-button form-pair">
+            <input type="button" value="add" id="addModifierForm"/>
+          </div>
+          <div class="modifier-form-button">
+            <input type="button" value="remove" id="removeModifierForm" hidden/>
+          </div>
           <div id="modifierContainer">&nbsp;</div>
         </div>
       </form>
 
       <!-- Output -->
       <form id="output">
-        <div class="form-pair">
+        <div class="form-pair field-full">
           <label for="outputJsonLabel">Output character json:</label>
           <br />
-          <textarea id="outputJsonTextArea" name="outputJsonTextArea" readonly
-            style="width: 250px;"></textarea>
+          <textarea id="outputJsonTextArea" name="outputJsonTextArea" readonly></textarea>
         </div>
       </form>
+      <div class="form-pair">
+        <label for="download">Downloads</label>
+        <input type="button" id="downloadButton" value="Download json"></input>
+        <input type="button" id="downloadZipButton" value="Download Zip"></input>
+      </div>
     </div>
 
-    <script type="text/javascript" src="zip.min.js"></script>
-    <script type="text/javascript" src="./create-character.js"></script>
-    <!-- <link href="style.css" rel="stylesheet" /> -->
+    <script type="text/javascript" src="./external/zip/zip.min.js"></script>
+    <script type="text/javascript" src="./external/choices/scripts/choices.min.js"></script>
+    <link rel="stylesheet" href="./external/choices/styles/choices.min.css" />
+    <script type="text/javascript" src="./js/zipper.js"></script>
+    <script type="text/javascript" src="./js/create-character.js"></script>
+
+    <style type="text/css">
+      .form-box {
+        max-width: 450px;
+        background: #FAFAFA;
+        padding: 30px;
+        margin: 50px auto;
+        box-shadow: 1px 1px 25px rgba(0, 0, 0, 0.35);
+        border-radius: 10px;
+        border: 6px solid #305A72;
+      }
+      .form-pair ul{
+        padding:0;
+        margin:0;
+        list-style:none;
+      }
+      .form-pair ul li{
+        display: block;
+        margin-bottom: 10px;
+        min-height: 35px;
+      }
+      .form-pair  .field-style {
+        box-sizing: border-box; 
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box; 
+        padding: 8px;
+        outline: none;
+        border: 1px solid #B0CFE0;
+        -webkit-transition: all 0.30s ease-in-out;
+        -moz-transition: all 0.30s ease-in-out;
+        -ms-transition: all 0.30s ease-in-out;
+        -o-transition: all 0.30s ease-in-out;
+      
+      }.form-pair  .field-style:focus {
+        box-shadow: 0 0 5px #B0CFE0;
+        border:1px solid #B0CFE0;
+      }
+      .form-pair .field-split {
+        width: 49%;
+      }
+      .form-pair .field-full {
+        width: 100%;
+      }
+      .form-pair input.align-left {
+        float:left;
+      }
+      .form-pair input.align-right {
+        float:right;
+      }
+      .form-pair textarea {
+        width: 100%;
+        height: 100px;
+      }
+      .form-pair input[type="button"], 
+      .form-pair input[type="submit"] {
+        -moz-box-shadow: inset 0px 1px 0px 0px #3985B1;
+        -webkit-box-shadow: inset 0px 1px 0px 0px #3985B1;
+        box-shadow: inset 0px 1px 0px 0px #3985B1;
+        background-color: #216288;
+        border: 1px solid #17445E;
+        display: inline-block;
+        cursor: pointer;
+        color: #FFFFFF;
+        padding: 8px 18px;
+        text-decoration: none;
+        font: 12px Arial, Helvetica, sans-serif;
+      }
+      .form-pair input[type="button"]:hover, 
+      .form-pair input[type="submit"]:hover {
+        background: linear-gradient(to bottom, #2D77A2 5%, #337DA8 100%);
+        background-color: #28739E;
+      }
+      </style>
+
   </body>
 </html>
