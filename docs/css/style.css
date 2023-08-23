@@ -49,6 +49,13 @@
 }
 
 .hover {
-  border-color: #f56a6a;
+  border-color: var(--color-2);
   background: #3d4449;
+}
+
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  background-color: var(--input-background-color);
 }

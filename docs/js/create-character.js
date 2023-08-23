@@ -440,9 +440,10 @@ const createModifierElement = (labelName, inputId, required = false, step=0.1) =
   const label = createLabel(capitalizeFirstLetter(labelName));
   label.setAttribute("for", inputId);
   const input = createInput("number", inputId, inputId);
+  input.value = 0;
   input.required = required;
   input.step = step;
-  const div = createColumnDiv();
+  const div = createDiv({classList: [ "col-2" ]});
   div.appendChild(label);
   div.appendChild(input);
   return div;
@@ -455,11 +456,10 @@ const capitalizeFirstLetter = (string) => {
  
 
 const createModiferSection = (i) => {
-  const div = document.createElement("div");
-  div.setAttribute("class", "modifier-form-instance");
-  div.setAttribute("id", "modifier-form-" + i);
+  const box = createDiv({classList: [ "box" ]});
+  const div = createDiv({classList: ["modifier-form-instance", "row", "gtr-uniform"], id: `modifier-form-${i}`});
 
-  div.appendChild(createLabel("Stat Modifier " + (i + 1)));
+  box.appendChild(createLabel("Stat Modifier " + (i + 1)));
 
   const ShiftByOne = ["level", "revivals", "skips", "banish", "rerolls"]
 
@@ -467,7 +467,8 @@ const createModiferSection = (i) => {
     div.appendChild(createModifierElement(key, "mod-" + key + "-" + i, key === "level", ShiftByOne.includes(key) ? 1 : 0.1));
   }
 
-  return div;
+  box.appendChild(div);
+  return box;
 }
 
 document.getElementById("addModifierForm").addEventListener("click", () => {
