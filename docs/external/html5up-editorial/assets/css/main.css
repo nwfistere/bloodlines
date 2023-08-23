@@ -1482,21 +1482,9 @@ table {
     table.alt tfoot {
       border-top: 0; }
 
-/* File */
-input[type="file"],
-.file {
-  display: none;
-}
 
-.file-label {
-  margin-top: 1em;
-}
 
-.image-remove-button {
-  display: block !important;
-  margin-left: auto;
-  margin-right: auto;
-}
+
 
 /* Button */
 input[type="submit"],

@@ -84,6 +84,7 @@ let numOfModifiers = 0;
 const clone = (obj) => { return JSON.parse(JSON.stringify(obj)); }
 
 const createJsonOutput = (form) => {
+  console.debug(`Running createJsonOutput on form: ${form.id}`);
   if (!form) {
     return;
   }
@@ -133,8 +134,18 @@ const createJsonOutput = (form) => {
 
       continue;
     } else if (field.id.startsWith("skin-")) {
-      const skinField = field.id.substring(field.id.indexOf("-") + 1, field.id.lastIndexOf("-"));
-      const num = parseInt(field.id.substring(field.id.lastIndexOf("-") + 1, field.id.length));
+      let skinFieldId = field.id;
+      if (skinFieldId.endsWith("-input")) {
+        skinFieldId = skinFieldId.substring(0, skinFieldId.indexOf("-input"));
+      }
+      
+      skinField = skinFieldId.substring(skinFieldId.indexOf("-") + 1, skinFieldId.lastIndexOf("-"));
+      const num = parseInt(skinFieldId.substring(skinFieldId.lastIndexOf("-") + 1, skinFieldId.length));
+
+      if (isNaN(num)) {
+        console.debug(`Invalid field: ${skinFieldId} ${num} ${skinField}`);
+        return;
+      }
 
       console.debug("skin num: " + num);
 
@@ -170,7 +181,14 @@ const getFieldValue = (field) => {
     case "checkbox":
       return field.checked;
     case "file":
-      return field.value.split(/(\\|\/)/g).pop();
+      const retArray = [];
+      if (field.files) {
+        for (const file of field.files) {
+          retArray.push(file.name);
+        }
+      }
+      return retArray;
+      // return field.value.split(/(\\|\/)/g).pop();
     case "select-multiple":
       if (showCaseChoices._baseId.endsWith(field.id)) {
         return showCaseChoices.getValue(true);
@@ -315,24 +333,54 @@ const createSkinElement = (labelName, inputId, inputType, required = false, read
   return div;
 }
 
-const createFramesDiv = (num) => {
-  const row = createRowDiv();
-  const text = document.createElement("p");
-  text.innerHTML = "Drag & Drop Individual walking frames Here, they will be sorting alphabetically.";
-  const inputContainer = document.createElement("div");
-  inputContainer.classList.add(`skin-frame-${num}`);
+const createDiv = ({id, classList }) => {
+  const div = document.createElement("div");
+  if (id) {
+    div.id = id;
+  }
+  if (classList) {
+    div.classList.add(...classList);
+  }
+  return div;
+};
 
-  // row.innerHTML = `
-  // <p>Drag & Drop Images Here...</p>
-  // <form class="skin-frame-${num}">
-  //   <input type="file" id="imgUpload" multiple accept="image/*" onchange="filesManager(this.files)">
-  //   <label class="button" for="imgUpload">...or Upload From Your Computer</label>
-  // </form>
-  // <div id="gallery"></div>
-  // `;
+const createFramesDiv = (num) => {
+  const row = createDiv({ classList: ["box", "align-center"]});
+
+  const text = document.createElement("p");
+  text.innerHTML = "Drag & drop individual walking frames here, they will be sorting alphabetically.";
+
+  const inputContainer = document.createElement("div");
+  inputContainer.id = `skin-frames-${num}`;
+  inputContainer.classList.add(`skin-frames-${num}`);
+
+  const input = document.createElement("input");
+  input.type = "file";
+  input.id = `skin-frames-${num}-input`;
+  input.multiple = true;
+  input.accept = "image/png";
+  input.addEventListener("change", (ev) => {
+    filesManager(ev.target.parentNode.id, ev.target.files);
+    return;
+  });
+
+  const inputLabel = document.createElement("label");
+  inputLabel.classList.add("button");
+  inputLabel.setAttribute("for", input.id);
+  inputLabel.innerHTML = "Or click to upload from your computer.";
+
+  inputContainer.appendChild(input);
+  inputContainer.appendChild(inputLabel);
+
+  const removeContainer = createDiv({id: `skin-frames-${num}-rm-container`, classList: ["row", "aln-center"] });
+  const gallery = createDiv({id: `skin-frames-${num}-gallery`, classList: ["gallery", "row", "aln-center"] });
+
+  handleFrameDropbox(inputContainer);
 
   row.appendChild(text);
-
+  row.appendChild(inputContainer);
+  row.appendChild(removeContainer);
+  row.appendChild(gallery);
 
   return row;
 }
@@ -459,6 +507,7 @@ const createChoices = () => {
     placeholder: true,
     placeholderValue: "Showcase items   ",
     itemSelectText: "",
+    allowHTML: true,
     classNames: {
       button: "choices__button ignore-style",
       item: "choices__item" // button",
@@ -538,6 +587,129 @@ const hide = (elementId) => {
   element.className += " hide";
 }
 
+
+const handleFrameDropbox = (container) => {
+
+	// modify all of the event types needed for the script so that the browser
+	// doesn't open the image in the browser tab (default behavior)
+	['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+		container.addEventListener(evt, prevDefault, false);
+	});
+	function prevDefault (e) {
+		e.preventDefault();
+		e.stopPropagation();
+	}
+
+	// remove and add the hover class, depending on whether something is being
+	// actively dragged over the box area
+	['dragenter', 'dragover'].forEach(evt => {
+		container.addEventListener(evt, hover, false);
+	});
+	['dragleave', 'drop'].forEach(evt => {
+		container.addEventListener(evt, unhover, false);
+	});
+	function hover(e) {
+		container.classList.add('hover');
+	}
+	function unhover(e) {
+		container.classList.remove('hover');
+	}
+
+	// the DataTransfer object holds the data being dragged. it's accessible
+	// from the dataTransfer property of drag events. the files property has
+	// a list of all the files being dragged. put it into the filesManager function
+	container.addEventListener('drop', mngDrop, false);
+	function mngDrop(e) {
+		let dataTrans = e.dataTransfer;
+		let files = dataTrans.files;
+		filesManager(container.id, files);
+	}
+}
+
+// use FormData browser API to create a set of key/value pairs representing
+// form fields and their values, to send using XMLHttpRequest.send() method.
+// Uses the same format a form would use with multipart/form-data encoding
+function upFile(file) {
+  //only allow images to be dropped
+  let imageType = /image.*/;
+  if (file.type.match(imageType)) {
+    let url = 'HTTP/HTTPS URL TO SEND THE DATA TO';
+    // create a FormData object
+    let formData = new FormData();
+    // add a new value to an existing key inside a FormData object or add the
+    // key if it doesn't exist. the filesManager function will loop through
+    // each file and send it here to be added
+    formData.append('file', file);
+
+    // standard file upload fetch setup
+    fetch(url, {
+      method: 'put',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(result => { console.log('Success:', result); })
+    .catch(error => { console.error('Error:', error); });
+  } else {
+    console.error("Only images are allowed!", file);
+  }
+}
+
+
+// use the FileReader API to get the image data, create an img element, and add
+// it to the gallery div. The API is asynchronous so onloadend is used to get the
+// result of the API function
+function previewFile(idPrefix, file) {
+  // only allow images to be dropped
+  let imageType = /image.*/;
+  if (file.type.match(imageType)) {
+    let fReader = new FileReader();
+    let gallery = document.getElementById(`${idPrefix}-gallery`);
+    // reads the contents of the specified Blob. the result attribute of this
+    // with hold a data: URL representing the file's data
+    fReader.readAsDataURL(file);
+    // handler for the loadend event, triggered when the reading operation is
+    // completed (whether success or failure)
+    fReader.onloadend = function() {
+      let wrap = document.createElement('div');
+      wrap.classList.add("file-label", "file-label--active", "col-2");
+      let img = document.createElement('img');
+      img.classList.add("frame-img");
+      // set the img src attribute to the file's contents (from read operation)
+      img.src = fReader.result;
+      let imgCapt = document.createElement('p');
+      // the name prop of the file contains the file name, and the size prop
+      // the file size. convert bytes to KB for the file size
+      let fSize = (file.size / 1000) + ' KB';
+      imgCapt.innerHTML = `<span class="fName">${file.name}</span><span class="fSize">${fSize}</span><span class="fType">${file.type}</span>`;
+      gallery.appendChild(wrap).appendChild(img);
+      gallery.appendChild(wrap).appendChild(imgCapt);
+    }
+
+    const rmContainer = document.getElementById(`${idPrefix}-rm-container`);
+    if (rmContainer && rmContainer.childElementCount === 0) {
+      const rmButton = document.createElement("input");
+      rmButton.type = "button";
+      rmButton.id = `${idPrefix}-rm-button`;
+      rmButton.value = `Remove All Images`;
+      rmContainer.appendChild(rmButton);
+    }
+
+  } else {
+    console.error("Only images are allowed!", file);
+  }
+}
+
+function filesManager(idPrefix, files) {
+  // spread the files array from the DataTransfer.files property into a new
+  // files array here
+  files = [...files];
+  // send each element in the array to both the upFile and previewFile
+  // functions
+  // TODO: instead of upFile, add to a list of files somewhere...
+  // files.forEach((file) => upFile(idPrefix, file));
+  files.forEach((file) => previewFile(idPrefix, file));
+}
+
 // Onload
 window.addEventListener("load", (event) => {
   const forms = document.querySelectorAll("form");
@@ -556,4 +728,6 @@ window.addEventListener("load", (event) => {
   createChoices();
   setupDownload();
 });
+
+
 
