@@ -4,6 +4,9 @@
 }
 .fName {
   color: brown;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 .fSize {
   font-size: .8em;
@@ -43,4 +46,9 @@
 
 .file-label :last-child {
   margin-bottom: auto !important;
+}
+
+.hover {
+  border-color: #f56a6a;
+  background: #3d4449;
 }
