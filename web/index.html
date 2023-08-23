@@ -1,183 +1,137 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>
-      Custom character creator
-    </title>
-  </head>
-  <body class="is-preload">
-    <div id="wrapper">
-      <div id="main">
-        <div class="inner">
-          <header id="header">
-            <a href="index.html" class="logo">Bloodlines character pack generator</a>
-            <!-- <ul class="icons">
+
+<head>
+  <title>
+    Custom character creator
+  </title>
+</head>
+
+<body class="is-preload">
+  <div id="wrapper">
+    <div id="main">
+      <div class="inner">
+        <header id="header">
+          <a href="index.html" class="logo">Bloodlines character pack generator</a>
+          <!-- <ul class="icons">
               <li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
               <li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
               <li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
               <li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
               <li><a href="#" class="icon brands fa-medium-m"><span class="label">Medium</span></a></li>
             </ul> -->
+        </header>
+
+        <section>
+          <header class="major">
+            <h2>Basic Details</h2>
           </header>
-
-          <section>
-            <h2 id="elements">Basic Details</h2>
-            <div class="row gtr-200">
-              <div class="col-6 col-12-medium">
-                <div class="row gtr-uniform">
-                  <div class="col-6 col-12-xsmall">
-                    <input type="text" name="prefix" id="prefix" class="field-style" placeholder="Prefix" />
-                  </div>
-                  <div class="col-6 col-12-xsmall">
-                    <input type="text" name="firstName" id="charName" class="field-style" placeholder="Name" required/>
-                  </div>
-                  <div class="col-6 col-12-xsmall">
-                    <input type="text" name="lastName" id="surname" class="field-style" placeholder="Last name" />
-                  </div>
-                  <div class="col-12">
-                    <input type="text" class="field-style" id="description" name="description" placeholder="Description"/>
-                  </div>
-                  <div class="col-12">
-                    <select id="startingWeapon" name="weaponsSelect" class="field-style"></select>
-                  </div>
-                  <div class="col-12">
-                    <input type="file" id="spriteName" name="sprite" accept=".png" class="field-style"/>
-                  </div>
-                  <div class="col-6 col-12-small">
-                    <input type="checkbox" class="field-style" id="isBought" name="isBought" checked>
-                    <label for="isBought">Bought</label>
-                  </div>
-                  <div class="col-6 col-12-small">
-                    <input type="number" class="field-style" id="price" name="price" min="0" placeholder="Price"/>
-                  </div>
+          <form id="basic-form">
+            <div class="row gtr-100">
+              <div class="row gtr-uniform">
+                <div class="col-6 col-12-xsmall">
+                  <input type="text" name="prefix" id="prefix" placeholder="Prefix" />
+                </div>
+                <div class="col-6 col-12-xsmall">
+                  <input type="text" name="firstName" id="charName" placeholder="Name" required />
+                </div>
+                <div class="col-6 col-12-xsmall">
+                  <input type="text" name="lastName" id="surname" placeholder="Last name" />
+                </div>
+                <div class="col-12">
+                  <input type="text" id="description" name="description" placeholder="Description" />
+                </div>
+                <div class="col-12">
+                  <select id="startingWeapon" name="weaponsSelect"></select>
+                </div>
+                <div class="col-12">
+                  <input type="file" id="spriteName" name="sprite" accept=".png" />
+                </div>
+                <div class="col-6 col-12-small">
+                  <input type="checkbox" id="isBought" name="isBought" checked>
+                  <label for="isBought">Bought</label>
+                </div>
+                <div class="col-6 col-12-small">
+                  <input type="number" id="price" name="price" min="0" placeholder="Price" />
+                </div>
+                <div class="col-6 col-12-small">
+                  <input type="number" id="bodyOffset.x" name="x" placeholder="Bodyoffset X" />
+                </div>
+                <div class="col-6 col-12-small">
+                  <input type="number" id="bodyOffset.y" name="y" placeholder="Bodyoffset Y" />
+                </div>
+                <div class="col-12">
+                  <select id="showcase" class="field-style ignore-style" multiple></select>
                 </div>
               </div>
-              <!-- <div class="col-6 col-12-medium">
-                <div class="row gtr-uniform">
-                  
-                </div>
-              </div> -->
             </div>
-            <div class="form-box">
-              <!-- Basic input -->
-              <form id="basic-form">
-                <div class="form-pair field-split align-left">
-                  <label for="prefix">Prefix</label>
-                  <input type="text" name="firstName" id="prefix" class="field-style" placeholder="Prefix"
-                    required />
-                </div>
-                <div class="form-pair field-split align-left">
-                  <label for="charName">First name</label>
-                  <input type="text" name="firstName" id="charName" class="field-style" placeholder="Name"
-                    required />
-                </div>
-                <div class="form-pair field-split align-left">
-                  <label for="surname">Last name</label>
-                  <input type="text" name="lastName" id="surname" class="field-style" placeholder="Last name" />
-                </div>
-                <div class="form-pair field-split align-left">
-                  <label for="startingWeapon">Starting weapon</label>
-                  <select id="startingWeapon" name="weaponsSelect" class="field-style">
-                    <!-- <option value="" selected>Weapon</option> -->
-                  </select>
-                </div>
-                <div class="form-pair field-split align-left">
-                  <label for="spriteName">Sprite</label>
-                  <input type="file" id="spriteName" name="sprite" accept=".png" class="field-style"/>
-                </div>
-                <!-- <div class="form-pair field-split align-left">
-                  <label>Current skin index (Coming soon)</label>
-                  <input type="number" class="field-style" id="walkingFrames" name="walkingFrames" value="0"
-                    readonly />
-                </div>
-                <div class="form-pair field-split align-left">
-                  <label>Walking Frames Coming soon)</label>
-                  <input type="number" class="field-style"id="walkingFrames" name="walkingFrames" value="1"
-                    readonly />
-                </div> -->
-                <div class="form-pair field-split align-left">
-                  <label>Description</label>
-                  <input type="text" class="field-style" id="description" name="description" />
-                </div>
-                <div class="form-pair field-split align-left">
-                  <label>Already bought</label>
-                  <input type="checkbox" class="field-style" id="isBought" name="isBought" value="true" />
-                </div>
-                <div class="form-pair field-split align-left">
-                  <label for="price">Price</label>
-                  <input type="number" class="field-style" id="price" name="price" min="0" />
-                </div>
-                <div class="body-offset-form align-left">
-                  <label>Body offset</label>
-                  <div class="form-pair field-split">
-                    <label for="bodyOffsetX">x</label>
-                    <input type="number" class="field-style" id="bodyOffset.x" name="x" />
-                  </div>
-                  <div class="form-pair field-split align-left">
-                    <label for="bodyOffsetY">y</label>
-                    <input type="number" class="field-style" id="bodyOffset.y" name="y" />
+          </form>
+        </section>
+        <section>
+          <!-- Skins -->
+          <header class="major">
+            <h3 id="elements">Skins</h3>
+          </header>
+          <form id="skins">
+            <div class="row gtr-200">
+              <div class="row" style="margin-bottom:2em; display: block;">
+                <div class="col-12-xlarge ">
+                  <div class="row gtr-0">
+                    <div class="col">
+                      <input type="button" class="primary small" value="add" id="addSkinForm" />
+                    </div>
+                    <div class="col">
+                      <input type="button" class="small" value="remove" id="removeSkinForm" />
+                    </div>
                   </div>
                 </div>
-                <div class="form-pair field-split align-left">
-                  <label for="showcase">Showcase items</label>
-                  <select id="showcase" class="field-style" multiple></select>
-                </div>
-                <!-- TODO: Sort showcase items by passive-->
-              </form>
-
-              <!-- Skins -->
-              <form id="skins">
-                <label for="skin-form-container">Skins</label>
-                <div class="skin-form" id="skin-form-container">
-                  <div class="skin-form-button form-pair">
-                    <input type="button" value="add" id="addSkinForm"/>
-                  </div>
-                  <div class="skin-form-button">
-                    <input type="button" value="remove" id="removeSkinForm" hidden />
-                  </div>
-                  <div id="skinContainer">&nbsp;</div>
-                </div>
-              </form>
-
-              <!-- Per level modifiers -->
-              <form id="modifiers">
-                <label for="modifier-form-container">Stat modifiers</label>
-                <div class="modifier-form" id="modifier-form-container">
-                  <div class="modifier-form-button form-pair">
-                    <input type="button" value="add" id="addModifierForm"/>
-                  </div>
-                  <div class="modifier-form-button">
-                    <input type="button" value="remove" id="removeModifierForm" hidden/>
-                  </div>
-                  <div id="modifierContainer">&nbsp;</div>
-                </div>
-              </form>
-
-              <!-- Output -->
-              <form id="output">
-                <div class="form-pair field-full">
-                  <label for="outputJsonLabel">Output character json:</label>
-                  <br />
-                  <textarea id="outputJsonTextArea" name="outputJsonTextArea" readonly></textarea>
-                </div>
-              </form>
-              <div class="form-pair">
-                <label for="download">Downloads</label>
-                <input type="button" id="downloadButton" value="Download json"></input>
-                <input type="button" id="downloadZipButton" value="Download Zip"></input>
               </div>
-            </div> <!-- form-box -->
-          </section>
-        </div> <!-- inner -->
+              <div id="skinContainer" style="width:100%"> </div>
+            </div>
+          </form>
+        </section>
+        <!-- Per level modifiers -->
+        <section>
+          <form id="modifiers">
+            <label for="modifier-form-container">Stat modifiers</label>
+            <div class="modifier-form" id="modifier-form-container">
+              <div class="modifier-form-button form-pair">
+                <input type="button" class="primary small" value="add" id="addModifierForm" />
+              </div>
+              <div class="modifier-form-button">
+                <input type="button" class="small" value="remove" id="removeModifierForm" hidden />
+              </div>
+              <div id="modifierContainer">&nbsp;</div>
+            </div>
+          </form>
+        </section>
+        <section>
+          <!-- Output -->
+          <form id="output">
+            <div class="form-pair field-full">
+              <label for="outputJsonLabel">Output character json:</label>
+              <br />
+              <textarea id="outputJsonTextArea" name="outputJsonTextArea" readonly></textarea>
+            </div>
+          </form>
+          <div class="form-pair">
+            <label for="download">Downloads</label>
+            <input type="button" id="downloadButton" value="Download json"></input>
+            <input type="button" id="downloadZipButton" value="Download Zip"></input>
+          </div>
+        </section>
+        </inner>
       </div> <!-- main -->
     </div> <!-- wrapper -->
 
     <script type="text/javascript" src="./external/zip/zip.min.js"></script>
+    <!-- TODO: revert choices.js to choices.min.js-->
     <script type="text/javascript" src="./external/choices/scripts/choices.min.js"></script>
-    <link rel="stylesheet" href="./external/choices/styles/choices.min.css" />
     <script type="text/javascript" src="./js/zipper.js"></script>
     <script type="text/javascript" src="./js/create-character.js"></script>
+    <link rel="stylesheet" href="./external/choices/styles/choices.css" />
     <link rel="stylesheet" href="external/html5up-editorial/assets/css/fontawesome-all.min.css" />
     <link rel="stylesheet" href="external/html5up-editorial/assets/css/main.css" />
-  </body>
+</body>
+
 </html>

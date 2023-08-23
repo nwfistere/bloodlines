@@ -1023,6 +1023,7 @@ input[type="email"],
 input[type="tel"],
 input[type="search"],
 input[type="url"],
+input[type="number"],
 select,
 textarea {
   -moz-appearance: none;
@@ -1045,6 +1046,7 @@ textarea {
   input[type="tel"]:invalid,
   input[type="search"]:invalid,
   input[type="url"]:invalid,
+  input[type="number"]:invalid,
   select:invalid,
   textarea:invalid {
     box-shadow: none; }
@@ -1054,6 +1056,7 @@ textarea {
   input[type="tel"]:focus,
   input[type="search"]:focus,
   input[type="url"]:focus,
+  input[type="number"]:focus,
   select:focus,
   textarea:focus {
     border-color: #f56a6a;
@@ -1081,6 +1084,7 @@ input[type="email"],
 input[type="tel"],
 input[type="search"],
 input[type="url"],
+input[type="number"],
 select {
   height: 2.75em; }
 
@@ -1478,12 +1482,30 @@ table {
     table.alt tfoot {
       border-top: 0; }
 
+/* File */
+input[type="file"],
+.file {
+  display: none;
+}
+
+.file-label {
+  margin-top: 1em;
+}
+
+.image-remove-button {
+  display: block !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Button */
 input[type="submit"],
 input[type="reset"],
 input[type="button"],
+/* input[type="file"], */
 button,
-.button {
+.button,
+.file-label {
   -moz-appearance: none;
   -webkit-appearance: none;
   -ms-appearance: none;
@@ -1509,7 +1531,30 @@ button,
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
-  white-space: nowrap; }
+  white-space: nowrap; 
+}
+
+.file-label--active {
+  height: fit-content;
+  padding : 2.25em 2.25em;
+}
+
+.choices__button {
+  box-shadow: none;
+  outline: none;
+  color: #f56a6a;
+}
+
+.choices__input,
+.choices__input:focus {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.hide {
+  display: none !important;
+}
+
   input[type="submit"]:hover,
   input[type="reset"]:hover,
   input[type="button"]:hover,

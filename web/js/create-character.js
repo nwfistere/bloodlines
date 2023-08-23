@@ -75,9 +75,19 @@ const skinJson = {
     "frames": []
 };
 
+const spritePortraitString = "<i class=\"fas fa-file-image\"></i> Sprite Portrait";
+const spriteFrameString = "<i class=\"fas fa-file-image\"></i> Frames";
+
+let numOfSkins = 0;
+let numOfModifiers = 0;
+
 const clone = (obj) => { return JSON.parse(JSON.stringify(obj)); }
 
 const createJsonOutput = (form) => {
+  if (!form) {
+    return;
+  }
+
   const currentJson = document.getElementById("outputJsonTextArea");
   let json = {};
 
@@ -105,7 +115,7 @@ const createJsonOutput = (form) => {
     } else if (field.id.startsWith("mod-")) {
       // Modifier objects
       const modField = field.id.substring(field.id.indexOf("-") + 1, field.id.lastIndexOf("-"));
-      // Plus one because the initial character data takes up the first slot.
+
       const num = parseInt(field.id.substring(field.id.lastIndexOf("-") + 1, field.id.length));
 
       console.debug("modifier num: " + num);
@@ -205,17 +215,29 @@ document.addEventListener("DOMContentLoaded", () => {
   setJsonOutputValue(clone(characterJson));
 });
 
-const createSkinFormPairDiv = () => {
+const createColumnDiv = () => {
   const div = document.createElement("div");
-  div.setAttribute("class", "form-pair skin-form-pair");
+  div.setAttribute("class", "col-6 col-12-small");
   return div;
 };
 
-const createInput = (type, name, id) => {
+const createRowDiv = (classes) => {
+  const div = document.createElement("div");
+  div.setAttribute("class", "row");
+  if (classes) {
+    div.classList.add(...classes);
+  }
+  return div;
+};
+
+const createInput = (type, name, id, placeholder) => {
   const input = document.createElement("input");
   input.setAttribute("type", type);
   input.setAttribute("name", name);
   input.setAttribute("id", id);
+  if (type !== "checkbox") {
+    input.setAttribute("placeholder", placeholder);
+  }
   return input;
 }
 
@@ -225,45 +247,132 @@ const createLabel = (innerHTML) => {
   return label;
 }
 
-let numOfSkins = 0;
-let numOfModifiers = 0;
+const resetFileInput = (element) => {
+  if (!element) {
+    console.error("resetFileInput - Invalid element");
+    return;
+  }
 
-const createSkinElement = (labelName, inputId, inputType, required = false, readOnly = false, value = undefined) => {
-  const label = createLabel(labelName);
-  label.setAttribute("for", inputId);
-  const input = createInput(inputType, inputId, inputId);
+  const resetAndSetString = (element, newStr) => {
+    element.value = '';
+    const label = document.getElementById(element.id + "-label");
+    if (label) {
+      label.innerHTML = newStr;
+      label.classList.remove("file-label--active");
+    }
+  }
+
+  if (element.id.startsWith("skin-spriteName")) {
+    resetAndSetString(element, spritePortraitString);
+  } else if (element.id.startsWith("skin-frames-")) {
+    resetAndSetString(element, spriteFrameString);
+  }
+}
+
+const setOnImageChange = (element) => {
+  element.addEventListener("change", (ev) => {
+    const elem = ev.target;
+    const [file] = elem.files;
+    if (file) {
+      const label = document.getElementById(elem.id + "-label");
+      if (label) {
+        label.innerHTML = "<img id=\"blah\" src=\"" + URL.createObjectURL(file) + "\" alt=\"" + file.name + "\" /><input type=\"button\" class=\"image-remove-button\"value=\"remove\" onclick=\"resetFileInput(document.getElementById('" + elem.id + "'));\" />";
+        label.classList.add("file-label--active");
+      }
+      
+      if (elem.id.startsWith("skin-frames-")) {
+        const clonedDiv = elem.parentNode.cloneNode(false);
+        const newId = "skin-frames-" + (parseInt(elem.id.substring(elem.id.lastIndexOf("-") + 1, elem.id.length)) + 1);
+        for (const child of elem.parentNode.childNodes) {
+          const clonedChild = child.cloneNode(false);
+
+          if (clonedChild.id.endsWith("-label")) {
+            clonedChild.innerHTML = spriteFrameString;
+            clonedChild.classList.remove("file-label--active");
+            clonedChild.id = newId + "-label";
+            clonedChild.setAttribute("for", newId);
+          } else if (clonedChild.id === elem.id) {
+            clonedChild.id = newId;
+            clonedChild.name = newId;
+            setOnImageChange(clonedChild);
+          }
+
+          clonedDiv.appendChild(clonedChild);
+        }
+
+        elem.parentNode.parentNode.appendChild(clonedDiv);
+      }
+    }
+  });
+};
+
+const createSkinElement = (labelName, inputId, inputType, required = false, readOnly = false, hidden = false, value = undefined) => {
+  let label = null;
+  if (inputType === "file" || inputType === "checkbox") {
+    label = createLabel(labelName);
+    label.setAttribute("for", inputId);
+    label.setAttribute("class", inputType + "-label");
+    label.id = inputId + "-label";
+  }
+
+  const input = createInput(inputType, inputId, inputId, labelName);
   input.required = required;
   input.readOnly = readOnly;
+  if (inputType == "file") {
+    input.accept="image/png";
+    setOnImageChange(input);
+  }
+
   if (value !== undefined) {
     input.value = value;
   }
-  const div = createSkinFormPairDiv();
-  div.appendChild(label);
+  if (hidden) {
+    input.className += " hide";
+  }
+  const div = createColumnDiv();
+  if (label != null && inputType !== "checkbox") {
+    div.appendChild(label);
+  }
   div.appendChild(input);
+  if (label != null && inputType === "checkbox") {
+    div.appendChild(label);
+  }
   return div;
+}
+
+const createFramesDiv = (num) => {
+  const row = createRowDiv();
+  const element = createSkinElement(spriteFrameString, "skin-frames-" + numOfSkins, "file");
+  element.classList.remove("col-6", "col-12-small");
+  element.classList.add("col-2");
+  row.appendChild(element);
+  return row;
 }
 
 document.getElementById("addSkinForm").addEventListener("click", () => {
   const div = document.createElement("div");
-  div.setAttribute("class", "skin-form-instance");
+  div.setAttribute("class", "box");
   div.setAttribute("id", "skin-form-" + numOfSkins);
 
-  div.appendChild(createLabel("Skin " + (numOfSkins + 1)));
-  div.appendChild(createSkinElement("Id", "skin-id-" + numOfSkins, "number", false, true));
+  // div.appendChild(createLabel("Skin " + (numOfSkins + 1)));
+  const header = document.createElement("h4");
+  header.innerHTML = "Skin " + (numOfSkins + 1);
+  div.appendChild(header);
+  // div.appendChild(createSkinElement("Id", "skin-id-" + numOfSkins, "number", false, true, true));
   div.appendChild(createSkinElement("Skin name", "skin-name-" + numOfSkins, "text"));
-  div.appendChild(createSkinElement("Texture Name", "skin-textureName-" + numOfSkins, "text", false, true));
-  div.appendChild(createSkinElement("Sprite Portrait", "skin-spriteName-" + numOfSkins, "file"));
-  div.appendChild(createSkinElement("Walking Frames", "skin-walkingFrames-" + numOfSkins, "number", false, true));
+  // div.appendChild(createSkinElement("Texture Name", "skin-textureName-" + numOfSkins, "text", false, true, true));
+  div.appendChild(createSkinElement(spritePortraitString, "skin-spriteName-" + numOfSkins, "file"));
+  // div.appendChild(createSkinElement("Walking Frames", "skin-walkingFrames-" + numOfSkins, "number", false, true, true));
   div.appendChild(createSkinElement("Unlocked", "skin-unlocked-" + numOfSkins, "checkbox"));
-  div.appendChild(createSkinElement("Frames", "skin-frames-" + numOfSkins, "file"));
+  div.appendChild(createFramesDiv(numOfSkins));
 
   document.getElementById("skinContainer").appendChild(div);
-  document.getElementById("skin-id-" + numOfSkins).value = numOfSkins;
-  document.getElementById("skin-textureName-" + numOfSkins).value = "characters";
-  document.getElementById("skin-walkingFrames-" + numOfSkins).value = 4;
+  // document.getElementById("skin-id-" + numOfSkins).value = numOfSkins;
+  // document.getElementById("skin-textureName-" + numOfSkins).value = "characters";
+  // document.getElementById("skin-walkingFrames-" + numOfSkins).value = 4;
   document.getElementById("skin-unlocked-" + numOfSkins).checked = true;
   numOfSkins += 1;
-  document.getElementById("removeSkinForm").hidden = false;
+  removeHide("removeSkinForm");
 });
 
 document.getElementById("removeSkinForm").addEventListener("click", () => {
@@ -272,7 +381,7 @@ document.getElementById("removeSkinForm").addEventListener("click", () => {
     element.parentNode.removeChild(element);
     numOfSkins -= 1;
     if (numOfSkins === 0) {
-      document.getElementById("removeSkinForm").hidden = true;
+      hide("removeSkinForm");
     }
     return false;
   }
@@ -286,7 +395,7 @@ const createModifierElement = (labelName, inputId, required = false, step=0.1) =
   const input = createInput("number", inputId, inputId);
   input.required = required;
   input.step = step;
-  const div = createSkinFormPairDiv();
+  const div = createColumnDiv();
   div.appendChild(label);
   div.appendChild(input);
   return div;
@@ -323,7 +432,7 @@ document.getElementById("addModifierForm").addEventListener("click", () => {
     document.getElementById("mod-level-0").readOnly = true;
   }
   numOfModifiers += 1;
-  document.getElementById("removeModifierForm").hidden = false;
+  removeHide("removeModifierForm");
 });
 
 document.getElementById("removeModifierForm").addEventListener("click", () => {
@@ -333,7 +442,7 @@ document.getElementById("removeModifierForm").addEventListener("click", () => {
     element.parentNode.removeChild(element);
     numOfModifiers -= 1;
     if (numOfModifiers === 0) {
-      document.getElementById("removeModifierForm").hidden = true;
+      hide("removeModifierForm");
     }
     return false;
   }
@@ -359,7 +468,30 @@ const createChoices = () => {
   showCaseChoices = new Choices(element, {
     removeItemButton: true,
     choices: defaults(),
-    // items: equipmentJson.equipment
+    placeholder: true,
+    placeholderValue: "Showcase items   ",
+    itemSelectText: "",
+    classNames: {
+      button: "choices__button ignore-style",
+      item: "choices__item" // button",
+    },
+    callbackOnCreateTemplates: (template) => {
+      return {
+        item: ({classNames}, data) => {
+          const div = Choices.defaults.templates.item.call(this, showCaseChoices.config, data, showCaseChoices.config.removeItemButton);
+          div.className += " button";
+          if(div.hasChildNodes()) {
+            for (const node of div.childNodes) {
+              if (node.type === "button") {
+                node.innerHTML = "<i class=\"fas fa-times\" style=\"color:#f56a6a\"></i>";
+                break;
+              }
+            }
+          }
+          return div;
+        }
+      }
+    }
   });
 
   const form = document.querySelector("#basic-form");
@@ -375,7 +507,7 @@ const createChoices = () => {
     showCaseChoices.setChoices(defaults(), "value", "label", true);
     createJsonOutput(form);
   });
-}
+};
 
 const setupDownload = () => {
   const button = document.getElementById("downloadButton");
@@ -402,8 +534,26 @@ const setupDownload = () => {
     const obj = new FieldsToZipFile("character_pack", "outputJsonTextArea", ["spriteName"], ["skin-spriteName-", "skin-frames-", "skin-spriteName-"]);
     obj.zip();
   });
+
+
+};
+
+const removeHide = (elementId) => {
+  const element = document.getElementById(elementId);
+  let className = element.className;
+  className = className.replace(/\b(hide)\b/g, "");
+  element.className = className;
+};
+
+const hide = (elementId) => {
+  const element = document.getElementById(elementId);
+  element.className += " hide";
 }
 
+const hideRemoveButtons = () => {
+  hide("removeSkinForm");
+  hide("removeModifierForm");
+};
 
 // Onload
 window.addEventListener("load", (event) => {
@@ -411,7 +561,9 @@ window.addEventListener("load", (event) => {
   for (const form of forms) {
     const onInput = () => {
       // Handle the different types of forms here.
-      createJsonOutput(form);
+      if (form) {
+        createJsonOutput(form);
+      }
     };
     if (form.id === "basic-form" || form.id === "modifiers" || form.id === "skins")
       form.addEventListener("input", onInput);
@@ -420,5 +572,6 @@ window.addEventListener("load", (event) => {
   setupStartingWeapon();
   createChoices();
   setupDownload();
+  hideRemoveButtons();
 });
 
