@@ -264,8 +264,6 @@ const resetFileInput = (element) => {
 
   if (element.id.startsWith("skin-spriteName")) {
     resetAndSetString(element, spritePortraitString);
-  } else if (element.id.startsWith("skin-frames-")) {
-    resetAndSetString(element, spriteFrameString);
   }
 }
 
@@ -278,29 +276,6 @@ const setOnImageChange = (element) => {
       if (label) {
         label.innerHTML = "<img id=\"blah\" src=\"" + URL.createObjectURL(file) + "\" alt=\"" + file.name + "\" /><input type=\"button\" class=\"image-remove-button\"value=\"remove\" onclick=\"resetFileInput(document.getElementById('" + elem.id + "'));\" />";
         label.classList.add("file-label--active");
-      }
-      
-      if (elem.id.startsWith("skin-frames-")) {
-        const clonedDiv = elem.parentNode.cloneNode(false);
-        const newId = "skin-frames-" + (parseInt(elem.id.substring(elem.id.lastIndexOf("-") + 1, elem.id.length)) + 1);
-        for (const child of elem.parentNode.childNodes) {
-          const clonedChild = child.cloneNode(false);
-
-          if (clonedChild.id.endsWith("-label")) {
-            clonedChild.innerHTML = spriteFrameString;
-            clonedChild.classList.remove("file-label--active");
-            clonedChild.id = newId + "-label";
-            clonedChild.setAttribute("for", newId);
-          } else if (clonedChild.id === elem.id) {
-            clonedChild.id = newId;
-            clonedChild.name = newId;
-            setOnImageChange(clonedChild);
-          }
-
-          clonedDiv.appendChild(clonedChild);
-        }
-
-        elem.parentNode.parentNode.appendChild(clonedDiv);
       }
     }
   });
@@ -342,10 +317,23 @@ const createSkinElement = (labelName, inputId, inputType, required = false, read
 
 const createFramesDiv = (num) => {
   const row = createRowDiv();
-  const element = createSkinElement(spriteFrameString, "skin-frames-" + numOfSkins, "file");
-  element.classList.remove("col-6", "col-12-small");
-  element.classList.add("col-2");
-  row.appendChild(element);
+  const text = document.createElement("p");
+  text.innerHTML = "Drag & Drop Individual walking frames Here, they will be sorting alphabetically.";
+  const inputContainer = document.createElement("div");
+  inputContainer.classList.add(`skin-frame-${num}`);
+
+  // row.innerHTML = `
+  // <p>Drag & Drop Images Here...</p>
+  // <form class="skin-frame-${num}">
+  //   <input type="file" id="imgUpload" multiple accept="image/*" onchange="filesManager(this.files)">
+  //   <label class="button" for="imgUpload">...or Upload From Your Computer</label>
+  // </form>
+  // <div id="gallery"></div>
+  // `;
+
+  row.appendChild(text);
+
+
   return row;
 }
 
@@ -550,11 +538,6 @@ const hide = (elementId) => {
   element.className += " hide";
 }
 
-const hideRemoveButtons = () => {
-  hide("removeSkinForm");
-  hide("removeModifierForm");
-};
-
 // Onload
 window.addEventListener("load", (event) => {
   const forms = document.querySelectorAll("form");
@@ -572,6 +555,5 @@ window.addEventListener("load", (event) => {
   setupStartingWeapon();
   createChoices();
   setupDownload();
-  hideRemoveButtons();
 });
 
