@@ -1,4 +1,5 @@
-﻿using Il2CppVampireSurvivors.Data;
+﻿using Bloodlines.src;
+using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Data.Characters;
 using Il2CppVampireSurvivors.Objects;
 using Newtonsoft.Json;
@@ -121,7 +122,7 @@ namespace Bloodlines
         [JsonProperty("showcase", ItemConverterType = typeof(StringEnumConverter))]
         public List<WeaponType> Showcase { get; set; }
 
-        public ModifierStats toModifierStat()
+        public ModifierStats ToModifierStat()
         {
             ModifierStats m = new();
 

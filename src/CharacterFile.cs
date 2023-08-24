@@ -39,85 +39,84 @@ namespace Bloodlines
         public override List<CharacterDataModelWrapper> GetCharacterList()
         {
             List<CharacterDataModelWrapper> characterDatas = new();
+            bool first = true;
+
             CharacterDataModelWrapper wrapper = new();
-            CharacterDataModel model = new();
 
-            CharacterJsonModelv0_1 old = Character[0];
-
-            PropertyInfo[] myProps = old.GetType().GetProperties();
-
-            List<string> toFloat = new() { "Level", "Cooldown" };
-
-            // StartingWeapon causes different type exception, even though they're the same type.
-
-            List<string> stringToString = new() { "CharName", "Surname", "TextureName", "SpriteName" };
-
-            foreach (PropertyInfo prop in myProps)
+            foreach (CharacterJsonModelv0_1 old in Character)
             {
-                if (model.GetType().GetProperty(prop.Name) == null && prop.Name != "StatModifiers")
-                {
-                    Melon<BloodlinesMod>.Logger.Msg($"No match for {prop.Name}");
-                    continue;
-                }
+                CharacterDataModel model = new();
 
-                try
-                {
-                    var value = prop.GetValue(old, null);
 
-                    // if (toFloat.Contains(prop.Name))
-                    // {
-                    //    model.GetType().GetProperty(prop.Name).SetValue(model, Convert.ToSingle(value));
-                    // } else if (prop.Name == "StartingWeapon")
-                    // {
-                    //    model.StartingWeapon = old.StartingWeapon;
-                    if (prop.Name == "Skins")
+                PropertyInfo[] myProps = old.GetType().GetProperties();
+
+                foreach (PropertyInfo prop in myProps)
+                {
+                    if (model.GetType().GetProperty(prop.Name) == null)
                     {
-                        model.Skins = new();
+                        Melon<BloodlinesMod>.Logger.Msg($"No match for {prop.Name}");
+                        continue;
+                    }
 
-                        foreach (SkinObjectModel os in old.Skins)
+                    try
+                    {
+                        var value = prop.GetValue(old, null);
+
+                        if (prop.Name == "Skins" && old.Skins != null)
                         {
-                            SkinObjectModelv0_2 ns = new()
+                            model.Skins = new();
+
+                            foreach (SkinObjectModel os in old.Skins)
                             {
-                                Id = (Il2CppVampireSurvivors.Data.SkinType)os.Id,
-                                Name = os.Name,
-                                SpriteName = os.SpriteName,
-                                TextureName = os.TextureName,
-                                Unlocked = os.Unlocked,
-                                frames = new()
-                            };
+                                SkinObjectModelv0_2 ns = new()
+                                {
+                                    Id = (Il2CppVampireSurvivors.Data.SkinType)os.Id,
+                                    Name = os.Name,
+                                    SpriteName = os.SpriteName,
+                                    TextureName = os.TextureName,
+                                    Unlocked = os.Unlocked,
+                                    frames = new()
+                                };
+                            }
+                        }
+                        else
+                        {
+                            model.GetType().GetProperty(prop.Name).SetValue(model, value);
                         }
                     }
-                    else
+                    catch (Exception e)
                     {
-                        model.GetType().GetProperty(prop.Name).SetValue(model, value);
+                        Melon<BloodlinesMod>.Logger
+                            .Msg($"Failed to convert: {prop.Name} From {prop.PropertyType.FullName} to {model.GetType().GetProperty(prop.Name).PropertyType.FullName} on character: {old.CharName}");
+                        Melon<BloodlinesMod>.Logger.Msg($"{e}");
                     }
                 }
-                catch (Exception e)
+
+                if (first)
                 {
-                    Melon<BloodlinesMod>.Logger
-                        .Msg($"Failed to convert: {prop.Name} From {prop.PropertyType.FullName} to {model.GetType().GetProperty(prop.Name).PropertyType.FullName} on character: {old.CharName}");
-                    Melon<BloodlinesMod>.Logger.Msg($"{e}");
+                    model.PortraitName ??= model.SpriteName;
+                    model.WalkingFrames = 1;
+
+                    if (!model.Skins.Any())
+                    {
+                        SkinObjectModelv0_2 skin = new();
+                        skin.Id = 0;
+                        skin.Name = "Default";
+                        skin.SpriteName = model.SpriteName;
+                        skin.TextureName = "characters";
+                        skin.Unlocked = true;
+                        skin.frames = new();
+
+                        model.Skins.Add(skin);
+                    }
+                    first = false;
                 }
+                
+                wrapper.CharacterSettings.Add(model);
             }
 
-            model.PortraitName ??= model.SpriteName;
-            model.WalkingFrames = 1;
-
-            if (!model.Skins.Any())
-            {
-                SkinObjectModelv0_2 skin = new();
-                skin.Id = 0;
-                skin.Name = "Default";
-                skin.SpriteName = model.SpriteName;
-                skin.TextureName = "characters";
-                skin.Unlocked = true;
-                skin.frames = new();
-
-                model.Skins.Add(skin);
-            }
-
-            wrapper.CharacterSettings.Add(model);
             characterDatas.Add(wrapper);
+
             return characterDatas;
         }
     }
