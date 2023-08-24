@@ -1,4 +1,4 @@
-# Bloodlines - A custom character importer for Vampire Survivors
+# <img src="./docs/images/00051-1768801398.ico" alt="Bloodlines Icon" width="30"/> Bloodlines - A custom character importer for Vampire Survivors
 A mod for Vampire Survivors to help facilitate creating custom characters.
 
 
