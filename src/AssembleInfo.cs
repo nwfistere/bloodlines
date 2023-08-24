@@ -17,5 +17,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 [assembly: Guid("11dc165c-253d-489c-9d97-5b624208faf5")]
-
-//[assembly: HarmonyDontPatchAll]
+// [assembly: HarmonyDontPatchAll]

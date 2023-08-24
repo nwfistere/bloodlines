@@ -1,4 +1,5 @@
-﻿using Il2CppVampireSurvivors.Data;
+﻿using Bloodlines.src;
+using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Data.Characters;
 using Il2CppVampireSurvivors.Objects;
 using Newtonsoft.Json;
@@ -9,9 +10,8 @@ using System.Reflection;
 
 namespace Bloodlines
 {
-
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-    public class CharacterJsonModel
+    public class CharacterJsonModelv0_1
     {
         [JsonProperty("level")]
         public int Level { get; set; }
@@ -122,21 +122,27 @@ namespace Bloodlines
         [JsonProperty("showcase", ItemConverterType = typeof(StringEnumConverter))]
         public List<WeaponType> Showcase { get; set; }
 
-        public ModifierStats toModifierStat()
+        public ModifierStats ToModifierStat()
         {
             ModifierStats m = new();
 
             PropertyInfo[] myProps = GetType().GetProperties();
+
             foreach (PropertyInfo prop in GetType().GetProperties())
             {
                 if (m.GetType().GetProperty(prop.Name) == null)
+                {
                     continue;
+                }
+
                 var value = prop.GetValue(this, null);
+
                 if (prop.Name == "Power")
                 {
                     m.Power = Convert.ToSingle(Power);
                     continue;
                 }
+
                 m.GetType().GetProperty(prop.Name).SetValue(m, value);
             }
 
@@ -165,7 +171,7 @@ namespace Bloodlines
 
         public static explicit operator Skin(SkinObjectModel model)
         {
-            Skin skin = new Skin();
+            Skin skin = new();
 
             skin.id = (SkinType)model.Id;
             skin.name = model.Name;

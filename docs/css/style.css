@@ -1,0 +1,57 @@
+.fName,
+.fSize {
+  display: block;
+}
+.fName {
+  color: var(--button-primary-color-3);
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.fSize {
+  font-size: .8em;
+}
+.fType {
+  font-size: .7em;
+}
+
+.frame-img {
+  max-height: 150px;
+  max-width: 150px;
+}
+
+.align-center {
+  /* display: block !important;
+  margin-left: auto;
+  margin-right: auto; */
+  justify-content: center;
+}
+
+/* File */
+ input[type="file"],
+.file {
+  display: none;
+} 
+
+.file-label {
+  margin-top: 1em;
+  margin-right: 1em;
+  /* margin-bottom: auto !important; */
+  white-space: normal !important; 
+}
+
+.file-label :last-child {
+  margin-bottom: auto !important;
+}
+
+.hover {
+  border-color: var(--color-2);
+  background: #3d4449;
+}
+
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  background-color: var(--input-background-color);
+}

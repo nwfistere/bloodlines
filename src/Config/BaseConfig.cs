@@ -5,9 +5,9 @@ namespace Bloodlines
 {
     public class BaseConfig
     {
-        private readonly string SavePath;
-        private readonly MelonPreferences_Category Category;
-        private readonly Dictionary<string, object> entries = new();
+        readonly string SavePath;
+        readonly MelonPreferences_Category Category;
+        readonly Dictionary<string, object> entries = new();
         public BaseConfig(string SavePath, string CategoryName)
         {
             this.SavePath = SavePath;

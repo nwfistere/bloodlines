@@ -13,11 +13,12 @@ namespace Bloodlines
 
             if (!File.Exists(FilePath))
             {
-                throw new ArgumentException("FilePath does not exist.");
+                throw new ArgumentException($"FilePath does not exist. <{FilePath}>");
             }
 
             byte[] imageBytes = File.ReadAllBytes(FilePath);
             texture = new Texture2D(2, 2);
+
             if (!ImageConversion.LoadImage(texture, imageBytes))
             {
                 throw new Exception("ImageConversion.LoadImage failed");
@@ -25,30 +26,36 @@ namespace Bloodlines
 
             // Point makes the pixels come out much clearer.
             texture.filterMode = FilterMode.Point;
+            texture.name = Path.GetFileNameWithoutExtension(FilePath);
 
             return texture;
         }
 
+        // Not sure which one of these is actually ran ^v Interesting that C# allows this...
         public static Texture2D LoadTexture(string FilePath, TextureFormat format = TextureFormat.RGBA32, bool mipChain = true)
         {
             Texture2D texture;
 
             if (!File.Exists(FilePath))
             {
-                throw new ArgumentException("FilePath does not exist.");
+                throw new ArgumentException($"FilePath does not exist. <{FilePath}>");
             }
 
             byte[] imageBytes = File.ReadAllBytes(FilePath);
             texture = new Texture2D(2, 2, format, mipChain);
+
             if (!ImageConversion.LoadImage(texture, imageBytes))
             {
                 throw new Exception("ImageConversion.LoadImage failed");
             }
 
+            texture.filterMode = FilterMode.Point;
+            texture.name = Path.GetFileNameWithoutExtension(FilePath);
+
             return texture;
         }
 
-        private static readonly Dictionary<Uri, TextureDownloader> downloadCache = new();
+        static readonly Dictionary<Uri, TextureDownloader> downloadCache = new();
 
         public static Texture2D LoadTexture(Uri textureUri)
         {
@@ -57,7 +64,9 @@ namespace Bloodlines
             TextureDownloader textureDownloader;
 
             if (downloadCache.ContainsKey(textureUri))
+            {
                 textureDownloader = downloadCache[textureUri];
+            }
             else
             {
                 textureDownloader = new(textureUri);
@@ -67,8 +76,13 @@ namespace Bloodlines
             texture = new Texture2D(2, 2);
 
             if (!ImageConversion.LoadImage(texture, imageBytes))
+            {
                 throw new Exception("ImageConversion.LoadImage failed");
+            }
+
             downloadCache[textureUri] = textureDownloader;
+            texture.filterMode = FilterMode.Point;
+            texture.name = Path.GetFileNameWithoutExtension(textureUri.LocalPath);
 
             return texture;
         }
@@ -80,6 +94,7 @@ namespace Bloodlines
                 return LoadTexture(textureUri);
             }
             catch { }
+
             return null;
         }
 
@@ -93,11 +108,15 @@ namespace Bloodlines
                 {
                     byte[] imageBytes = File.ReadAllBytes(FilePath);
                     texture = new Texture2D(2, 2);
+
                     if (ImageConversion.LoadImage(texture, imageBytes))
+                    {
                         return texture;
+                    }
                 }
             }
             catch { }
+
             return null;
         }
 
@@ -126,7 +145,16 @@ namespace Bloodlines
 
         public static Sprite LoadSprite(Texture2D texture, Rect rect, Vector2 pivot)
         {
-            return Sprite.Create(texture, rect, pivot);
+            Sprite sprite = Sprite.Create(texture, rect, pivot);
+            sprite.name = texture.name;
+            return sprite;
+        }
+
+        public static Sprite LoadCharacterSprite(string FilePath)
+        {
+            Texture2D texture = LoadTexture(FilePath);
+            // Stadard characters have large values (400?) in the x y parameters of their Rect. I wonder what that's for.
+            return LoadSprite(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0f));
         }
 
         public static Sprite? TryLoadSprite(string FilePath)
@@ -134,10 +162,16 @@ namespace Bloodlines
             try
             {
                 Texture2D? texture = TryLoadTexture(FilePath);
-                if (texture == null) return null;
+
+                if (texture == null)
+                {
+                    return null;
+                }
+
                 return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
             }
             catch { }
+
             return null;
         }
 
@@ -146,10 +180,16 @@ namespace Bloodlines
             try
             {
                 Texture2D? texture = TryLoadTexture(FilePath);
-                if (texture == null) return null;
+
+                if (texture == null)
+                {
+                    return null;
+                }
+
                 return Sprite.Create(texture, rect, pivot);
             }
             catch { }
+
             return null;
         }
 
@@ -160,6 +200,7 @@ namespace Bloodlines
                 return LoadSprite(texture, rect, pivot);
             }
             catch { }
+
             return null;
         }
 
@@ -170,8 +211,8 @@ namespace Bloodlines
                 return LoadSprite(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
             }
             catch { }
+
             return null;
         }
     }
-
 }
