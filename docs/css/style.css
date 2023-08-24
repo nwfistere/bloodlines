@@ -3,7 +3,7 @@
   display: block;
 }
 .fName {
-  color: brown;
+  color: var(--button-primary-color-3);
   word-wrap: break-word;
   white-space: pre-wrap;
   word-break: break-word;
@@ -38,10 +38,6 @@
   margin-right: 1em;
   /* margin-bottom: auto !important; */
   white-space: normal !important; 
-}
-
-.gallery :first-child {
-  margin-left: 1em;
 }
 
 .file-label :last-child {

@@ -5,11 +5,13 @@ class FieldsToZipFile {
    * @param {string} jsonFieldId - json text area id
    * @param {[string]} imageFieldIds - Known existing image field ids. May or may not have anything in them.
    * @param {[string]} imageFieldIdPrefixes - Prefixes of ids that may or may not exist. Append integers onto them and search.
+   * @param {[File]} fileList - A list of arbitrary files
    */
-  constructor(filename, jsonFieldId, imageFieldIds, imageFieldIdPrefixes) {
+  constructor(filename, jsonFieldId, imageFieldIds, imageFieldIdPrefixes, fileList) {
     this.filename = filename;
     this.jsonField = document.getElementById(jsonFieldId);
     this.imageFields = [];
+    this.OtherFiles = [...fileList];
     
     imageFieldIds.forEach((id) => this.imageFields.push(document.getElementById(id)));
 
@@ -31,7 +33,7 @@ class FieldsToZipFile {
    * @returns string BlobUrl - the url to the zip file.
    */
   async zip() {
-    const files = [];
+    const files = [...this.OtherFiles];
     files.push(new File([this.jsonField.textContent], "character.json", {
       type: "text/json",
     }));

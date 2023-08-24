@@ -84,7 +84,7 @@ let numOfModifiers = 0;
 const clone = (obj) => { return JSON.parse(JSON.stringify(obj)); }
 
 const createJsonOutput = (form) => {
-  console.debug(`Running createJsonOutput on form: ${form.id}`);
+  // console.debug(`Running createJsonOutput on form: ${form.id}`);
   if (!form) {
     return;
   }
@@ -118,10 +118,7 @@ const createJsonOutput = (form) => {
     } else if (field.id.startsWith("mod-")) {
       // Modifier objects
       const modField = field.id.substring(field.id.indexOf("-") + 1, field.id.lastIndexOf("-"));
-
       const num = parseInt(field.id.substring(field.id.lastIndexOf("-") + 1, field.id.length));
-
-      console.debug("modifier num: " + num);
 
       while (char.statModifiers[num] == null) {
         char.statModifiers.push({});
@@ -149,8 +146,6 @@ const createJsonOutput = (form) => {
         return;
       }
 
-      console.debug("skin num: " + num);
-
       while (char.skins[num] == null) {
         char.skins.push({});
       }
@@ -161,6 +156,11 @@ const createJsonOutput = (form) => {
         if (!gotField.includes(skinFieldId)) {
           skinObject[skinField] = getFieldValue({ type: "file", files: currentFiles.get(skinFieldId) || [] })
           gotField.push(skinFieldId);
+        }
+        continue;
+      } else if (skinField === "spriteName") {
+        if (field && field.files && field.files.length > 0) {
+          skinObject[skinField] = field.files[0].name;
         }
         continue;
       }
@@ -178,6 +178,25 @@ const createJsonOutput = (form) => {
 
     char[fieldId] = getFieldValue(field);
   }
+
+  // Need: portrait, onEveryLevelup
+  // Hide: bodyOffset
+
+
+  if (char?.skins?.length > 0) {
+    for (let i = 0; i < char.skins.length; i++) {
+      char.skins[i].id = i;
+      char.skins[i].walkingFrames = char.skins[i].frames?.length ?? 0;
+      char.walkingFrames = char.skins[i].walkingFrames;
+    }
+    char.walkingFrames = char.skins[0].walkingFrames;
+
+    if (char.skins[0].spriteName) {
+      char.spriteName = char.skins[0].spriteName;
+    }
+  }
+  // readonly variables to set based on variables above or just default stuff.
+  
 
   setJsonOutputValue(json);
 }
@@ -303,7 +322,7 @@ const setOnImageChange = (element) => {
     if (file) {
       const label = document.getElementById(elem.id + "-label");
       if (label) {
-        label.innerHTML = "<img id=\"blah\" src=\"" + URL.createObjectURL(file) + "\" alt=\"" + file.name + "\" /><input type=\"button\" class=\"image-remove-button\"value=\"remove\" onclick=\"resetFileInput(document.getElementById('" + elem.id + "'));\" />";
+        label.innerHTML = "<img id=\"" + elem.id + "-img" + "\" src=\"" + URL.createObjectURL(file) + "\" alt=\"" + file.name + "\" /><input type=\"button\" class=\"image-remove-button\"value=\"remove\" onclick=\"resetFileInput(document.getElementById('" + elem.id + "'));\" />";
         label.classList.add("file-label--active");
       }
     }
@@ -458,8 +477,11 @@ const capitalizeFirstLetter = (string) => {
 const createModiferSection = (i) => {
   const box = createDiv({classList: [ "box" ]});
   const div = createDiv({classList: ["modifier-form-instance", "row", "gtr-uniform"], id: `modifier-form-${i}`});
-
-  box.appendChild(createLabel("Stat Modifier " + (i + 1)));
+  if (i == 0) {
+    box.appendChild(createLabel("Initial stats"));
+  } else {
+    box.appendChild(createLabel("Stat Modifier " + (i)));
+  }
 
   const ShiftByOne = ["level", "revivals", "skips", "banish", "rerolls"]
 
@@ -484,10 +506,9 @@ document.getElementById("addModifierForm").addEventListener("click", () => {
 });
 
 document.getElementById("removeModifierForm").addEventListener("click", () => {
-  document.getElementById("spriteName").files
   if (numOfModifiers > 0) {
     const element = document.getElementById("modifier-form-" + (numOfModifiers - 1));
-    element.parentNode.removeChild(element);
+    element.parentNode.parentElement.removeChild(element.parentNode);
     numOfModifiers -= 1;
     if (numOfModifiers === 0) {
       hide("removeModifierForm");
@@ -580,7 +601,7 @@ const setupDownload = () => {
   });
 
   zipButton.addEventListener("click", async () => {
-    const obj = new FieldsToZipFile("character_pack", "outputJsonTextArea", ["spriteName"], ["skin-spriteName-", "skin-frames-", "skin-spriteName-"]);
+    const obj = new FieldsToZipFile("character_pack", "outputJsonTextArea", ["spriteName"], ["skin-spriteName-"], [...currentFiles.values()].flat(1));
     obj.zip();
   });
 
@@ -649,7 +670,7 @@ function previewFile(idPrefix, file) {
 
     fReader.onloadend = function() {
       let wrap = document.createElement('div');
-      wrap.classList.add("file-label", "file-label--active", "col-2");
+      wrap.classList.add("file-label", "file-label--active", "col-3");
 
       let img = document.createElement('img');
       img.classList.add("frame-img");
@@ -657,7 +678,7 @@ function previewFile(idPrefix, file) {
 
       let imgCapt = document.createElement('p');
       let fSize = (file.size / 1000) + ' KB';
-      imgCapt.innerHTML = `<span class="fName">${file.name}</span><span class="fSize">${fSize}</span><span class="fType">${file.type}</span>`;
+      imgCapt.innerHTML = `<span class="fName">${file.name}</span>`; //<span class="fSize">${fSize}</span><span class="fType">${file.type}</span>
 
       gallery.appendChild(wrap).appendChild(img);
       gallery.appendChild(wrap).appendChild(imgCapt);
@@ -682,6 +703,7 @@ function previewFile(idPrefix, file) {
         // Remove this button too.
         document.getElementById(`${prefix}-rm-container`).innerHTML = "";
         currentFiles.set(idPrefix, []);
+        createJsonOutput(document.querySelector("#skins"));
       });
       rmContainer.appendChild(rmButton);
     }
@@ -692,13 +714,12 @@ function previewFile(idPrefix, file) {
 }
 
 const currentFiles = new Map();
-console.debug("new map");
 
-function filesManager(idPrefix, files) {
+const filesManager = (idPrefix, files) => {
   if (!currentFiles.has(idPrefix)) {
     currentFiles.set(idPrefix, []);
   }
-  console.debug(`Before: currentFiles[${idPrefix}] - ${currentFiles.get(idPrefix)}`);
+
   files = [...files];
   files.forEach((file) => previewFile(idPrefix, file));
 
@@ -709,8 +730,25 @@ function filesManager(idPrefix, files) {
   if (form) {
     createJsonOutput(form);
   }
-  console.debug(`After: currentFiles[${idPrefix}] - ${currentFiles.get(idPrefix)}`);
+};
+
+const showMain = () => {
+  const gei = (id) => document.getElementById(id);
+  gei("basic-section").classList.remove("hide");
+  gei("skins-section").classList.remove("hide");
+  gei("modifier-section").classList.remove("hide");
+  gei("output-section").classList.remove("hide");
+  gei("about-section").classList.add("hide");
 }
+
+const showAbout = () => {
+  const gei = (id) => document.getElementById(id);
+  gei("basic-section").classList.add("hide");
+  gei("skins-section").classList.add("hide");
+  gei("modifier-section").classList.add("hide");
+  gei("output-section").classList.add("hide");
+  gei("about-section").classList.remove("hide");
+};
 
 // Onload
 window.addEventListener("load", (event) => {

@@ -30,6 +30,7 @@
   --button-primary-color-1: var(--black-bean-2);
   --button-primary-color-2: var(--blood-red);
   --button-primary-color-3: #7e0000;
+  --sidebar-background-color: #1E1E1E;
 
 }
 
@@ -1576,13 +1577,13 @@ button,
   input[type="button"]:hover,
   button:hover,
   .button:hover {
-    background-color: rgba(245, 106, 106, 0.05); }
+    background-color: var(--blood-red); }
   input[type="submit"]:active,
   input[type="reset"]:active,
   input[type="button"]:active,
   button:active,
   .button:active {
-    background-color: rgba(245, 106, 106, 0.15); }
+    background-color: var(--blood-red); }
   input[type="submit"].icon:before,
   input[type="reset"].icon:before,
   input[type="button"].icon:before,
@@ -1993,7 +1994,7 @@ button,
   -webkit-transition: margin-left 0.5s ease, box-shadow 0.5s ease;
   -ms-transition: margin-left 0.5s ease, box-shadow 0.5s ease;
   transition: margin-left 0.5s ease, box-shadow 0.5s ease;
-  background-color: #f5f6f7;
+  background-color: var(--sidebar-background-color);
   font-size: 0.9em;
   position: relative;
   width: 26em; }
@@ -2014,7 +2015,7 @@ button,
         margin-bottom: 0;
         padding-bottom: 0; }
     #sidebar > .inner > .alt {
-      background-color: #eff1f2;
+      background-color: var(--sidebar-background-color);
       border-bottom: 0;
       margin: -2.22222em 0 4.44444em -2.22222em;
       padding: 2.22222em;

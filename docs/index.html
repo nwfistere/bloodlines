@@ -13,20 +13,12 @@
     <div id="main">
       <div class="inner">
         <header id="header">
-          <a href="index.html" class="logo"><b>Bloodlines</b> - character pack generator</a>
+          <a href="index.html" class="logo"><b>Bloodlines</b> - character pack creator</a>
           <ul class="icons">
             <li><a href="#" class="icon brands fa-discord"><span class="label">Discord</span></a></li>
           </ul>
-          <!-- <ul class="icons">
-              <li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
-              <li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
-              <li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
-              <li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
-              <li><a href="#" class="icon brands fa-medium-m"><span class="label">Medium</span></a></li>
-            </ul> -->
         </header>
-
-        <section>
+        <section id="basic-section">
           <header class="major">
             <h2>Basic Details</h2>
           </header>
@@ -71,7 +63,7 @@
             </div>
           </form>
         </section>
-        <section>
+        <section id="skins-section">
           <!-- Skins -->
           <header class="major">
             <h3 id="elements">Skins</h3>
@@ -82,7 +74,7 @@
                 <div class="col-12-xlarge ">
                   <div class="row gtr-0">
                     <div class="col">
-                      <input type="button" class="primary small" value="add" id="addSkinForm" />
+                      <input type="button" class="small" value="add" id="addSkinForm" />
                     </div>
                     <div class="col">
                       <input type="button" class="small hide" value="remove" id="removeSkinForm" />
@@ -95,12 +87,14 @@
           </form>
         </section>
         <!-- Per level modifiers -->
-        <section>
+        <section id="modifier-section">
+          <header class="major">
+            <h3 id="elements">Stat modifiers</h3>
+          </header>
           <form id="modifiers">
-            <label for="modifier-form-container">Stat modifiers</label>
             <div class="modifier-form" id="modifier-form-container">
               <div class="modifier-form-button form-pair">
-                <input type="button" class="primary small" value="add" id="addModifierForm" />
+                <input type="button" class="small" value="add" id="addModifierForm" />
               </div>
               <div class="modifier-form-button">
                 <input type="button" class="small hide" value="remove" id="removeModifierForm" hidden />
@@ -109,7 +103,7 @@
             </div>
           </form>
         </section>
-        <section>
+        <section id="output-section">
           <!-- Output -->
           <form id="output">
             <div class="form-pair field-full">
@@ -124,104 +118,68 @@
             <input type="button" id="downloadZipButton" value="Download Zip"></input>
           </div>
         </section>
-        </inner>
+        <section id="about-section" class="hide">
+          <header class="major">
+            <h2>About</h2>
+          </header>
+          <div>
+            <h5>What's bloodlines</h5>
+            <p>Bloodlines is a custom character import mod for the game <a href="https://store.steampowered.com/app/1794680/Vampire_Survivors/">Vampire Survivors</a> by <a href="https://poncle.games/">Poncle</a>.</p>
+            <h5>What's this website?</h5>
+            <p>This website hosts a tool to create custom character packs for the bloodlines mod.</p>
+            <h5>What's a character pack?</h5>
+            <p>A character pack is what bloodline uses to import custom characters. It's a zipfile containing two types of files: one .json file and 1 to many .png files.</p>
+            <h5>Is bloodlines safe to use?</h5>
+            <p>
+              Bloodlines is opensource software (under the <a href="../LICENSE">MIT License</a>)
+              therefore you can view and verify the <a href="https://github.com/nwfistere/bloodlines">code</a>
+              doesn't have any malicious material in it. Even though there's no intentionally
+              malicious material in this mod doesn't mean your save file might become corrupt.
+              This mod provides no guarentee. Always keeps backups of your saves when modding your games.
+            </p>
+            <h5>Is this tool safe to use?</h5>
+            <p>
+              The custom character pack creator website is built purely in frontend javascript. This means even though you upload files and receive a zip back, the files do not go to any server.
+            </p>
+            <h5>Can I share my character packs anywhere?</h5>
+            <p>
+              I'm planning on making a discord for sharing custom character packs.
+            </p>
+          </div>
+        </section>
       </div>
-    </div> <!-- main -->
-  <!--
+    </div>
     <div id="sidebar">
       <div class="inner">
-
-        <section id="search" class="alt">
-          <form method="post" action="#">
-            <input type="text" name="query" id="query" placeholder="Search">
-          </form>
-        </section>
-    
         <nav id="menu">
           <header class="major">
             <h2>Menu</h2>
           </header>
           <ul>
-            <li><a href="index.html">Homepage</a></li>
-            <li><a href="generic.html">Generic</a></li>
+            <li><a onclick="showMain()">Homepage</a></li>
+            <li><a onclick="showAbout()">About</a></li>
             <li><a href="elements.html">Elements</a></li>
-            <li>
-              <span class="opener">Submenu</span>
-              <ul>
-                <li><a href="#">Lorem Dolor</a></li>
-                <li><a href="#">Ipsum Adipiscing</a></li>
-                <li><a href="#">Tempus Magna</a></li>
-                <li><a href="#">Feugiat Veroeros</a></li>
-              </ul>
-            </li>
-            <li><a href="#">Etiam Dolore</a></li>
-            <li><a href="#">Adipiscing</a></li>
-            <li>
-              <span class="opener">Another Submenu</span>
-              <ul>
-                <li><a href="#">Lorem Dolor</a></li>
-                <li><a href="#">Ipsum Adipiscing</a></li>
-                <li><a href="#">Tempus Magna</a></li>
-                <li><a href="#">Feugiat Veroeros</a></li>
-              </ul>
-            </li>
-            <li><a href="#">Maximus Erat</a></li>
-            <li><a href="#">Sapien Mauris</a></li>
-            <li><a href="#">Amet Lacinia</a></li>
           </ul>
         </nav>
-    
-        <section>
-          <header class="major">
-            <h2>Ante interdum</h2>
-          </header>
-          <div class="mini-posts">
-            <article>
-              <a href="#" class="image"><img src="images/pic07.jpg" alt=""></a>
-              <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore aliquam.</p>
-            </article>
-            <article>
-              <a href="#" class="image"><img src="images/pic08.jpg" alt=""></a>
-              <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore aliquam.</p>
-            </article>
-            <article>
-              <a href="#" class="image"><img src="images/pic09.jpg" alt=""></a>
-              <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore aliquam.</p>
-            </article>
-          </div>
-          <ul class="actions">
-            <li><a href="#" class="button">More</a></li>
-          </ul>
-        </section>
-    
-        <section>
-          <header class="major">
-            <h2>Get in touch</h2>
-          </header>
-          <p>Sed varius enim lorem ullamcorper dolore aliquam aenean ornare velit lacus, ac varius enim lorem ullamcorper
-            dolore. Proin sed aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-          <ul class="contact">
-            <li class="icon solid fa-envelope"><a href="#">information@untitled.tld</a></li>
-            <li class="icon solid fa-phone">(000) 000-0000</li>
-            <li class="icon solid fa-home">1234 Somewhere Road #8254<br>
-              Nashville, TN 00000-0000</li>
-          </ul>
-        </section>
-    
         <footer id="footer">
-          <p class="copyright">© Untitled. All rights reserved. Demo Images: <a href="https://unsplash.com">Unsplash</a>.
-            Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+          <p class="copyright">© 2023 nwfistere. All rights reserved. <a href="../LICENSE">MIT LICENSE</a>.
+            Design (Modified by nwfistere): <a href="https://html5up.net">HTML5 UP</a>. (<a
+              href="external/html5up-editorial/LICENSE.txt">CC 3.0 LICENSE</a>)
+          </p>
         </footer>
-    
       </div>
       <a href="#sidebar" class="toggle">Toggle</a>
     </div>
-  -->
   </div> <!-- wrapper -->
   <script type="text/javascript" src="external/zip/zip.min.js"></script>
   <script type="text/javascript" src="external/choices/scripts/choices.min.js"></script>
   <script type="text/javascript" src="js/zipper.js"></script>
   <script type="text/javascript" src="js/create-character.js"></script>
+  <script type="text/javascript" src="external/html5up-editorial/assets/js/breakpoints.min.js"></script>
+  <script type="text/javascript" src="external/html5up-editorial/assets/js/browser.min.js"></script>
+  <script type="text/javascript" src="external/html5up-editorial/assets/js/jquery.min.js"></script>
+  <script type="text/javascript" src="external/html5up-editorial/assets/js/util.js"></script>
+  <script type="text/javascript" src="external/html5up-editorial/assets/js/main.js"></script>
   <link rel="stylesheet" href="external/choices/styles/choices.css" />
   <link rel="stylesheet" href="external/html5up-editorial/assets/css/fontawesome-all.min.css" />
   <link rel="stylesheet" href="external/html5up-editorial/assets/css/main.css" />
