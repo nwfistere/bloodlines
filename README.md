@@ -3,39 +3,61 @@ A mod for Vampire Survivors to help facilitate creating custom characters.
 
 
 ## Installing for the first time
-1. Install MelonLoader - [Installation Instructions](https://melonwiki.xyz/#/?id=requirements)		
-	> [!WARNING]
-	> **Important** The game must run at least once after installing melon loader before going onto the next steps.
-2. Download bloodlines.dll from newest release - [Latest Release](https://github.com/nwfistere/bloodlines/releases/latest)
-3. Add bloodlines.dll the mods folder in Vampire Survivors
+1. Install MelonLoader - [Installation Instructions](https://melonwiki.xyz/#/?id=requirements) **IMPORTANT:** Start the game at least once prior to going to the next step.
+3. Download bloodlines.dll from newest release - [Latest Release](https://github.com/nwfistere/bloodlines/releases/latest)
+4. Add bloodlines.dll the mods folder in Vampire Survivors
    - Question: Where's my game installed?
 	 - Answer: Go to your steam library, in the list of your games: right-click on Vampire Survivors, go to properties -> Installed Files -> Browse. That is the base folder of Vampire Survivors. If you installed Melonloader correctly you should see a mods folder.
-4. Run Vampire Survivors again and the mod will create the required directories.
-5. Add your custom character pack (zip file) into `..\Vampire Survivors\UserData\Bloodlines`. The zip file should be next to config.cfg. Do NOT unzip, the mod will do it for you.
-6. Restart Vampire Survivors.
+5. Run Vampire Survivors again and the mod will create the required directories.
+6. Add your custom character pack (zip file) into `..\Vampire Survivors\UserData\Bloodlines`. The zip file should be next to config.cfg. Do NOT unzip, the mod will do it for you.
+7. Restart Vampire Survivors.
 
-## Adding a character
-Custom characters can be added to the game being downloading and copying a zip file to the Bloodlines directory ("Vampire Survivors/UserData/Bloodlines"). Once the game starts the character will be imported and the zip file will be deleted.
+## Skin Installation
+Did you friend make a super cool custom character and they want to share it with you? All they have to do is share the character pack with you.
+1. Download the zip file they send you (shared somewhere like discord)
+2. copy the zip file to the  `<Vampire Survivors Location>/UserData/Bloodlines` folder. No need to unzip
+4. start the game.
 
-## Creating your own characters
-**TODO:** More info needed
+## Creating your own character packs!
+### **New!** - Easily create a custom character using the new tool - [HERE](https://nwfistere.github.io/bloodlines/)
+### Character packs contain two types of items:
+1. A json file - This contains the character data: Starting weapon, which sprites to use, power level, etc.
+2. png files - The character sprites. (These must be referenced by filename in the json file)
 
-Zip files are used to import characters into the game.
-The zip files contain two things:
-1. character.json
- - This is a json document that holds all the info on the character. Name, starting weapon, strength, etc. Currently it mimics the Vampire Survivors character json data.
-2. png files
- - The sprite(s) you want to use for the character. The json document must reference them.
+### How to zip files together for a character pack
+1. select the files you want to zip together - press `ctrl` + `left-click` each file you want, they should all be highlighted.
+2. right click and select Send to > Compressed (zipped) folder
+3. Rename the pack to whatever you want.
+5. View the contents of the zip by opening it with windows explorer or a zip utility like 7zip.
+**Note: There should be no folders in the zip file, just the json file and png files.**
+
+### See [examples](./examples) for info on how to format json file and example character pack.
+
+## Known bugs/limitations
+This mod is in very early in development stages, but I wanted to get testers as quickly as possible so I know what works and what doesn't with the packs and the mod.
+1. Sprite scaling doesn't work in game. Keep your sprites generally around 50x50 pixels no bigger than 200x200px or they will be obnoxious in game.
+2. Custom character progress isn't saved.
+3. Plenty of visual bugs
+    - Legionnaire's sprites don't spawn correctly
 
 
 ## Json Schema
-**TODO:** Need a wiki/readme for this.
+See [examples](./examples)
 
 ## Sharing skins
 **TODO:** Make a discord for this or something.
 
-## Issues
-See issues tab
+## Known bugs/limitations
+This mod is in very early in development stages, but I wanted to get testers as quickly as possible so I know what works and what doesn't with the packs and the mod.
+1. Sprite scaling doesn't work in game. Keep your sprites generally around 50x50 pixels no bigger than 200x200px or they will be obnoxious in game.
+2. Custom character progress isn't saved.
+3. Plenty of visual bugs
+    - Legionnaire's sprites don't spawn correctly
+
+## Future plans
+1. Spritesheet/Sprite atlas support (With a reference json file anyway)
+2. Saving character progress (eggs, cleared stages, exp gained, etc)
+3. Additional animation support
 
 ## License
 [See LICENSE](./LICENSE)
