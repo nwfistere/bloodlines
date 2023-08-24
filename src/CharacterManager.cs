@@ -24,7 +24,7 @@ namespace Bloodlines
         {
             this.ZipPath = ZipPath;
             this.ExtractPath = ExtractPath;
-            this.SavePackPath = Path.Combine(DataPath, "Installed Packs");
+            SavePackPath = Path.Combine(DataPath, "Installed Packs");
 
             try
             {
@@ -35,14 +35,19 @@ namespace Bloodlines
             catch (Exception e)
             {
                 Melon<BloodlinesMod>.Logger.Error($"Error: {e}");
-                Melon<BloodlinesMod>.Logger.Error($"Submit an issue for this exception including all of the stacktrace and extra data.");
+                Melon<BloodlinesMod>.Logger
+                    .Error($"Submit an issue for this exception including all of the stacktrace and extra data.");
                 Melon<BloodlinesMod>.Logger.Error($"To: https://github.com/nwfistere/bloodlines/issues");
+
                 if (e.Data.Count > 0)
                 {
                     Melon<BloodlinesMod>.Logger.Error("Extra Data:");
+
                     foreach (DictionaryEntry de in e.Data)
-                        Melon<BloodlinesMod>.Logger.Error("    Key: {0,-20}      Value: {1}", "'" + de.Key.ToString() + "'", de.Value);
+                        Melon<BloodlinesMod>.Logger
+                            .Error("    Key: {0,-20}      Value: {1}", "'" + de.Key.ToString() + "'", de.Value);
                 }
+
                 success = false;
             }
         }
@@ -122,6 +127,7 @@ namespace Bloodlines
             }
 
             string newFilePath = filePath.Insert(filePath.Length - 4, "-" + level);
+
             if (!File.Exists(newFilePath))
             {
                 return newFilePath;
@@ -129,7 +135,6 @@ namespace Bloodlines
 
             return GetUnusedName(filePath, ++level);
         }
-
 
         public static bool DirectoryEmpty(string path)
         {
@@ -144,7 +149,8 @@ namespace Bloodlines
                 {
                     Directory.CreateDirectory(path);
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 e.Data.Add("CharacterManager.CreateDirectory()", path);
                 throw;
@@ -194,7 +200,6 @@ namespace Bloodlines
 
                             using (StreamReader reader = new(stream))
                                 jsonString = reader.ReadToEnd();
-                            
 
                             handleJsonFileString(outputJsonFile, jsonString);
                             entry.ExtractToFile(outputJsonFile);
@@ -214,12 +219,14 @@ namespace Bloodlines
                             {
                                 Melon<BloodlinesMod>.Logger
                                     .Error($"Error: {imageFilePath} already exists.\nAre you trying to reimport the same character? Rename the zip file to something unique to fix this issue.");
+
                                 throw;
                             }
                             catch (Exception e)
                             {
                                 Melon<BloodlinesMod>.Logger
                                     .Error($"Error: Unexpected error while extracting image {entry.Name} from zip file. {e}");
+
                                 throw;
                             }
                         }
@@ -239,6 +246,7 @@ namespace Bloodlines
             {
                 Melon<BloodlinesMod>.Logger
                     .Error($"Error: File did not exist. Do you have permission to access the directory?");
+
                 Melon<BloodlinesMod>.Logger.Error($"Skipping file: {filePath} - {exception}");
                 CleanupFiles(filesToClean);
                 return;

@@ -82,10 +82,12 @@ namespace Bloodlines
                 if (ex.Data.Count > 0)
                 {
                     MelonLogger.Error("Extra Data:");
+
                     foreach (DictionaryEntry de in ex.Data)
                         MelonLogger.Error("    Key: {0,-20}      Value: {1}",
                                           "'" + de.Key.ToString() + "'", de.Value);
                 }
+
                 return false;
             }
         }
@@ -175,10 +177,12 @@ namespace Bloodlines
                             string framePath = System.IO.Path.Join(character.BaseDirectory, frame);
                             c.SpriteAnimation._animations["walk"]._frames.Add(SpriteImporter.LoadCharacterSprite(framePath));
                         }
+
                         if (skin.frames.Any())
                         {
                             c.SpriteAnimation.Play("walk");
-                        } else
+                        }
+                        else
                         {
                             c._hasWalkingAnimation = false;
                         }
@@ -200,6 +204,7 @@ namespace Bloodlines
             {
                 Melon<BloodlinesMod>.Logger
                     .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
+
                 if (isCustomCharacter(__instance._currentCharacter.CharacterType))
                 {
                     CharacterDataModelWrapper character = getCharacterManager().characterDict[__instance._currentCharacter.CharacterType];
@@ -354,7 +359,6 @@ namespace Bloodlines
                     __instance.Type = cType;
                     __instance._Background.name = __instance.name;
                     __instance.SetWeaponIconSprite(dat);
-                    
 
                     playerOptions._config.BoughtCharacters.Add(cType);
 

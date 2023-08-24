@@ -9,8 +9,8 @@ const equipmentJson = {
 };
 
 const characterJson = {
-  "version": "0.1",
-  "character": [
+  "version": "0.2",
+  "characters": [
     {
       "level": 1,
       "startingWeapon": "",
@@ -19,6 +19,7 @@ const characterJson = {
       "surname": "",
       "textureName": "characters",
       "spriteName": "",
+      "portraitName": "",
       "skins": [],
       "currentSkinIndex": 0,
       "walkingFrames": 1,
@@ -100,7 +101,7 @@ const createJsonOutput = (form) => {
 
   const gotField = [];
 
-  const char = json.character[0];
+  const char = json.characters[0];
   for (let field of form.elements) {
     if (!field.id || field.disabled || field.type === "reset" || field.type === "submit" || field.type === "button") {
       continue;
@@ -193,6 +194,7 @@ const createJsonOutput = (form) => {
 
     if (char.skins[0].spriteName) {
       char.spriteName = char.skins[0].spriteName;
+      char.portraitName = char.skins[0].spriteName;
     }
   }
   // readonly variables to set based on variables above or just default stuff.

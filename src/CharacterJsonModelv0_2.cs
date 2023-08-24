@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -96,7 +95,7 @@ namespace Bloodlines
                 }
 
                 var value = prop.GetValue(stats, null);
-                
+
                 if (statsToFloat.Contains(prop.Name))
                 {
                     c.GetType().GetProperty(prop.Name).SetValue(c, Convert.ToSingle(value));
@@ -123,7 +122,8 @@ namespace Bloodlines
                 {
                     foreach (StatModifierJsonModelv0_2 statMod in StatModifiers.Skip(1))
                         modelWrapper.CharacterSettings.Add(statMod.toCharacterDataModel());
-                } else if (prop.Name == "OnEveryLevelUp" && OnEveryLevelUp != null)
+                }
+                else if (prop.Name == "OnEveryLevelUp" && OnEveryLevelUp != null)
                 {
                     c.OnEveryLevelUp = OnEveryLevelUp.toModifierStat();
                 }
@@ -221,7 +221,7 @@ namespace Bloodlines
             foreach (PropertyInfo prop in GetType().GetProperties())
             {
                 try
-                { 
+                {
                     if (m.GetType().GetProperty(prop.Name) == null)
                     {
                         continue;
@@ -229,8 +229,8 @@ namespace Bloodlines
 
                     var value = prop.GetValue(this, null);
                     m.GetType().GetProperty(prop.Name).SetValue(m, value);
-
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     e.Data.Add("CharacterDataModel.toCharacterDataModel().prop.Name", prop.Name);
                     throw;
@@ -267,12 +267,14 @@ namespace Bloodlines
                     {
                         c.GetType().GetProperty(prop.Name).SetValue(c, value);
                     }
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     e.Data.Add("CharacterDataModel.toCharacterDataModel().prop.Name", prop.Name);
                     throw;
                 }
             }
+
             return c;
         }
     }

@@ -23,7 +23,6 @@ namespace Bloodlines
 
                 while (!request.isDone)
                     Thread.Sleep(50);
-                
 
                 if (uwr.result != UnityWebRequest.Result.Success)
                 {
