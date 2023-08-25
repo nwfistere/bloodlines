@@ -13,7 +13,7 @@ A mod for Vampire Survivors to help facilitate creating custom characters.
 7. Restart Vampire Survivors.
 
 ## Character Installation
-Did you friend make a super cool custom character and they want to share it with you? All they have to do is share the character pack with you.
+Did your friend make a super cool custom character and they want to share it with you? All they have to do is share the character pack with you.
 1. Download the zip file they send you (shared somewhere like discord)
 2. copy the zip file to the  `<Vampire Survivors Location>/UserData/Bloodlines` folder. No need to unzip
 4. start the game.
