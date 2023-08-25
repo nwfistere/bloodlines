@@ -12,7 +12,7 @@ A mod for Vampire Survivors to help facilitate creating custom characters.
 6. Add your custom character pack (zip file) into `..\Vampire Survivors\UserData\Bloodlines`. The zip file should be next to config.cfg. Do NOT unzip, the mod will do it for you.
 7. Restart Vampire Survivors.
 
-## Skin Installation
+## Character Installation
 Did you friend make a super cool custom character and they want to share it with you? All they have to do is share the character pack with you.
 1. Download the zip file they send you (shared somewhere like discord)
 2. copy the zip file to the  `<Vampire Survivors Location>/UserData/Bloodlines` folder. No need to unzip
