@@ -44,8 +44,6 @@ This mod is in very early in development stages, but I wanted to get testers as 
 ## Json Schema
 See [examples](./examples)
 
-## Sharing skins
-**TODO:** Make a discord for this or something.
 
 ## Known bugs/limitations
 This mod is in very early in development stages, but I wanted to get testers as quickly as possible so I know what works and what doesn't with the packs and the mod.
