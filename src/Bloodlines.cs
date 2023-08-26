@@ -108,6 +108,7 @@ namespace Bloodlines
 
         public static void TimerCallback(object stateInfo)
         {
+#if DEBUG
             if (gameManager != null && gameManager.PlayerOne != null && gameManager.PlayerOne.PlayerStats != null)
             {
                 PlayerModifierStats stats = gameManager.PlayerOne.PlayerStats;
@@ -131,6 +132,7 @@ namespace Bloodlines
                         Melon<BloodlinesMod>.Logger.Msg($"{prop.Name} = <{prop.GetValue(stats)}>");
                 }
             }
+# endif // DEBUG
         }
 
         [HarmonyPatch(typeof(GameManager))]
@@ -172,6 +174,7 @@ namespace Bloodlines
                             c.Rend.sprite = SpriteImporter.LoadCharacterSprite(character.SpritePath);
                         }
 
+                        c.SpriteAnimation._animations["walk"]._frames.Clear();
                         foreach (string frame in skin.frames)
                         {
                             string framePath = System.IO.Path.Join(character.BaseDirectory, frame);
@@ -202,6 +205,12 @@ namespace Bloodlines
             [HarmonyPostfix]
             static void OnShowStart_Postfix(RecapPage __instance)
             {
+#if DEBUG
+                if (BloodlinesMod._Timer != null) {
+                    BloodlinesMod._Timer.Dispose();
+                    BloodlinesMod._Timer = null;
+                }
+#endif
                 Melon<BloodlinesMod>.Logger
                     .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
 
