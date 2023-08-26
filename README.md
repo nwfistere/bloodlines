@@ -1,6 +1,7 @@
 # <img src="./docs/images/00051-1768801398.ico" alt="Bloodlines Icon" width="30"/> Bloodlines - A custom character importer for Vampire Survivors
 A mod for Vampire Survivors to help facilitate creating custom characters.
 
+## Join the official bloodlines discord [Here!](https://discord.gg/ScfxCepsRb)
 
 ## Installing for the first time
 1. Install MelonLoader - [Installation Instructions](https://melonwiki.xyz/#/?id=requirements) **IMPORTANT:** Start the game at least once prior to going to the next step.
@@ -46,16 +47,10 @@ See [examples](./examples)
 
 
 ## Known bugs/limitations
-This mod is in very early in development stages, but I wanted to get testers as quickly as possible so I know what works and what doesn't with the packs and the mod.
-1. Sprite scaling doesn't work in game. Keep your sprites generally around 50x50 pixels no bigger than 200x200px or they will be obnoxious in game.
-2. Custom character progress isn't saved.
-3. Plenty of visual bugs
-    - Legionnaire's sprites don't spawn correctly
+See: https://github.com/nwfistere/bloodlines/labels/bug Feel free to open any bugs.
 
 ## Future plans
-1. Spritesheet/Sprite atlas support (With a reference json file anyway)
-2. Saving character progress (eggs, cleared stages, exp gained, etc)
-3. Additional animation support
+See: https://github.com/nwfistere/bloodlines/labels/enhancement
 
 ## License
 [See LICENSE](./LICENSE)
