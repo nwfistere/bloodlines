@@ -1,5 +1,4 @@
-﻿using Bloodlines.src;
-using Il2CppVampireSurvivors.Data;
+﻿using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Data.Characters;
 using Il2CppVampireSurvivors.Objects;
 using Newtonsoft.Json;

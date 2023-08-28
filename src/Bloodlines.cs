@@ -2,12 +2,16 @@
 using HarmonyLib;
 using Il2CppNewtonsoft.Json;
 using Il2CppNewtonsoft.Json.Linq;
+using Il2CppVampireSurvivors;
 using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Data.Characters;
 using Il2CppVampireSurvivors.Framework;
 using Il2CppVampireSurvivors.Framework.NumberTypes;
+using Il2CppVampireSurvivors.Graphics;
 using Il2CppVampireSurvivors.Objects;
 using Il2CppVampireSurvivors.Objects.Characters;
+using Il2CppVampireSurvivors.Objects.Items;
+using Il2CppVampireSurvivors.Objects.Pickups;
 using Il2CppVampireSurvivors.UI;
 using MelonLoader;
 using System;
@@ -135,6 +139,108 @@ namespace Bloodlines
 # endif // DEBUG
         }
 
+        // SpriteAnimationController
+
+        [HarmonyPatch(typeof(SpriteAnimationController))]
+        static class SpriteAnimationController_Patch
+        {
+            [HarmonyPatch(nameof(SpriteAnimationController.OnUpdate), new Type[] { })]
+            [HarmonyPrefix]
+            static void OnUpdate_Prefix(SpriteAnimationController __instance)
+            {
+                // Melon<BloodlinesMod>.Logger.Msg($"BaseSpriteAnimation.{MethodBase.GetCurrentMethod()?.Name}");
+            }
+
+            [HarmonyPatch(nameof(SpriteAnimationController.Add), new Type[] { typeof(BaseSpriteAnimation) })]
+            [HarmonyPrefix]
+            static void Add_Prefix(SpriteAnimationController __instance, BaseSpriteAnimation baseSpriteAnimation)
+            {
+                Melon<BloodlinesMod>.Logger.Msg($"BaseSpriteAnimation.{MethodBase.GetCurrentMethod()?.Name}");
+            }
+
+            [HarmonyPatch(nameof(SpriteAnimationController.Remove), new Type[] { typeof(BaseSpriteAnimation) })]
+            [HarmonyPrefix]
+            static void Remove_Prefix(SpriteAnimationController __instance, BaseSpriteAnimation baseSpriteAnimation)
+            {
+                Melon<BloodlinesMod>.Logger.Msg($"BaseSpriteAnimation.{MethodBase.GetCurrentMethod()?.Name}");
+            }
+        }
+
+        [HarmonyPatch(typeof(Pickup))]
+        class Pickup_Patch
+        {
+            // Bugfix: Allows gems to be picked up, even if the character is a big boy.
+            [HarmonyPatch(nameof(Pickup.GoToThePlayer))]
+            [HarmonyPostfix]
+            static void GoToThePlayer_Postix(Gem __instance, MethodBase __originalMethod)
+            {
+                if (BloodlinesMod.isCustomCharacter(__instance.TargetPlayer._characterType))
+                {
+                    float distance = Vector2.Distance(__instance.position, __instance.TargetPlayer.position);
+                    float closeEnough = 0.09f;
+
+                    if (distance < closeEnough || float.IsInfinity(distance))
+                    {
+                        __instance.GetTaken();
+                    }
+                }
+            }
+        }
+
+        // "idle" is an animation
+        // "meleeA" is one for Maruto
+        [HarmonyPatch(typeof(BaseSpriteAnimation))]
+        [HarmonyPatch(nameof(BaseSpriteAnimation.Play), new Type[] { typeof(string), typeof(int) })]
+        static class SpriteAnimation_Patch
+        {
+            [HarmonyPrefix]
+            static void prefix(SpriteAnimation __instance, MethodBase __originalMethod, string animName, int frameRate)
+            {
+                Melon<BloodlinesMod>.Logger.Msg($"SpriteAnimation.{__originalMethod?.Name} - prefix");
+            }
+
+            [HarmonyPostfix]
+            static void postfix(SpriteAnimation __instance, MethodBase __originalMethod, string animName, int frameRate)
+            {
+                Melon<BloodlinesMod>.Logger.Msg($"SpriteAnimation.{__originalMethod?.Name} - postfix");
+            }
+        }
+
+        // SpriteAnimation
+        [HarmonyPatch(typeof(BaseSpriteAnimation))]
+        class BaseSpriteAnimation_Patch
+        {
+            [HarmonyPatch(nameof(BaseSpriteAnimation.Play), new Type[] { typeof(string) })]
+            [HarmonyPrefix]
+            static void Play_Prefix(BaseSpriteAnimation __instance, string animName)
+            {
+                Melon<BloodlinesMod>.Logger.Msg($"BaseSpriteAnimation.{MethodBase.GetCurrentMethod()?.Name}({animName})");
+            }
+
+            [HarmonyPatch(nameof(BaseSpriteAnimation.Play), new Type[] { typeof(string), typeof(int) })]
+            [HarmonyPrefix]
+            static void Play2_Prefix(BaseSpriteAnimation __instance, string animName, int frameRate)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"BaseSpriteAnimation.{MethodBase.GetCurrentMethod()?.Name}({animName}, {frameRate})");
+            }
+
+            [HarmonyPatch(nameof(BaseSpriteAnimation.Play), new Type[] { typeof(string) })]
+            [HarmonyPostfix]
+            static void Play_Postfix(BaseSpriteAnimation __instance, string animName)
+            {
+                Melon<BloodlinesMod>.Logger.Msg($"BaseSpriteAnimation.{MethodBase.GetCurrentMethod()?.Name}({animName})");
+            }
+
+            [HarmonyPatch(nameof(BaseSpriteAnimation.Play), new Type[] { typeof(string), typeof(int) })]
+            [HarmonyPostfix]
+            static void Play2_Postfix(BaseSpriteAnimation __instance, string animName, int frameRate)
+            {
+                Melon<BloodlinesMod>.Logger
+                    .Msg($"BaseSpriteAnimation.{MethodBase.GetCurrentMethod()?.Name}({animName}, {frameRate})");
+            }
+        }
+
         [HarmonyPatch(typeof(GameManager))]
         class GameManager_Patch
         {
@@ -175,6 +281,7 @@ namespace Bloodlines
                         }
 
                         c.SpriteAnimation._animations["walk"]._frames.Clear();
+
                         foreach (string frame in skin.frames)
                         {
                             string framePath = System.IO.Path.Join(character.BaseDirectory, frame);
@@ -184,6 +291,7 @@ namespace Bloodlines
                         if (skin.frames.Any())
                         {
                             c.SpriteAnimation.Play("walk");
+                            c.IsAnimForced = skin.AlwaysAnimated;
                         }
                         else
                         {
@@ -194,6 +302,7 @@ namespace Bloodlines
 
 #if DEBUG
                 BloodlinesMod._Timer = new Timer(TimerCallback, null, 0, 10000); // List stats every 10 seconds.
+                // gameManager.Player.Debug_ToggleInvulnerability();
 #endif
             }
         }
@@ -206,10 +315,12 @@ namespace Bloodlines
             static void OnShowStart_Postfix(RecapPage __instance)
             {
 #if DEBUG
-                if (BloodlinesMod._Timer != null) {
+                if (BloodlinesMod._Timer != null)
+                {
                     BloodlinesMod._Timer.Dispose();
                     BloodlinesMod._Timer = null;
                 }
+
 #endif
                 Melon<BloodlinesMod>.Logger
                     .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");

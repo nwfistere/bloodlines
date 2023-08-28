@@ -35,8 +35,10 @@ namespace Bloodlines
             catch (Exception e)
             {
                 Melon<BloodlinesMod>.Logger.Error($"Error: {e}");
+
                 Melon<BloodlinesMod>.Logger
                     .Error($"Submit an issue for this exception including all of the stacktrace and extra data.");
+
                 Melon<BloodlinesMod>.Logger.Error($"To: https://github.com/nwfistere/bloodlines/issues");
 
                 if (e.Data.Count > 0)

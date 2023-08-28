@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -301,6 +302,10 @@ namespace Bloodlines
 
         [JsonProperty("unlocked")]
         public bool Unlocked { get; set; }
+
+        [DefaultValue(false)]
+        [JsonProperty("alwaysAnimated")]
+        public bool AlwaysAnimated { get; set; }
 
         public static implicit operator Skin(SkinObjectModelv0_2 model)
         {
