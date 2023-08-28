@@ -73,13 +73,14 @@ const statModifierJson = {
 };
 
 const skinJson = {
-    "id": 0,
-    "name": "Default",
-    "textureName": "characters",
-    "spriteName": "",
-    "walkingFrames": 1,
-    "unlocked": true,
-    "frames": []
+  "id": 0,
+  "name": "Default",
+  "textureName": "characters",
+  "spriteName": "",
+  "walkingFrames": 1,
+  "unlocked": true,
+  "frames": [],
+  "alwaysAnimate": false
 };
 
 const weaponIdToNameMap = new Map(equipmentJson.IdToNameArray.map(({id, name}) => [id, name]));
@@ -342,7 +343,7 @@ const setOnImageChange = (element) => {
   });
 };
 
-const createSkinElement = (labelName, inputId, inputType, required = false, readOnly = false, hidden = false, value = undefined) => {
+const createSkinElement = ({ labelName, inputId, inputType, required = false, readOnly = false, hidden = false, value = undefined, classList = [] }) => {
   let label = null;
   if (inputType === "file" || inputType === "checkbox") {
     label = createLabel(labelName);
@@ -365,7 +366,7 @@ const createSkinElement = (labelName, inputId, inputType, required = false, read
   if (hidden) {
     input.className += " hide";
   }
-  const div = createColumnDiv();
+  const div = createDiv();
   if (label != null && inputType !== "checkbox") {
     div.appendChild(label);
   }
@@ -373,10 +374,13 @@ const createSkinElement = (labelName, inputId, inputType, required = false, read
   if (label != null && inputType === "checkbox") {
     div.appendChild(label);
   }
+  
+  div.classList.add(...classList || []);
+
   return div;
 }
 
-const createDiv = ({id, classList }) => {
+const createDiv = ({id, classList } = {}) => {
   const div = document.createElement("div");
   if (id) {
     div.id = id;
@@ -438,17 +442,45 @@ document.getElementById("addSkinForm").addEventListener("click", () => {
   header.innerHTML = "Skin " + (numOfSkins + 1);
   div.appendChild(header);
   // div.appendChild(createSkinElement("Id", "skin-id-" + numOfSkins, "number", false, true, true));
-  div.appendChild(createSkinElement("Skin name", "skin-name-" + numOfSkins, "text"));
-  // div.appendChild(createSkinElement("Texture Name", "skin-textureName-" + numOfSkins, "text", false, true, true));
-  div.appendChild(createSkinElement(spritePortraitString, "skin-spriteName-" + numOfSkins, "file"));
-  // div.appendChild(createSkinElement("Walking Frames", "skin-walkingFrames-" + numOfSkins, "number", false, true, true));
-  div.appendChild(createSkinElement("Unlocked", "skin-unlocked-" + numOfSkins, "checkbox"));
+  div.appendChild(
+    createSkinElement({
+      labelName: "Skin name",
+      inputId: "skin-name-" + numOfSkins,
+      inputType: "text"}
+    )
+  );
+  div.appendChild(
+    createSkinElement({
+      labelName: spritePortraitString,
+      inputId: "skin-spriteName-" + numOfSkins,
+      inputType: "file"}
+    )
+  );
+
+  const checkboxDiv = createDiv({ classList: [ "row" ]});
+
+  checkboxDiv.appendChild(
+    createSkinElement({
+      labelName: "Unlocked",
+      inputId: "skin-unlocked-" + numOfSkins,
+      inputType: "checkbox", 
+      classList: ["col-2"]
+    })
+  );
+
+  checkboxDiv.appendChild(
+    createSkinElement({
+      labelName: "Always Animate",
+      inputId: "skin-alwaysAnimate-" + numOfSkins,
+      inputType: "checkbox", 
+      classList: ["col-3"]
+    })
+  );
+
+  div.appendChild(checkboxDiv);
   div.appendChild(createFramesDiv(numOfSkins));
 
   document.getElementById("skinContainer").appendChild(div);
-  // document.getElementById("skin-id-" + numOfSkins).value = numOfSkins;
-  // document.getElementById("skin-textureName-" + numOfSkins).value = "characters";
-  // document.getElementById("skin-walkingFrames-" + numOfSkins).value = 4;
   document.getElementById("skin-unlocked-" + numOfSkins).checked = true;
   numOfSkins += 1;
   removeHide("removeSkinForm");
