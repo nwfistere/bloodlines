@@ -25,38 +25,38 @@
           <form id="basic-form">
             <div class="row gtr-100">
               <div class="row gtr-uniform">
-                <div class="col-6 col-12-xsmall">
-                  <input type="text" name="prefix" id="prefix" placeholder="Prefix" />
+                <div class="col-6 col-12-xsmall" tip="Is displayed before name when character's full name is used.">
+                  <input type="text" name="prefix" id="prefix" placeholder="Prefix"/>
                 </div>
-                <div class="col-6 col-12-xsmall">
+                <div class="col-6 col-12-xsmall" tip="Character's first name">
                   <input type="text" name="firstName" id="charName" placeholder="Name" required />
                 </div>
-                <div class="col-6 col-12-xsmall">
+                <div class="col-6 col-12-xsmall" tip="Character's last (sir) name">
                   <input type="text" name="lastName" id="surname" placeholder="Last name" />
                 </div>
-                <div class="col-12">
+                <div class="col-12" tip="The description that will be shown when the character is selected in the character page">
                   <input type="text" id="description" name="description" placeholder="Description" />
                 </div>
-                <div class="col-12">
+                <div class="col-12" tip="Equipped weapon at the start of the game.">
                   <select id="startingWeapon" name="weaponsSelect"></select>
                 </div>
-                <div class="col-12">
+                <div class="col-12" tip="Sprite used by default.">
                   <input type="file" id="spriteName" name="sprite" accept=".png" />
                 </div>
-                <div class="col-6 col-12-small">
+                <div class="col-6 col-12-small", tip="Has already been bought by player">
                   <input type="checkbox" id="isBought" name="isBought" checked>
                   <label for="isBought">Bought</label>
                 </div>
-                <div class="col-6 col-12-small">
+                <div class="col-6 col-12-small" tip="Cost to buy">
                   <input type="number" id="price" name="price" min="0" placeholder="Price" />
                 </div>
-                <div class="col-6 col-12-small">
+                <!-- <div class="col-6 col-12-small" tip="Doesn't currently do anything. Feel free to ignore.">
                   <input type="number" id="bodyOffset.x" name="x" placeholder="Bodyoffset X" />
                 </div>
-                <div class="col-6 col-12-small">
+                <div class="col-6 col-12-small" tip="Doesn't currently do anything. Feel free to ignore.">
                   <input type="number" id="bodyOffset.y" name="y" placeholder="Bodyoffset Y" />
-                </div>
-                <div class="col-12">
+                </div> -->
+                <div class="col-12" tip="Based on code from the original engine. When showcase items are selected on level up, both the weapon and character level up.">
                   <select id="showcase" class="field-style ignore-style" multiple></select>
                 </div>
               </div>
@@ -175,6 +175,7 @@
   <script type="text/javascript" src="external/choices/scripts/choices.min.js"></script>
   <script type="text/javascript" src="js/zipper.js"></script>
   <script type="text/javascript" src="js/create-character.js"></script>
+  <script type="text/javascript" src="js/tool-tips.js"></script>
   <script type="text/javascript" src="external/html5up-editorial/assets/js/breakpoints.min.js"></script>
   <script type="text/javascript" src="external/html5up-editorial/assets/js/browser.min.js"></script>
   <script type="text/javascript" src="external/html5up-editorial/assets/js/jquery.min.js"></script>
@@ -184,6 +185,7 @@
   <link rel="stylesheet" href="external/html5up-editorial/assets/css/fontawesome-all.min.css" />
   <link rel="stylesheet" href="external/html5up-editorial/assets/css/main.css" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/tool-tips.css" />
 </body>
 
 </html>
