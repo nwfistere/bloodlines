@@ -47,7 +47,6 @@ namespace Bloodlines
             {
                 CharacterDataModel model = new();
 
-
                 PropertyInfo[] myProps = old.GetType().GetProperties();
 
                 foreach (PropertyInfo prop in myProps)
@@ -88,6 +87,7 @@ namespace Bloodlines
                     {
                         Melon<BloodlinesMod>.Logger
                             .Msg($"Failed to convert: {prop.Name} From {prop.PropertyType.FullName} to {model.GetType().GetProperty(prop.Name).PropertyType.FullName} on character: {old.CharName}");
+
                         Melon<BloodlinesMod>.Logger.Msg($"{e}");
                     }
                 }
@@ -109,9 +109,10 @@ namespace Bloodlines
 
                         model.Skins.Add(skin);
                     }
+
                     first = false;
                 }
-                
+
                 wrapper.CharacterSettings.Add(model);
             }
 

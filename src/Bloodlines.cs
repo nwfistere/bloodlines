@@ -2,12 +2,16 @@
 using HarmonyLib;
 using Il2CppNewtonsoft.Json;
 using Il2CppNewtonsoft.Json.Linq;
+using Il2CppVampireSurvivors;
 using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Data.Characters;
 using Il2CppVampireSurvivors.Framework;
 using Il2CppVampireSurvivors.Framework.NumberTypes;
+using Il2CppVampireSurvivors.Graphics;
 using Il2CppVampireSurvivors.Objects;
 using Il2CppVampireSurvivors.Objects.Characters;
+using Il2CppVampireSurvivors.Objects.Items;
+using Il2CppVampireSurvivors.Objects.Pickups;
 using Il2CppVampireSurvivors.UI;
 using MelonLoader;
 using System;
@@ -135,6 +139,27 @@ namespace Bloodlines
 # endif // DEBUG
         }
 
+        [HarmonyPatch(typeof(Pickup))]
+        class Pickup_Patch
+        {
+            // Bugfix: Allows gems to be picked up, even if the character is a big boy.
+            [HarmonyPatch(nameof(Pickup.GoToThePlayer))]
+            [HarmonyPostfix]
+            static void GoToThePlayer_Postix(Gem __instance, MethodBase __originalMethod)
+            {
+                if (BloodlinesMod.isCustomCharacter(__instance.TargetPlayer._characterType))
+                {
+                    float distance = Vector2.Distance(__instance.position, __instance.TargetPlayer.position);
+                    float closeEnough = 0.09f;
+
+                    if (distance < closeEnough || float.IsInfinity(distance))
+                    {
+                        __instance.GetTaken();
+                    }
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(GameManager))]
         class GameManager_Patch
         {
@@ -175,6 +200,7 @@ namespace Bloodlines
                         }
 
                         c.SpriteAnimation._animations["walk"]._frames.Clear();
+
                         foreach (string frame in skin.frames)
                         {
                             string framePath = System.IO.Path.Join(character.BaseDirectory, frame);
@@ -184,6 +210,7 @@ namespace Bloodlines
                         if (skin.frames.Any())
                         {
                             c.SpriteAnimation.Play("walk");
+                            c.IsAnimForced = skin.AlwaysAnimated;
                         }
                         else
                         {
@@ -194,6 +221,7 @@ namespace Bloodlines
 
 #if DEBUG
                 BloodlinesMod._Timer = new Timer(TimerCallback, null, 0, 10000); // List stats every 10 seconds.
+                // gameManager.Player.Debug_ToggleInvulnerability();
 #endif
             }
         }
@@ -206,10 +234,12 @@ namespace Bloodlines
             static void OnShowStart_Postfix(RecapPage __instance)
             {
 #if DEBUG
-                if (BloodlinesMod._Timer != null) {
+                if (BloodlinesMod._Timer != null)
+                {
                     BloodlinesMod._Timer.Dispose();
                     BloodlinesMod._Timer = null;
                 }
+
 #endif
                 Melon<BloodlinesMod>.Logger
                     .Msg($"{typeof(RecapPage).FullName}.{MethodBase.GetCurrentMethod().Name}");
