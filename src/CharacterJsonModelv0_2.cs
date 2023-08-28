@@ -91,7 +91,9 @@ namespace Bloodlines
             {
                 if (c.GetType().GetProperty(prop.Name) == null)
                 {
-                    Melon<BloodlinesMod>.Logger.Msg($"No match for {prop.Name}");
+#if DEBUG
+                        Melon<BloodlinesMod>.Logger.Msg($"No match for {prop.Name}");
+#endif // DEBUG
                     continue;
                 }
 
@@ -113,7 +115,10 @@ namespace Bloodlines
             {
                 if (c.GetType().GetProperty(prop.Name) == null && prop.Name != "StatModifiers")
                 {
-                    Melon<BloodlinesMod>.Logger.Msg($"No match for {prop.Name}");
+#if DEBUG
+                        Melon<BloodlinesMod>.Logger.Msg($"No match for {prop.Name}");
+#endif // DEBUG
+
                     continue;
                 }
 
@@ -254,7 +259,10 @@ namespace Bloodlines
                 {
                     if (c.GetType().GetProperty(prop.Name) == null)
                     {
+#if DEBUG
                         Melon<BloodlinesMod>.Logger.Msg($"No match for {prop.Name}");
+#endif // DEBUG
+
                         continue;
                     }
 

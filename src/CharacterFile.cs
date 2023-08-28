@@ -53,7 +53,9 @@ namespace Bloodlines
                 {
                     if (model.GetType().GetProperty(prop.Name) == null)
                     {
+#if DEBUG
                         Melon<BloodlinesMod>.Logger.Msg($"No match for {prop.Name}");
+#endif // DEBUG
                         continue;
                     }
 

@@ -33,7 +33,7 @@ namespace Bloodlines
         public const string Description = "Easily add custom characters!";
         public const string Author = "Nick";
         public const string Company = "Nick";
-        public const string Version = "0.2.0";
+        public const string Version = "0.2.1";
         public const string Download = "https://github.com/nwfistere/bloodlines";
     }
 
