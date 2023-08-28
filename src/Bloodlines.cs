@@ -139,33 +139,6 @@ namespace Bloodlines
 # endif // DEBUG
         }
 
-        // SpriteAnimationController
-
-        [HarmonyPatch(typeof(SpriteAnimationController))]
-        static class SpriteAnimationController_Patch
-        {
-            [HarmonyPatch(nameof(SpriteAnimationController.OnUpdate), new Type[] { })]
-            [HarmonyPrefix]
-            static void OnUpdate_Prefix(SpriteAnimationController __instance)
-            {
-                // Melon<BloodlinesMod>.Logger.Msg($"BaseSpriteAnimation.{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(SpriteAnimationController.Add), new Type[] { typeof(BaseSpriteAnimation) })]
-            [HarmonyPrefix]
-            static void Add_Prefix(SpriteAnimationController __instance, BaseSpriteAnimation baseSpriteAnimation)
-            {
-                Melon<BloodlinesMod>.Logger.Msg($"BaseSpriteAnimation.{MethodBase.GetCurrentMethod()?.Name}");
-            }
-
-            [HarmonyPatch(nameof(SpriteAnimationController.Remove), new Type[] { typeof(BaseSpriteAnimation) })]
-            [HarmonyPrefix]
-            static void Remove_Prefix(SpriteAnimationController __instance, BaseSpriteAnimation baseSpriteAnimation)
-            {
-                Melon<BloodlinesMod>.Logger.Msg($"BaseSpriteAnimation.{MethodBase.GetCurrentMethod()?.Name}");
-            }
-        }
-
         [HarmonyPatch(typeof(Pickup))]
         class Pickup_Patch
         {
@@ -184,60 +157,6 @@ namespace Bloodlines
                         __instance.GetTaken();
                     }
                 }
-            }
-        }
-
-        // "idle" is an animation
-        // "meleeA" is one for Maruto
-        [HarmonyPatch(typeof(BaseSpriteAnimation))]
-        [HarmonyPatch(nameof(BaseSpriteAnimation.Play), new Type[] { typeof(string), typeof(int) })]
-        static class SpriteAnimation_Patch
-        {
-            [HarmonyPrefix]
-            static void prefix(SpriteAnimation __instance, MethodBase __originalMethod, string animName, int frameRate)
-            {
-                Melon<BloodlinesMod>.Logger.Msg($"SpriteAnimation.{__originalMethod?.Name} - prefix");
-            }
-
-            [HarmonyPostfix]
-            static void postfix(SpriteAnimation __instance, MethodBase __originalMethod, string animName, int frameRate)
-            {
-                Melon<BloodlinesMod>.Logger.Msg($"SpriteAnimation.{__originalMethod?.Name} - postfix");
-            }
-        }
-
-        // SpriteAnimation
-        [HarmonyPatch(typeof(BaseSpriteAnimation))]
-        class BaseSpriteAnimation_Patch
-        {
-            [HarmonyPatch(nameof(BaseSpriteAnimation.Play), new Type[] { typeof(string) })]
-            [HarmonyPrefix]
-            static void Play_Prefix(BaseSpriteAnimation __instance, string animName)
-            {
-                Melon<BloodlinesMod>.Logger.Msg($"BaseSpriteAnimation.{MethodBase.GetCurrentMethod()?.Name}({animName})");
-            }
-
-            [HarmonyPatch(nameof(BaseSpriteAnimation.Play), new Type[] { typeof(string), typeof(int) })]
-            [HarmonyPrefix]
-            static void Play2_Prefix(BaseSpriteAnimation __instance, string animName, int frameRate)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"BaseSpriteAnimation.{MethodBase.GetCurrentMethod()?.Name}({animName}, {frameRate})");
-            }
-
-            [HarmonyPatch(nameof(BaseSpriteAnimation.Play), new Type[] { typeof(string) })]
-            [HarmonyPostfix]
-            static void Play_Postfix(BaseSpriteAnimation __instance, string animName)
-            {
-                Melon<BloodlinesMod>.Logger.Msg($"BaseSpriteAnimation.{MethodBase.GetCurrentMethod()?.Name}({animName})");
-            }
-
-            [HarmonyPatch(nameof(BaseSpriteAnimation.Play), new Type[] { typeof(string), typeof(int) })]
-            [HarmonyPostfix]
-            static void Play2_Postfix(BaseSpriteAnimation __instance, string animName, int frameRate)
-            {
-                Melon<BloodlinesMod>.Logger
-                    .Msg($"BaseSpriteAnimation.{MethodBase.GetCurrentMethod()?.Name}({animName}, {frameRate})");
             }
         }
 
