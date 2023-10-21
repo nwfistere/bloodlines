@@ -1,3 +1,12 @@
+# No longer actively developing.
+I will no longer be actively developing this mod. Feel free to fork this repo and continue development as long as you follow the [LICENSE](./LICENSE).
+  
+<br />
+<br /><br />
+<br /><br />
+<br />
+
+
 # <img src="./docs/images/00051-1768801398.ico" alt="Bloodlines Icon" width="30"/> Bloodlines - A custom character importer for Vampire Survivors
 A mod for Vampire Survivors to help facilitate creating custom characters.
 
